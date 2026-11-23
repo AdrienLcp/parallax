@@ -1,0 +1,50 @@
+@layer components
+  .floating-stick
+    --stick-base-size: calc(var(--pad-unit) * 45)
+    --stick-knob-size: calc(var(--stick-base-size) * 0.42)
+    --shadow-knob: drop-shadow(0 5px 6px color-mix(in oklab, var(--lacquer-ink) 35%, transparent))
+
+    position: relative
+    touch-action: none
+
+    .stick-base
+      block-size: var(--stick-base-size)
+      inline-size: var(--stick-base-size)
+      inset-block-start: var(--anchor-y-px, 54%)
+      inset-inline-start: var(--anchor-x-px, 50%)
+      pointer-events: none
+      position: absolute
+      transition: inset-block-start var(--transition-base) var(--ease-out), inset-inline-start var(--transition-base) var(--ease-out)
+      translate: -50% -50%
+
+    .stick-plan
+      block-size: 100%
+      color: var(--seat-cap)
+      inline-size: 100%
+      inset: 0
+      opacity: 0.5
+      position: absolute
+      transition: opacity var(--transition-fast)
+
+    .stick-knob
+      block-size: var(--stick-knob-size)
+      filter: var(--shadow-knob)
+      inline-size: var(--stick-knob-size)
+      inset-block-start: calc(50% - var(--stick-knob-size) / 2)
+      inset-inline-start: calc(50% - var(--stick-knob-size) / 2)
+      position: absolute
+      transition: translate var(--transition-fast) var(--ease-out)
+      translate: var(--knob-x-px, 0px) var(--knob-y-px, 0px)
+
+    .knob-top
+      block-size: 100%
+      inline-size: 100%
+      rotate: var(--knob-turn, 0turn)
+
+    &[data-held]
+      .stick-base,
+      .stick-knob
+        transition: none
+
+      .stick-plan
+        opacity: 0.95

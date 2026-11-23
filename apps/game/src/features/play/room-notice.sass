@@ -1,0 +1,68 @@
+@use '@adrienlcp/styles/accessibility'
+@use '../../presentation/styles/typography'
+
+@layer components
+  .room-notice
+    --text-plaque: 3.625rem
+    --text-notice: 2.875rem
+    --plaque-tracking: 0.14em
+    --radius-plaque: 12px
+    --radius-control: 4px
+    --shadow-plaque: inset 0 0 0 4px var(--enamel), inset 0 0 0 7px var(--ivory), 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
+    --shadow-control: 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)
+
+    align-items: center
+    background: var(--felt)
+    color: var(--chalk)
+    display: flex
+    flex-direction: column
+    gap: var(--space-l)
+    inset: 0
+    justify-content: center
+    padding: var(--page-padding-block-start) var(--gutter-right) var(--page-padding-block-end) var(--gutter-left)
+    position: absolute
+    text-align: center
+
+    .room-plaque
+      @include typography.display
+
+      background: var(--enamel)
+      border-radius: var(--radius-plaque)
+      box-shadow: var(--shadow-plaque)
+      color: var(--ivory)
+      font-size: var(--text-plaque)
+      letter-spacing: var(--plaque-tracking)
+      padding: var(--space-xs) var(--space-l)
+      padding-inline-end: calc(var(--space-l) - var(--plaque-tracking))
+      user-select: text
+
+    .plaque-label
+      @include accessibility.visually-hidden
+
+    .notice-status
+      @include typography.label
+
+      align-items: center
+      display: flex
+      font-size: var(--text-l)
+      gap: var(--space-s)
+
+    .notice-headline
+      @include typography.display
+
+      font-size: var(--text-notice)
+
+    .notice-retry
+      @include typography.display
+
+      background: var(--brass)
+      border: 0
+      border-radius: var(--radius-control)
+      box-shadow: var(--shadow-control)
+      color: var(--lacquer-ink)
+      font-size: var(--text-l)
+      min-block-size: var(--control-height)
+      padding-inline: var(--space-2xl)
+
+      &[data-pressed]
+        scale: 0.96

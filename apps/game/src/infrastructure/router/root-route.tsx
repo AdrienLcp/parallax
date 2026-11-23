@@ -6,9 +6,11 @@ import {
   ScrollRestoration,
   useHref,
   useLocation,
+  useMatch,
   useNavigate
 } from 'react-router'
 
+import { paths } from '@/infrastructure/router/navigation'
 import { AppShell } from '@/presentation/app-shell'
 import { focusMain } from '@/presentation/components/main'
 import { RouterProvider } from '@/presentation/components/router-provider'
@@ -56,8 +58,16 @@ const useFocusMainOnNavigation = (): void => {
   }, [pathname])
 }
 
+const useIsGamePage = (): boolean => {
+  const playMatch = useMatch(paths.play)
+  const screenMatch = useMatch(paths.screen)
+
+  return playMatch !== null || screenMatch !== null
+}
+
 export const RootRoute: React.FC = () => {
   const navigate = useNavigate()
+  const isGamePage = useIsGamePage()
   useFocusMainOnNavigation()
 
   return (
@@ -69,7 +79,7 @@ export const RootRoute: React.FC = () => {
       }}
       {...hrefResolution}
     >
-      <AppShell>
+      <AppShell isFullBleed={isGamePage}>
         <Outlet />
       </AppShell>
       <ScrollRestoration />

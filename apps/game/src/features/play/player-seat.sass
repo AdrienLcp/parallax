@@ -1,0 +1,40 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .player-seat
+    --radius-bubble: 6px
+    --shadow-bubble: 0 8px 20px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)
+
+    background: var(--seat)
+    inset: 0
+    position: absolute
+
+    .seat-controller
+      inset: 0
+      position: absolute
+      transition: filter var(--transition-base)
+
+      &[inert]
+        filter: saturate(0.4) brightness(0.75)
+
+    .seat-connection
+      inset: 0
+      pointer-events: none
+      position: absolute
+
+    .reconnecting-bubble
+      @include typography.label
+
+      align-items: center
+      background: var(--slate)
+      border-radius: var(--radius-bubble)
+      box-shadow: var(--shadow-bubble)
+      color: var(--chalk)
+      display: flex
+      font-size: var(--text-l)
+      gap: var(--space-s)
+      inset-block-start: 50%
+      inset-inline-start: 50%
+      padding: var(--space-m) var(--space-l)
+      position: absolute
+      translate: -50% -50%

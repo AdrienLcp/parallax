@@ -2,19 +2,25 @@ import type React from 'react'
 
 import { useRoomCodeParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
-import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { PlayerSeat } from './player-seat'
+import { RoomNotice } from './room-notice'
 
-/** What a phone shows once it joined a room by its code. */
+import './play-page.sass'
+
+/** What a phone shows once it joined a room by its code: held to the screen, edge to edge. */
 export const PlayPage: React.FC = () => {
-  const translate = useTranslate()
   const roomCode = useRoomCodeParam()
 
   return (
     <Main className='play-page'>
       {roomCode === null ? (
-        <p>{translate('play.refused.roomGone')}</p>
+        <RoomNotice
+          canRetry={false}
+          kind='refused'
+          reason='play.refused.roomGone'
+          roomCode={null}
+        />
       ) : (
         <PlayerSeat key={roomCode} roomCode={roomCode} />
       )}

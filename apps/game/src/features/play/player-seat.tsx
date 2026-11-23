@@ -15,20 +15,38 @@ import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import type { PlainTranslationKey } from '@/presentation/i18n/translation'
 
+import { RoomNotice } from './room-notice'
+import { Spinner } from './spinner'
 import { usePlayerSessionId } from './use-player-session-id'
 
-const refusalMessage = {
-  hello_required: 'play.refused.unexpected',
-  internal_error: 'play.refused.unexpected',
-  invalid_message: 'play.refused.unexpected',
-  protocol_version_mismatch: 'play.refused.outdated',
-  room_closed: 'play.refused.roomGone',
-  room_full: 'play.refused.roomFull',
-  room_not_found: 'play.refused.roomGone',
-  screen_replaced: 'play.refused.unexpected',
-  screen_token_invalid: 'play.refused.unexpected',
-  wrong_role: 'play.refused.unexpected'
-} satisfies Record<ProtocolErrorCode, PlainTranslationKey>
+import './player-seat.sass'
+
+type Refusal = {
+  canRetry: boolean
+  reason: PlainTranslationKey
+}
+
+const UNEXPECTED: Refusal = {
+  canRetry: true,
+  reason: 'play.refused.unexpected'
+}
+const ROOM_GONE: Refusal = { canRetry: false, reason: 'play.refused.roomGone' }
+
+const refusals = {
+  hello_required: UNEXPECTED,
+  internal_error: UNEXPECTED,
+  invalid_message: UNEXPECTED,
+  protocol_version_mismatch: {
+    canRetry: true,
+    reason: 'play.refused.outdated'
+  },
+  room_closed: ROOM_GONE,
+  room_full: { canRetry: true, reason: 'play.refused.roomFull' },
+  room_not_found: ROOM_GONE,
+  screen_replaced: UNEXPECTED,
+  screen_token_invalid: UNEXPECTED,
+  wrong_role: UNEXPECTED
+} satisfies Record<ProtocolErrorCode, Refusal>
 
 type PlayerSeatProps = {
   roomCode: RoomCode
@@ -56,28 +74,42 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
   })
 
   if (socket.status.kind === 'refused') {
-    return <p>{translate(refusalMessage[socket.status.code])}</p>
+    return (
+      <RoomNotice
+        kind='refused'
+        roomCode={roomCode}
+        {...refusals[socket.status.code]}
+      />
+    )
   }
 
   const ownSeat = roomView?.seats.find((seat) => seat.seatId === roomView.youId)
 
   if (roomView === null || ownSeat === undefined) {
-    return null
+    return <RoomNotice kind='connecting' roomCode={roomCode} />
   }
 
+  const isReconnecting = socket.status.kind === 'reconnecting'
+
   return (
-    <>
-      <p>{translate('seat.present', { number: String(ownSeat.slot + 1) })}</p>
-      {socket.status.kind === 'reconnecting' && (
-        <p>{translate('play.reconnecting')}</p>
-      )}
-      <Suspense fallback={null}>
-        <game.Controller
-          events={gameEvents}
-          room={roomView}
-          send={socket.send}
-        />
-      </Suspense>
-    </>
+    <div className='player-seat' data-seat-slot={ownSeat.slot}>
+      <div className='seat-controller' inert={isReconnecting}>
+        <Suspense fallback={null}>
+          <game.Controller
+            events={gameEvents}
+            room={roomView}
+            send={socket.send}
+          />
+        </Suspense>
+      </div>
+      <div className='seat-connection' role='status'>
+        {isReconnecting && (
+          <p className='reconnecting-bubble'>
+            <Spinner />
+            {translate('play.reconnecting')}
+          </p>
+        )}
+      </div>
+    </div>
   )
 }

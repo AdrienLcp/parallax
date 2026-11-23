@@ -1,0 +1,12 @@
+@use '@adrienlcp/styles/motion'
+
+@layer components
+  .spinner
+    @include motion.spin(calc(var(--transition-slow) * 2))
+
+    block-size: 1em
+    border: var(--stroke-bold) solid currentColor
+    border-inline-end-color: transparent
+    border-radius: var(--radius-pill)
+    flex: none
+    inline-size: 1em

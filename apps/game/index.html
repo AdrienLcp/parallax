@@ -11,6 +11,13 @@
     <meta content="#ffffff" data-scheme="light" media="(prefers-color-scheme: light)" name="theme-color" />
     <meta content="#000000" data-scheme="dark" media="(prefers-color-scheme: dark)" name="theme-color" />
     <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+    <!--
+      The faces every first screen paints — the screen's room code, a phone's
+      name and its text —, found before the stylesheet asks for them so
+      `font-display: optional` gets them on a first visit.
+    -->
+    <link as="font" crossorigin href="/fonts/big-shoulders-display-black-latin.woff2" rel="preload" type="font/woff2" />
+    <link as="font" crossorigin href="/fonts/barlow-semi-condensed-medium-latin.woff2" rel="preload" type="font/woff2" />
     <title>App</title>
     <meta content="What the app does, in one sentence." name="description" />
     <!--

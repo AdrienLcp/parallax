@@ -1,0 +1,35 @@
+// Side effect: each seat slot's lacquer, loaded once from globals.sass.
+// An element carrying `data-seat-slot` hands its subtree three colours:
+// `--seat` (the lacquer), `--seat-cap` (text and the top's cap on it) and
+// `--seat-mark` (the glyph carved in the cap).
+
+@layer base
+  [data-seat-slot='0']
+    --seat: var(--seat-red)
+    --seat-cap: var(--ivory)
+    --seat-mark: var(--lacquer-ink)
+
+  [data-seat-slot='1']
+    --seat: var(--seat-ivory)
+    --seat-cap: var(--lacquer-ink)
+    --seat-mark: var(--ivory)
+
+  [data-seat-slot='2']
+    --seat: var(--seat-black)
+    --seat-cap: var(--ivory)
+    --seat-mark: var(--lacquer-ink)
+
+  [data-seat-slot='3']
+    --seat: var(--seat-ochre)
+    --seat-cap: var(--lacquer-ink)
+    --seat-mark: var(--ivory)
+
+  [data-seat-slot='4']
+    --seat: var(--seat-blue)
+    --seat-cap: var(--ivory)
+    --seat-mark: var(--lacquer-ink)
+
+  [data-seat-slot='5']
+    --seat: var(--seat-green)
+    --seat-cap: var(--lacquer-ink)
+    --seat-mark: var(--ivory)

@@ -1,0 +1,72 @@
+@use '@adrienlcp/styles/accessibility'
+@use '../../presentation/styles/typography'
+
+@layer components
+  .room-join
+    --plaque-tracking: 0.14em
+
+    align-items: start
+    display: grid
+    gap: calc(var(--cu) * 2.4) calc(var(--cu) * 2.6)
+    grid-template-columns: calc(var(--cu) * 23) 1fr
+    padding-block-start: var(--cu)
+
+    .join-heading
+      @include typography.display
+
+      font-size: calc(var(--cu) * 5.4)
+
+    .room-plaque
+      @include typography.display
+
+      background: var(--enamel)
+      border-radius: calc(var(--cu) * 1.2)
+      box-shadow: inset 0 0 0 calc(var(--cu) * 0.45) var(--enamel), inset 0 0 0 calc(var(--cu) * 0.8) var(--ivory), var(--screen-shadow-raised)
+      color: var(--ivory)
+      display: inline-block
+      font-size: calc(var(--cu) * 6.4)
+      letter-spacing: var(--plaque-tracking)
+      margin-block-start: calc(var(--cu) * 1.8)
+      padding: calc(var(--cu) * 0.8) calc(var(--cu) * 2.2)
+      padding-inline-end: calc(var(--cu) * 2.2 - var(--plaque-tracking))
+      user-select: text
+
+      @supports (text-box: trim-both cap alphabetic)
+        padding-block: calc(var(--cu) * 0.8 + (1lh - 1cap) / 2)
+        text-box: trim-both cap alphabetic
+
+    .room-plaque-label
+      @include accessibility.visually-hidden
+
+    .join-cues
+      border-block-start: calc(var(--cu) * 0.2) solid var(--brass)
+      display: grid
+      gap: calc(var(--cu) * 1.6)
+      grid-column: 1 / -1
+      grid-template-columns: repeat(2, 1fr)
+      list-style: none
+      padding: calc(var(--cu) * 1.2) 0 0
+
+      li
+        @include typography.label
+
+        align-items: center
+        display: grid
+        font-size: calc(var(--cu) * 1.9)
+        gap: calc(var(--cu) * 1.1)
+        grid-template-columns: calc(var(--cu) * 5.2) 1fr
+
+    .cue-icon
+      block-size: calc(var(--cu) * 5.2)
+      inline-size: calc(var(--cu) * 5.2)
+
+    .cue-line
+      fill: none
+      stroke: currentColor
+      stroke-width: 3.5
+
+    .cue-dashed
+      stroke-dasharray: 4 4
+
+    .cue-fill
+      fill: currentColor

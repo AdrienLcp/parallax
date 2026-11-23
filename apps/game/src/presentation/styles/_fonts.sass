@@ -1,0 +1,29 @@
+// Side-effect module: emits top-level CSS. Loaded once, from globals.sass.
+//
+// Two families, SIL Open Font License 1.1, self-hosted as one static file per
+// weight and subset. Big Shoulders Display Black is the uppercase lettering —
+// names, titles, the room code, buttons —; Barlow Semi Condensed is every
+// line read, its 500 standing in for the body's 400 and its 700 for every
+// heavier weight.
+
+@use '@adrienlcp/styles/fonts'
+
+/// Each family's ascent, descent and capital height, in em.
+$big-shoulders-metrics: (ascent: 0.984, descent: 0.213, cap-height: 0.8)
+$barlow-metrics: (ascent: 1, descent: 0.2, cap-height: 0.7)
+
+@layer base
+  @include fonts.font-face('Big Shoulders Display', '/fonts/big-shoulders-display-black-latin.woff2', fonts.$latin, $weight: 900)
+  @include fonts.font-face('Big Shoulders Display', '/fonts/big-shoulders-display-black-latin-ext.woff2', fonts.$latin-ext, $weight: 900)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-medium-latin.woff2', fonts.$latin, $weight: 500)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-medium-latin-ext.woff2', fonts.$latin-ext, $weight: 500)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-bold-latin.woff2', fonts.$latin, $weight: 700)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-bold-latin-ext.woff2', fonts.$latin-ext, $weight: 700)
+
+  // fontaine's size-adjust for each family's first file; each width ratio is
+  // the scaled Arial's over the file's, measured with `measure-font` over both
+  // dictionaries — uppercased, with the room code's alphabet, for the display
+  // face, whose digits set 19 % wider than its letters and get a face of their
+  // own.
+  @include fonts.fallback-faces('Big Shoulders Display', $big-shoulders-metrics, 0.897262, (900: 1.294), $figures: 1.0431)
+  @include fonts.fallback-faces('Barlow Semi Condensed', $barlow-metrics, 0.865858, (400 599: 0.9909, 600 700: 1.0343), $bold-from: 600)

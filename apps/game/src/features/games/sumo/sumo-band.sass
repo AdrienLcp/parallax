@@ -1,0 +1,75 @@
+@use '@adrienlcp/styles/motion'
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .sumo-band
+    --seat-top-ring: var(--chalk)
+    --text-band-title: 4rem
+
+    align-items: center
+    background: var(--slate)
+    border-block: var(--stroke-bold) solid var(--brass)
+    clip-path: inset(0)
+    color: var(--chalk)
+    display: grid
+    gap: var(--space-l)
+    grid-template-columns: auto auto
+    inset-block-start: 50%
+    inset-inline: 0
+    justify-content: center
+    padding-block: var(--space-m)
+    padding-inline: var(--gutter-left) var(--gutter-right)
+    position: absolute
+    transition: clip-path var(--transition-slow) var(--ease-out)
+    translate: 0 -50%
+
+    @starting-style
+      clip-path: inset(0 100% 0 0)
+
+    .band-top
+      block-size: 6rem
+      inline-size: 6rem
+
+    .band-title
+      @include typography.display
+
+      font-size: var(--text-band-title)
+
+    .band-detail
+      @include typography.label
+
+      align-items: center
+      color: var(--chalk-soft)
+      display: flex
+      font-size: var(--text-l)
+      gap: var(--space-xs)
+      margin-block-start: var(--space-xs)
+
+    .pusher
+      align-items: center
+      display: inline-flex
+      gap: var(--space-xs)
+
+    .pusher-top
+      block-size: 1.75rem
+      inline-size: 1.75rem
+
+    &[data-outcome='won']
+      background: var(--brass)
+      border-color: var(--lacquer-ink)
+      color: var(--lacquer-ink)
+
+      .band-detail
+        color: var(--lacquer-ink)
+
+      .band-top
+        @include motion.spin(calc(var(--transition-slow) * 6))
+
+  @media (orientation: portrait)
+    .sumo-band
+      grid-template-columns: auto
+      justify-items: center
+      text-align: center
+
+      .band-detail
+        justify-content: center

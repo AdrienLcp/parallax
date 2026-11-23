@@ -2,8 +2,10 @@
 @use '@adrienlcp/styles/reduced-motion.css'
 @use '@adrienlcp/theme-preference/color-scheme.css'
 @use './focus'
+@use './fonts'
 @use './layout'
 @use './tokens'
+@use './seats'
 
 @layer base
   // The ground is painted here and not on the body: the body is a size
@@ -19,6 +21,7 @@
 
     caret-color: var(--focus)
     color: var(--ink)
+    font-family: var(--font-body)
     font-size: var(--text-m)
     font-synthesis: none
 

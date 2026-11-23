@@ -64,25 +64,45 @@ export const EN_DICTIONARY = defineDictionary({
     title: 'Legal notice and privacy'
   },
   play: {
+    connecting: 'Connecting…',
     reconnecting: 'Reconnecting…',
     refused: {
-      outdated: 'This page is out of date. Reload it.',
-      roomFull: 'This room is full.',
-      roomGone: 'No room here.',
-      unexpected: 'The room turned you away.'
-    }
+      outdated: 'Page out of date',
+      roomFull: 'Room full',
+      roomGone: 'No room here',
+      unexpected: 'Turned away'
+    },
+    retry: 'Try again',
+    room: 'Room'
   },
   screen: {
+    cue: {
+      knockOut: 'Knock them into the gutter',
+      steer: 'Steer with your thumb'
+    },
+    ejected: '{seat} in the gutter',
+    join: 'Scan to play',
     openFailed: 'The room did not open.',
+    players: '{fewest:number} to {most:number} players',
+    qr: 'QR code to join room {code}',
     reconnecting: 'Reconnecting…',
     refused: 'The room turned this display away.',
     replaced: 'Another display took this room.',
     retry: 'Retry',
+    roomCode: 'Room code',
+    seat: {
+      absent: 'away',
+      free: 'Free'
+    },
     takeBack: 'Take back'
   },
   seat: {
-    away: 'Player {number} · away',
-    present: 'Player {number}'
+    black: 'Black',
+    blue: 'Blue',
+    green: 'Green',
+    ivory: 'Ivory',
+    ochre: 'Ochre',
+    red: 'Red'
   },
   shell: {
     footer: {
@@ -91,5 +111,18 @@ export const EN_DICTIONARY = defineDictionary({
       source: 'Source code'
     },
     skipLink: 'Skip to content'
+  },
+  sumo: {
+    dash: 'Dash',
+    out: {
+      pushedBy: 'by <seat>{name}</seat>',
+      title: 'In the gutter'
+    },
+    playInLandscape: 'Play in landscape',
+    turnToLandscape: 'Turn to landscape',
+    won: {
+      detail: 'Last one on the board',
+      title: 'Won'
+    }
   }
 })

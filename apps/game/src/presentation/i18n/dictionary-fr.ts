@@ -62,25 +62,45 @@ export default defineDictionary({
     title: 'Mentions légales et confidentialité'
   },
   play: {
+    connecting: 'Connexion…',
     reconnecting: 'Reconnexion…',
     refused: {
-      outdated: 'Cette page est périmée. Rechargez-la.',
-      roomFull: 'Cette salle est pleine.',
-      roomGone: 'Aucune salle ici.',
-      unexpected: 'La salle a refusé l’entrée.'
-    }
+      outdated: 'Page périmée',
+      roomFull: 'Salle pleine',
+      roomGone: 'Aucune salle ici',
+      unexpected: 'Entrée refusée'
+    },
+    retry: 'Réessayer',
+    room: 'Salle'
   },
   screen: {
+    cue: {
+      knockOut: 'Faites-les tomber dans la rigole',
+      steer: 'Pilotez au pouce'
+    },
+    ejected: '{seat} à la rigole',
+    join: 'Scannez pour jouer',
     openFailed: 'La salle ne s’est pas ouverte.',
+    players: '{fewest:number} à {most:number} joueurs',
+    qr: 'QR code pour rejoindre la salle {code}',
     reconnecting: 'Reconnexion…',
     refused: 'La salle a refusé cet affichage.',
     replaced: 'Un autre affichage a pris la salle.',
     retry: 'Réessayer',
+    roomCode: 'Code de la salle',
+    seat: {
+      absent: 'absent',
+      free: 'Libre'
+    },
     takeBack: 'Reprendre'
   },
   seat: {
-    away: 'Joueur {number} · absent',
-    present: 'Joueur {number}'
+    black: 'Noir',
+    blue: 'Bleu',
+    green: 'Vert',
+    ivory: 'Ivoire',
+    ochre: 'Ocre',
+    red: 'Rouge'
   },
   shell: {
     footer: {
@@ -89,5 +109,18 @@ export default defineDictionary({
       source: 'Code source'
     },
     skipLink: 'Aller au contenu'
+  },
+  sumo: {
+    dash: 'Foncer',
+    out: {
+      pushedBy: 'par <seat>{name}</seat>',
+      title: 'À la rigole'
+    },
+    playInLandscape: 'Jouez en paysage',
+    turnToLandscape: 'Passez en paysage',
+    won: {
+      detail: 'Dernier sur le plateau',
+      title: 'Gagné'
+    }
   }
 })

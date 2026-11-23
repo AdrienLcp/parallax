@@ -11,11 +11,16 @@ import {
 import type { ScreenGameEvent } from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
 import { createEventChannel } from '@/helpers/event-channel'
-import { reloadPage, sameOriginUrl } from '@/infrastructure/browser'
+import { reloadPage } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
-import { playPathFor } from '@/infrastructure/router/navigation'
-import { Button } from '@/presentation/components/button'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
+
+import { ArenaPlan } from './arena-plan'
+import { RoomJoin } from './room-join'
+import { ScreenNotice } from './screen-notice'
+import { SeatRoster } from './seat-roster'
+
+import './screen-room.sass'
 
 /** Refusals that mean the room is gone for this display: it opens another. */
 const ROOM_LOST_CODES: ReadonlySet<ProtocolErrorCode> = new Set([
@@ -30,7 +35,7 @@ type ScreenRoomProps = {
   room: CreateRoomResponse
 }
 
-/** The room on the screen: the address to join it, its seats, and the game. */
+/** The room on the display: how to join it, the arena the game plays on, and its seats. */
 export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
   const translate = useTranslate()
   const [roomView, setRoomView] = useState<ScreenRoomMessage | null>(null)
@@ -62,37 +67,24 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
 
   if (socket.status.kind === 'refused') {
     return isRoomLost ? null : (
-      <>
-        <p>
-          {translate(
-            socket.status.code === 'screen_replaced'
-              ? 'screen.replaced'
-              : 'screen.refused'
-          )}
-        </p>
-        <Button onPress={reloadPage}>{translate('screen.takeBack')}</Button>
-      </>
+      <ScreenNotice
+        action={translate('screen.takeBack')}
+        message={translate(
+          socket.status.code === 'screen_replaced'
+            ? 'screen.replaced'
+            : 'screen.refused'
+        )}
+        onAction={reloadPage}
+      />
     )
   }
 
   return (
-    <>
-      <p>{room.code}</p>
-      <p>{sameOriginUrl(playPathFor(room.code))}</p>
-      {socket.status.kind === 'reconnecting' && (
-        <p>{translate('screen.reconnecting')}</p>
-      )}
-      {roomView !== null && (
-        <>
-          <ul>
-            {roomView.seats.map((seat) => (
-              <li key={seat.seatId}>
-                {translate(seat.isConnected ? 'seat.present' : 'seat.away', {
-                  number: String(seat.slot + 1)
-                })}
-              </li>
-            ))}
-          </ul>
+    <div className='screen-room'>
+      <RoomJoin code={room.code} />
+      <div className='arena'>
+        <ArenaPlan />
+        {roomView !== null && (
           <Suspense fallback={null}>
             <game.Scene
               events={gameEvents}
@@ -100,8 +92,14 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
               send={socket.send}
             />
           </Suspense>
-        </>
-      )}
-    </>
+        )}
+        {socket.status.kind === 'reconnecting' && (
+          <p className='screen-reconnecting' role='status'>
+            {translate('screen.reconnecting')}
+          </p>
+        )}
+      </div>
+      <SeatRoster seats={roomView?.seats ?? []} />
+    </div>
   )
 }

@@ -1,0 +1,38 @@
+@layer components
+  .arena-plan
+    block-size: 100%
+    display: block
+    inline-size: 100%
+
+    .gutter
+      fill: var(--felt-deep)
+
+    .platform
+      fill: color-mix(in oklab, var(--felt) 94%, var(--chalk))
+
+    .rim, .gutter-edge, .centre-ring, .centre-spot, .home-spot
+      fill: none
+      stroke: var(--brass)
+
+    .rim
+      stroke-width: 0.018
+
+    .gutter-edge
+      stroke-opacity: 0.55
+      stroke-width: 0.01
+
+    .centre-ring
+      stroke-opacity: 0.4
+      stroke-width: 0.006
+
+    .centre-spot
+      stroke-width: 0.012
+
+    .tick
+      fill: var(--brass)
+      fill-opacity: 0.7
+
+    .home-spot
+      stroke: var(--chalk)
+      stroke-opacity: 0.55
+      stroke-width: 0.02

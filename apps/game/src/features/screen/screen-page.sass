@@ -1,0 +1,21 @@
+@layer components
+  :root:has(.screen-page)
+    background: var(--felt)
+    scrollbar-gutter: auto
+
+  .screen-page
+    --cu: min(1dvh, calc(1dvw * 16 / 9))
+    --screen-safe-block: calc(var(--cu) * 1.7)
+    --screen-safe-inline: calc(var(--cu) * 1.6875)
+    --screen-shadow-ink: color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
+    --screen-shadow-raised: 0 calc(var(--cu) * 0.5) calc(var(--cu) * 1.2) var(--screen-shadow-ink)
+    --focus: var(--brass)
+
+    -webkit-touch-callout: none
+    background: var(--felt)
+    block-size: 100dvh
+    color: var(--chalk)
+    display: grid
+    overflow: clip
+    place-items: center
+    user-select: none

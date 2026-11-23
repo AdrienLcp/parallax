@@ -1,0 +1,33 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .ejection-band
+    align-items: center
+    background: var(--slate)
+    border-block: calc(var(--cu) * 0.3) solid var(--brass)
+    clip-path: inset(0)
+    display: grid
+    grid-template-columns: calc(var(--cu) * 15) 1fr
+    inset-block-start: 3%
+    inset-inline: calc(var(--screen-safe-inline) * -1)
+    position: absolute
+    transition: clip-path var(--transition-slow, 0s) var(--ease-out)
+    z-index: 2
+
+    @starting-style
+      clip-path: inset(0 100% 0 0)
+
+    &[data-exiting]
+      clip-path: inset(0 0 0 100%)
+
+    .ejected-top
+      block-size: calc(var(--cu) * 10)
+      inline-size: calc(var(--cu) * 10)
+      justify-self: center
+
+    .ejection-message
+      @include typography.display
+
+      color: var(--chalk)
+      font-size: calc(var(--cu) * 7)
+      padding: calc(var(--cu) * 1.8) calc(var(--cu) * 3) calc(var(--cu) * 1.6) calc(var(--cu) * 1.2)
