@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-23T18:47:35.784Z",
+  "generatedAt": "2026-11-23T19:34:18.053Z",
   "title": "Design System: Parallax",
   "extensions": {
     "colorMeta": {
@@ -383,7 +383,7 @@
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Every name, title and button label, uppercase; sized by the caller (the phone lobby name shown). Display surfaces size it in --cu."
+        "purpose": "Every name, title and button label, uppercase; sized by the caller (the phone lobby name shown). Display surfaces size it in --cu: countdown 16, play title 8, plaque 6.4 (compact 2.6), announcement 5.5, roster name 3.2."
       },
       "headline": {
         "displayName": "Band Title",
@@ -403,7 +403,7 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Cues, statuses, seat states, band detail."
+        "purpose": "Cues, statuses, seat states, band detail, the play header subtitle and the roster cue."
       },
       "small": {
         "displayName": "Small",
@@ -455,6 +455,16 @@
         "name": "shadow-control",
         "value": "0 4px 10px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)",
         "purpose": "Brass retry button on the phone."
+      },
+      {
+        "name": "countdown-text",
+        "value": "0 calc(var(--cu) * 0.5) calc(var(--cu) * 1.2) color-mix(in oklab, var(--lacquer-ink) 40%, transparent)",
+        "purpose": "Text shadow under the countdown numerals over the arena (the raised-object values)."
+      },
+      {
+        "name": "scene-shadow-catcher",
+        "value": "ShadowMaterial lacquer-ink, opacity 0.38, PCF soft shadow radius 5",
+        "purpose": "Shadows the modelled tops cast on the 3D arena plan."
       }
     ],
     "motion": [
@@ -487,6 +497,21 @@
         "name": "dash-refill",
         "value": "linear, var(--dash-cooldown)",
         "purpose": "Cooldown ring refilling from dashoffset 101 to 0."
+      },
+      {
+        "name": "countdown-beat",
+        "value": "var(--transition-slow) cubic-bezier(0.16, 1, 0.3, 1), from opacity 0 and scale 1.25",
+        "purpose": "Each countdown number beating in over the arena."
+      },
+      {
+        "name": "announcement-wipe",
+        "value": "clip-path var(--transition-slow) var(--ease-out); in from inset(0 100% 0 0), out to inset(0 0 0 100%)",
+        "purpose": "The display announcement band wiping in from the left and out to the right."
+      },
+      {
+        "name": "top-spin",
+        "value": "3 rad/s; lean 0.35 per unit speed up to 0.3 rad; fall tip up to 1.2 rad",
+        "purpose": "Modelled tops in the 3D arena; reduced motion stops the spin."
       }
     ],
     "breakpoints": [
@@ -537,15 +562,23 @@
       "name": "Seat Roster",
       "kind": "card",
       "refersTo": "seat-roster",
-      "description": "Slate scoreboard in a walnut frame listing the seats.",
-      "html": "<div class=\"ds-roster\"><div class=\"ds-seat\"><span class=\"ds-dot\"></span><b>Ivory</b></div><div class=\"ds-seat ds-free\"><span class=\"ds-socket\"></span>Free</div></div>",
-      "css": ".ds-roster { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px 20px; background: oklch(28.3% 0.008 169.8); color: oklch(93.1% 0.015 90.2); border-radius: 8px; box-shadow: inset 0 0 0 5px oklch(38% 0.058 56.8), inset 0 0 0 7px color-mix(in oklab, oklch(38% 0.058 56.8) 55%, oklch(20.8% 0.009 59.2)); } .ds-seat { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1.5px solid oklch(42.7% 0.011 160.9); } .ds-seat b { font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 1.75rem; } .ds-dot { width: 40px; height: 40px; border-radius: 50%; background: oklch(91.8% 0.032 87.3); box-shadow: 0 0 0 2px oklch(73.1% 0.115 85.2); } .ds-free { color: oklch(79.2% 0.015 124.6); font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; } .ds-socket { width: 40px; height: 40px; border-radius: 50%; border: 2px dashed color-mix(in oklab, oklch(73.1% 0.115 85.2) 70%, transparent); }"
+      "description": "Slate scoreboard in a walnut frame: seats with brass tally pips, a fallen seat struck through in brass, the winner ringed in brass.",
+      "html": "<div class=\"ds-roster\"><div class=\"ds-seat ds-winner\"><span class=\"ds-dot\"></span><span><b>Ochre</b><span class=\"ds-pips\"><i class=\"ds-pip ds-won\"></i><i class=\"ds-pip ds-won\"></i><i class=\"ds-pip\"></i></span></span></div><div class=\"ds-seat ds-out\"><span class=\"ds-dot\"></span><span><b>Blue</b><span class=\"ds-pips\"><i class=\"ds-pip ds-won\"></i><i class=\"ds-pip\"></i><i class=\"ds-pip\"></i></span></span></div><div class=\"ds-seat ds-free\"><span class=\"ds-socket\"></span>Free</div></div><p class=\"ds-cue\">Premier à 3 manches</p>",
+      "css": ".ds-roster { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 14px; padding: 14px 20px; background: var(--slate, oklch(28.3% 0.008 169.8)); color: var(--chalk, oklch(93.1% 0.015 90.2)); border-radius: 8px; box-shadow: inset 0 0 0 5px oklch(38% 0.058 56.8), inset 0 0 0 7px color-mix(in oklab, oklch(38% 0.058 56.8) 55%, oklch(20.8% 0.009 59.2)); } .ds-seat { display: grid; grid-template-columns: 54px 1fr; align-items: center; gap: 10px; padding: 6px; border-bottom: 1.5px solid oklch(42.7% 0.011 160.9); } .ds-seat b { display: block; font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 32px; } .ds-dot { width: 54px; height: 54px; border-radius: 50%; background: oklch(72.4% 0.138 78.8); box-shadow: inset 0 0 0 4px oklch(73.1% 0.115 85.2); } .ds-pips { display: flex; gap: 6px; margin-top: 3px; } .ds-pip { width: 16px; height: 16px; border: 2.5px solid oklch(73.1% 0.115 85.2); border-radius: 50%; box-sizing: border-box; } .ds-pip.ds-won { background: oklch(73.1% 0.115 85.2); } .ds-out .ds-dot { opacity: 0.35; background: oklch(45.9% 0.094 251.4); } .ds-out b { text-decoration: line-through 3.5px oklch(73.1% 0.115 85.2); } .ds-winner { border-radius: 8px; box-shadow: inset 0 0 0 3px oklch(73.1% 0.115 85.2); } .ds-free { font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 24px; color: oklch(79.2% 0.015 124.6); } .ds-socket { width: 54px; height: 54px; border-radius: 50%; border: 3px dashed color-mix(in oklab, oklch(73.1% 0.115 85.2) 70%, transparent); box-sizing: border-box; } .ds-cue { font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 22px; margin: 10px 0 0; grid-column: 1 / -1; }"
+    },
+    {
+      "name": "Announcement Band",
+      "kind": "custom",
+      "refersTo": "announcement-band",
+      "description": "The display band across the header for falls, round and match winners: slate, brass filets, tops then message; always slate.",
+      "html": "<div class=\"ds-announce\"><span class=\"ds-announce-top\"></span><p>Ochre wins the match</p></div>",
+      "css": ".ds-announce { display: flex; align-items: center; gap: 20px; padding: 0 17px; background: oklch(28.3% 0.008 169.8); border-block: 3px solid oklch(73.1% 0.115 85.2); clip-path: inset(0); transition: clip-path 400ms ease-out; } .ds-announce:hover { clip-path: inset(0 0 0 0); } .ds-announce-top { flex-shrink: 0; width: 70px; height: 70px; border-radius: 50%; background: oklch(20.8% 0.009 59.2); box-shadow: inset 0 0 0 4px oklch(73.1% 0.115 85.2), inset 0 0 0 16px oklch(72.4% 0.138 78.8); } .ds-announce p { margin: 0; color: oklch(93.1% 0.015 90.2); font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 55px; text-wrap: balance; }"
     },
     {
       "name": "Outcome Band",
       "kind": "custom",
       "refersTo": "sumo-band",
-      "description": "Full-width slate band with brass borders, wiped in from the left; won variant in brass.",
+      "description": "The phone outcome band: full-width slate with brass borders, wiped in from the left; won variant in brass.",
       "html": "<div class=\"ds-band\">Out</div><div class=\"ds-band ds-band-won\">Won</div>",
       "css": ".ds-band { background: oklch(28.3% 0.008 169.8); color: oklch(93.1% 0.015 90.2); border-block: 3px solid oklch(73.1% 0.115 85.2); padding: 1rem 1.5rem; text-align: center; font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 4rem; margin-bottom: 8px; } .ds-band-won { background: oklch(73.1% 0.115 85.2); color: oklch(20.8% 0.009 59.2); border-color: oklch(20.8% 0.009 59.2); }"
     },
@@ -560,10 +593,11 @@
   ],
   "narrative": {
     "northStar": "Plateau de bistrot",
-    "overview": "A table game seen from directly above. The display is a billiard-green felt tabletop; every structure on it (arena rim, gutter edge, ticks, rules between zones, cooldown gauge) is a brass filet drawn on that felt, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.\n\nThe display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so it carries only the player's top and name, a stick and one button. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond two pictogram cues.\n\nThe bistrot look is fixed whatever the system theme. Only the host's secondary pages (home, legal, footer) follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.",
+    "overview": "A table game seen from directly above. The display is a billiard-green felt tabletop; every structure on it (arena rim, gutter edge, ticks, rules between zones, tally pips, cooldown gauge) is a brass filet drawn on that felt, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.\n\nIn play, the display's arena is a real-time 3D scene seen through one perspective camera that leans 14° from straight above toward the people standing in front. The table itself stays a plan: unlit felt and brass filets at the same radii as the flat SVG plan shown before the scene loads. Only the tops are modelled: lacquered, clearcoated, ringed in brass, spinning on their point and casting soft ink shadows; a top that loses tips over and sinks into the gutter. The shell around the arena stays neutral: the game hands it a title, a subtitle, a cue, each seat's standing and the announcement of the moment, and the shell draws them in the bistrot vocabulary.\n\nThe display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so it carries only the player's top and name, a stick and one button. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond two pictogram cues.\n\nThe bistrot look is fixed whatever the system theme. Only the host's secondary pages (home, legal, footer) follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.",
     "keyCharacteristics": [
       "Felt ground, brass filets for every line and ring, no gradients, no glass.",
-      "Six lacquered tops, each with a carved glyph, so seats differ by shape as well as colour.",
+      "Six lacquered tops, each with a carved glyph, so seats differ by shape as well as colour; flat SVG on every 2D surface, modelled only inside the 3D arena.",
+      "The 3D arena is a flat plan with modelled tops on it, framed by a near-vertical camera; every colour it draws comes from the CSS tokens.",
       "Big Shoulders Display Black, uppercase, for everything named; Barlow Semi Condensed for everything read.",
       "Depth from soft ink-tinted shadows and inset double filets, never from blur or glow.",
       "Display sized in `--cu` units inside a 3 % safe area; controller sized in rem and `--pad-unit`."
@@ -581,7 +615,12 @@
       },
       {
         "name": "The Two Marks Rule",
-        "body": "A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone.",
+        "body": "A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone. The arena is the one exception: there the top moves alone, and the roster and the announcement band carry the names.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Source Rule",
+        "body": "The 3D scene owns no colour. It resolves every token (`--felt`, `--brass`, `--seat`, `--seat-cap`, `--seat-mark`, `--seat-top-ring`, `color-mix` included) through a hidden probe in the page and draws without tone mapping, so the lacquer on the table is the lacquer in the roster.",
         "section": "colors"
       },
       {
@@ -596,7 +635,12 @@
       },
       {
         "name": "The Ink Shadow Rule",
-        "body": "Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %. No hard offsets, no glow, no coloured shadows.",
+        "body": "Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %, the 3D scene's shadows included. No hard offsets, no glow, no coloured shadows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Plan Under Objects Rule",
+        "body": "In 3D the table stays a plan and only what sits on it is modelled. The rim, gutter, ticks and centre ring are unlit filets at their 2D radii and opacities; depth comes from the tops, their light and their shadows.",
         "section": "elevation"
       }
     ],
@@ -606,14 +650,18 @@
       "**Do** set names, codes, titles and button labels in Big Shoulders Display 900 uppercase, and everything else in Barlow Semi Condensed 500 / 700.",
       "**Do** size display surfaces in `--cu` and keep them inside the 3 % safe area.",
       "**Do** tint every shadow with lacquer ink at 30 to 40 %.",
-      "**Do** keep the bistrot look fixed regardless of system theme; only host secondary pages follow light / dark."
+      "**Do** keep the bistrot look fixed regardless of system theme; only host secondary pages follow light / dark.",
+      "**Do** let a game speak to the room only through its standings: title, subtitle, cue, pips, fallen and winner marks, and the one announcement band across the header.",
+      "**Do** read every 3D colour from the CSS tokens through the probe."
     ],
     "donts": [
-      "**Don't** use gradients, glass, blur or glow; the table is flat felt and lacquer.",
+      "**Don't** paint gradients, glass, blur or glow onto any surface; the table is flat felt, and the only shading is light falling on the modelled lacquer.",
       "**Don't** use a seat lacquer for anything that is not a player.",
       "**Don't** wrap content in generic UI cards; a panel is a table object (slate in walnut, enamel plaque, ivory QR card).",
       "**Don't** add a third weight to the body face or a second weight to the display face.",
-      "**Don't** model the arena as an object in this layer; it is a plan in filets until the 3D scene replaces it."
+      "**Don't** model the arena itself: in the 3D scene the platform, gutter, rim, ticks and centre ring stay unlit felt and brass filets; only the tops are modelled and lit.",
+      "**Don't** put shell UI over the arena; news goes in the header band, standings on the roster.",
+      "**Don't** hard-code a colour in the renderer."
     ]
   }
 }
