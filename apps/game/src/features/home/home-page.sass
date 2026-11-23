@@ -18,6 +18,7 @@
 
     display: grid
     min-block-size: 100dvh
+    overscroll-behavior: none
     place-items: center
 
   .home-display
@@ -26,6 +27,9 @@
     -webkit-touch-callout: none
     display: grid
     grid-template-rows: auto minmax(0, 1fr) auto
+    // A drag on the column must not pan the display off its title; pinch
+    // zoom stays for a phone that opens the home.
+    touch-action: pinch-zoom
     user-select: none
 
   .home-head
