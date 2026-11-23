@@ -83,9 +83,10 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
     <div className='screen-room'>
       <RoomJoin code={room.code} />
       <div className='arena'>
-        <ArenaPlan />
-        {roomView !== null && (
-          <Suspense fallback={null}>
+        {roomView === null ? (
+          <ArenaPlan />
+        ) : (
+          <Suspense fallback={<ArenaPlan />}>
             <game.Scene
               events={gameEvents}
               room={roomView}

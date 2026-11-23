@@ -1,0 +1,37 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .sumo-scene
+    display: grid
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr)
+    min-block-size: 0
+    position: relative
+
+    & > *
+      grid-area: 1 / 1
+
+    .arena-view
+      min-block-size: 0
+      position: relative
+
+    .arena-canvas
+      block-size: 100%
+      display: block
+      inline-size: 100%
+      max-inline-size: none
+
+    .countdown
+      @include typography.display
+
+      align-self: center
+      animation: countdown-beat var(--transition-slow) cubic-bezier(0.16, 1, 0.3, 1)
+      color: var(--chalk)
+      font-size: calc(var(--cu) * 16)
+      justify-self: center
+      pointer-events: none
+      text-shadow: 0 calc(var(--cu) * 0.5) calc(var(--cu) * 1.2) color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
+
+  @keyframes countdown-beat
+    from
+      opacity: 0
+      scale: 1.25

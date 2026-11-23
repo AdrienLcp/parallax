@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 
 import type { GameDefinition } from './game-definition'
+import { SUMO_PLAYERS } from './sumo/sumo-tuning'
 
 export type GameId = 'sumo'
 
@@ -11,7 +12,7 @@ export const games = {
       default: (await import('./sumo/sumo-controller')).SumoController
     })),
     name: 'games.sumo.name',
-    players: { fewest: 2, most: 6 },
+    players: SUMO_PLAYERS,
     Scene: lazy(async () => ({
       default: (await import('./sumo/sumo-scene')).SumoScene
     }))
