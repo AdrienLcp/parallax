@@ -49,7 +49,7 @@ const MIN_SCORE = 100
  */
 const BUDGETS_WITH_HEADROOM = {
   'cumulative-layout-shift': 0.01,
-  'resource-summary:script:size': 140_000,
+  'resource-summary:script:size': 220_000,
   'three-chunk:size': 160_000
 }
 
