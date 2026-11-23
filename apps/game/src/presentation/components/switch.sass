@@ -1,0 +1,53 @@
+@use '../styles/focus'
+@use '../styles/typography'
+
+@layer components
+  .switch
+    @include focus.ring('.track')
+
+    align-items: center
+    cursor: pointer
+    display: inline-flex
+    gap: var(--space-s)
+    min-block-size: var(--target)
+
+    .track
+      align-items: center
+      background: var(--ground)
+      block-size: 1.5rem
+      border: var(--stroke-thin) solid var(--rule-strong)
+      border-radius: var(--radius-pill)
+      display: flex
+      flex: none
+      inline-size: 2.75rem
+      padding-inline: 0.1875rem
+      transition: background-color var(--transition-fast) var(--ease-out), border-color var(--transition-fast) var(--ease-out)
+
+    .thumb
+      background: var(--rule-strong)
+      block-size: 1rem
+      border-radius: var(--radius-pill)
+      inline-size: 1rem
+      transition: translate var(--transition-base) var(--ease-out), background-color var(--transition-fast) var(--ease-out)
+
+    .switch-label
+      @include typography.label
+
+    &[data-hovered]:not([data-disabled]) .track
+      border-color: var(--ink)
+
+    &[data-selected]
+      .track
+        background: var(--ink)
+        border-color: var(--ink)
+
+      .thumb
+        background: var(--ground)
+        translate: calc(2.75rem - 2 * 0.1875rem - 2 * var(--stroke-thin) - 1rem) 0
+
+    &[data-disabled]
+      color: var(--ink-muted)
+      cursor: default
+
+      .track
+        border-style: dashed

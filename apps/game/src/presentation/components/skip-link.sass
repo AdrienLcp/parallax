@@ -1,0 +1,10 @@
+@use '@adrienlcp/styles/accessibility'
+
+@layer components
+  .skip-link
+    @include accessibility.skip-link($top: var(--space-s))
+
+    background: var(--ground)
+    border: var(--hairline-strong)
+    color: var(--ink)
+    padding: var(--space-s) var(--space-l)

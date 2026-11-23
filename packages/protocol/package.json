@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "name": "@parallax/protocol",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module"
+}

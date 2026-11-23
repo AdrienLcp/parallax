@@ -1,0 +1,39 @@
+@use '@adrienlcp/styles/sizes'
+@use '@adrienlcp/styles/tokens'
+
+@use './layout'
+
+@layer tokens
+  :root
+    @include tokens.defaults
+
+    --ground: light-dark(oklch(100% 0 0), oklch(0% 0 0))
+    --ink: light-dark(oklch(20% 0 0), oklch(95% 0 0))
+    --ink-muted: light-dark(oklch(45% 0 0), oklch(72% 0 0))
+    --focus: light-dark(oklch(50% 0.2 260), oklch(75% 0.15 260))
+    --rule: light-dark(oklch(85% 0 0), oklch(30% 0 0))
+    --rule-strong: light-dark(oklch(60% 0 0), oklch(55% 0 0))
+    --selection: light-dark(oklch(88% 0.06 260), oklch(35% 0.08 260))
+
+    --text-s: 0.875rem
+    --text-m: 1rem
+    --text-l: 1.25rem
+    --text-title: #{sizes.fluid(2rem, 3rem)}
+
+    --space-xs: 0.5rem
+    --space-s: 0.75rem
+    --space-m: 1rem
+    --space-l: 1.5rem
+    --space-2xl: 3rem
+
+    --radius-pill: 999px
+
+    --gutter: var(--space-l)
+    --page-padding: var(--space-l)
+    --page-padding-block-start: max(var(--page-padding), var(--safe-area-top))
+    --page-padding-block-end: max(var(--page-padding), var(--safe-area-bottom))
+    --header-height: 0rem
+
+    @include layout.wide
+      --gutter: var(--space-2xl)
+      --page-padding: var(--space-2xl)

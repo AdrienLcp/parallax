@@ -1,0 +1,35 @@
+@use '@adrienlcp/styles/reset.css'
+@use '@adrienlcp/styles/reduced-motion.css'
+@use '@adrienlcp/theme-preference/color-scheme.css'
+@use './focus'
+@use './layout'
+@use './tokens'
+
+@layer base
+  // The ground is painted here and not on the body: the body is a size
+  // container, and containment stops its background propagating to the
+  // canvas, which leaves the gutter in the browser's own grey.
+  html
+    background: var(--ground)
+    scrollbar-color: var(--rule-strong) var(--ground)
+    scrollbar-gutter: stable
+
+  body
+    @include layout.container(page)
+
+    caret-color: var(--focus)
+    color: var(--ink)
+    font-size: var(--text-m)
+    font-synthesis: none
+
+  #root
+    display: flex
+    flex-direction: column
+    min-block-size: 100dvh
+    overflow-x: clip
+
+  ::selection
+    background: var(--selection)
+    color: var(--ink)
+
+  @include focus.ring-focusables

@@ -1,0 +1,41 @@
+{
+  "dependencies": {
+    "@adrienlcp/i18n": "^0.7.0",
+    "@adrienlcp/react": "^0.5.0",
+    "@adrienlcp/react-aria": "^0.8.1",
+    "@adrienlcp/result": "^0.1.1",
+    "@adrienlcp/safe-storage": "^0.1.1",
+    "@adrienlcp/styles": "^0.19.0",
+    "@adrienlcp/theme-preference": "^0.5.0",
+    "@parallax/protocol": "workspace:*",
+    "react": "19.3.1",
+    "react-aria-components": "1.22.1",
+    "react-dom": "19.3.1",
+    "react-router": "^8.5.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "~1.64.1",
+    "@react-aria/optimize-locales-plugin": "^2.1.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "lighthouse": "^13.6.0",
+    "oxc-transform-react": "^0.156.0",
+    "sass": "^1.107.1",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
+  },
+  "name": "@parallax/game",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "vite",
+    "lighthouse": "node scripts/lighthouse.ts",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module"
+}

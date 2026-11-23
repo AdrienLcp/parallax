@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport" />
+    <!--
+      The page's top colour in each palette: if that token moves, these move with it.
+      Scoped to the system theme; the theme-preference plugin appends the script
+      that stamps an explicit choice and retargets them before the first paint.
+    -->
+    <meta content="#ffffff" data-scheme="light" media="(prefers-color-scheme: light)" name="theme-color" />
+    <meta content="#000000" data-scheme="dark" media="(prefers-color-scheme: dark)" name="theme-color" />
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+    <title>App</title>
+    <meta content="What the app does, in one sentence." name="description" />
+    <!--
+      A layer's position is fixed where its name first appears, and Vite injects
+      stylesheets in module-graph order: declared here, the order cannot depend
+      on which component happened to be imported first.
+    -->
+    <style>
+      @layer reset, tokens, base, components;
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/src/main.tsx" type="module"></script>
+  </body>
+</html>

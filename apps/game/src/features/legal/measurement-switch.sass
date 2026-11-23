@@ -1,0 +1,16 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .measurement-switch
+    border: var(--hairline)
+    display: grid
+    gap: var(--space-xs)
+    padding: var(--space-s) var(--space-m) var(--space-m)
+
+    .measurement-note
+      @include typography.small
+
+      color: var(--ink-muted)
+
+      &.failed
+        color: var(--ink)

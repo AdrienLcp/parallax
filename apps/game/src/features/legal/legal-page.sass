@@ -1,0 +1,41 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .legal-page
+    padding-block: var(--page-padding-block-start) var(--page-padding-block-end)
+    padding-inline: var(--gutter-left) var(--gutter-right)
+
+    .legal-document
+      @include typography.prose
+
+      margin-inline: auto
+      max-inline-size: var(--measure)
+
+    .legal-title
+      @include typography.title
+
+    .legal-intro
+      color: var(--ink-muted)
+      margin-block-start: var(--space-m)
+
+    .legal-section
+      border-block-start: var(--hairline)
+      display: grid
+      gap: var(--space-s)
+      margin-block-start: var(--space-2xl)
+      padding-block-start: var(--space-l)
+
+    .legal-heading
+      @include typography.heading
+
+    .host-address
+      display: grid
+      font-style: normal
+
+    .stored-keys
+      display: grid
+      gap: var(--space-xs) var(--space-m)
+      grid-template-columns: max-content 1fr
+
+      dd
+        margin: 0
