@@ -19,5 +19,14 @@
   "migrations": [{ "new_sqlite_classes": ["RoomObject"], "tag": "v1" }],
   "name": "parallax",
   "observability": { "enabled": true },
+  // Only a display opens rooms, a few a day: ten a minute from one address is
+  // already a script. Namespace ids are account-wide; melee holds the 1000s.
+  "ratelimits": [
+    {
+      "name": "ROOM_CREATION_LIMITER",
+      "namespace_id": "2001",
+      "simple": { "limit": 10, "period": 60 }
+    }
+  ],
   "workers_dev": false
 }

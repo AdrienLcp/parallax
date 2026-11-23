@@ -165,4 +165,22 @@ describe('worker API', () => {
       type: 'error'
     })
   })
+
+  // Last: it spends this address's whole allowance for the minute.
+  it('refuses an address that opens rooms in a burst', async () => {
+    const statuses: number[] = []
+
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const response = await server.fetch(API_ROUTES.rooms, { method: 'POST' })
+      statuses.push(response.status)
+
+      if (response.status === 429) {
+        expect(apiErrorResponseSchema.parse(await response.json()).code).toBe(
+          'rate_limited'
+        )
+      }
+    }
+
+    expect(statuses).toContain(429)
+  })
 })

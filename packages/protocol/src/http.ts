@@ -14,11 +14,12 @@ export const healthResponseSchema = z.object({
   status: z.literal('ok')
 })
 
-/** The socket's codes plus the two only a request can earn. */
+/** The socket's codes plus the three only a request can earn. */
 export const httpErrorCodeSchema = z.enum([
   ...protocolErrorCodeSchema.options,
   'invalid_input',
-  'not_found'
+  'not_found',
+  'rate_limited'
 ])
 
 /** `code` is the contract a client translates; `message` is English for a log, never rendered. */

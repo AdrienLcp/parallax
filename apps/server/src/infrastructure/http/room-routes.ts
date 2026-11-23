@@ -6,10 +6,11 @@ import { openFreshRoom } from '@/domain/room/room-opening'
 import { newRoomCode, newScreenToken } from '@/infrastructure/ids'
 
 import { answerInternalError, answerNotFound } from './error-handling'
+import { limitRoomCreation } from './rate-limit'
 import type { WorkerApp } from './worker-app'
 
 export const registerRoomRoutes = (app: WorkerApp) => {
-  app.post(API_ROUTES.rooms, async (context) => {
+  app.post(API_ROUTES.rooms, limitRoomCreation, async (context) => {
     const opened = await openFreshRoom({
       newRoomCode,
       newScreenToken,
