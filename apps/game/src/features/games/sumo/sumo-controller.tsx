@@ -104,8 +104,9 @@ export const SumoController: React.FC<GameControllerProps> = ({
   const translate = useTranslate()
   const state = useSumoState(events)
   const hasAskedLandscapeRef = useRef(false)
-  const sendStick = usePacedStick((stick) =>
-    send({ type: 'sumo.stick', x: stick.x, y: stick.y })
+  const sendStick = usePacedStick(
+    (stick) => send({ type: 'sumo.stick', x: stick.x, y: stick.y }),
+    room
   )
   const view = sumoControllerView({ seatId: room.youId, state })
 
