@@ -12,6 +12,7 @@ import type { OpenedRoom } from './room'
 import { openRoom } from './room-service'
 import { handleFrame } from './room-session'
 import { createRoomStore, type RoomStore } from './room-store'
+import { SEAT_RELEASE_AFTER_MS } from './seat-release'
 
 const ROOM: OpenedRoom = {
   code: 'ABCD',
@@ -55,13 +56,28 @@ const sendFrame = ({
   admission = null,
   frame,
   mintSeatId = seatIdsInOrder(),
+  nowMs = 0,
   store
 }: {
   admission?: Admission | null
   frame: string
   mintSeatId?: () => string
+  nowMs?: number
   store: RoomStore
-}) => handleFrame({ admission, mintSeatId, raw: frame, store })
+}) => handleFrame({ admission, mintSeatId, nowMs, raw: frame, store })
+
+const fillRoom = (store: RoomStore, mintSeatId: () => string) => {
+  for (let phone = 1; phone <= ROOM_SEAT_LIMIT; phone += 1) {
+    sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(phone) }),
+      mintSeatId,
+      store
+    })
+  }
+}
+
+const LEFT_AT_MS = 1_000
+const RELEASED_AT_MS = LEFT_AT_MS + SEAT_RELEASE_AFTER_MS
 
 const PLAYER: Admission = { role: 'player', seatId: 'seat-1' }
 const SCREEN: Admission = { role: 'screen' }
@@ -82,7 +98,12 @@ describe('handleFrame', () => {
       shouldClose: false
     })
     expect(store.readSeats()).toEqual([
-      { seatId: 'seat-1', sessionId: sessionOf(1), slot: 0 }
+      {
+        absentSinceMs: null,
+        seatId: 'seat-1',
+        sessionId: sessionOf(1),
+        slot: 0
+      }
     ])
   })
 
@@ -102,13 +123,7 @@ describe('handleFrame', () => {
     const store = openedStore()
     const mintSeatId = seatIdsInOrder()
 
-    for (let phone = 1; phone <= ROOM_SEAT_LIMIT; phone += 1) {
-      sendFrame({
-        frame: helloFrame({ role: 'player', sessionId: sessionOf(phone) }),
-        mintSeatId,
-        store
-      })
-    }
+    fillRoom(store, mintSeatId)
 
     const outcome = sendFrame({
       frame: helloFrame({
@@ -125,6 +140,94 @@ describe('handleFrame', () => {
       type: 'error'
     })
     expect(outcome.shouldClose).toBe(true)
+  })
+
+  it('keeps an absent seat for its phone until the release delay is over', () => {
+    const store = openedStore()
+    const mintSeatId = seatIdsInOrder()
+    fillRoom(store, mintSeatId)
+    store.recordAbsences([{ absentSinceMs: LEFT_AT_MS, seatId: 'seat-3' }])
+
+    const outcome = sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(7) }),
+      mintSeatId,
+      nowMs: RELEASED_AT_MS - 1,
+      store
+    })
+
+    expect(outcome.reply).toEqual({
+      code: 'room_full',
+      isFatal: true,
+      type: 'error'
+    })
+  })
+
+  it('gives a newcomer the slot of the seat released first', () => {
+    const store = openedStore()
+    const mintSeatId = seatIdsInOrder()
+    fillRoom(store, mintSeatId)
+    store.recordAbsences([
+      { absentSinceMs: LEFT_AT_MS + 10, seatId: 'seat-2' },
+      { absentSinceMs: LEFT_AT_MS, seatId: 'seat-5' }
+    ])
+
+    const outcome = sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(7) }),
+      mintSeatId,
+      nowMs: RELEASED_AT_MS + 10,
+      store
+    })
+
+    expect(outcome.admission).toEqual({ role: 'player', seatId: 'seat-7' })
+    expect(store.readSeats().at(4)).toEqual({
+      absentSinceMs: null,
+      seatId: 'seat-7',
+      sessionId: sessionOf(7),
+      slot: 4
+    })
+    expect(store.readSeats()).toHaveLength(ROOM_SEAT_LIMIT)
+  })
+
+  it('gives a newcomer an empty slot before a released one', () => {
+    const store = openedStore()
+    const mintSeatId = seatIdsInOrder()
+    sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(1) }),
+      mintSeatId,
+      store
+    })
+    store.recordAbsences([{ absentSinceMs: LEFT_AT_MS, seatId: 'seat-1' }])
+
+    sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(2) }),
+      mintSeatId,
+      nowMs: RELEASED_AT_MS,
+      store
+    })
+
+    expect(store.readSeats().map(({ seatId, slot }) => [seatId, slot])).toEqual(
+      [
+        ['seat-1', 0],
+        ['seat-2', 1]
+      ]
+    )
+  })
+
+  it('gives a released seat back to its phone while nobody took the slot', () => {
+    const store = openedStore()
+    const mintSeatId = seatIdsInOrder()
+    const hello = helloFrame({ role: 'player', sessionId: sessionOf(1) })
+    sendFrame({ frame: hello, mintSeatId, store })
+    store.recordAbsences([{ absentSinceMs: LEFT_AT_MS, seatId: 'seat-1' }])
+
+    const back = sendFrame({
+      frame: hello,
+      mintSeatId,
+      nowMs: RELEASED_AT_MS * 10,
+      store
+    })
+
+    expect(back.admission).toEqual(PLAYER)
   })
 
   it('admits the screen only with the token the room was opened with', () => {

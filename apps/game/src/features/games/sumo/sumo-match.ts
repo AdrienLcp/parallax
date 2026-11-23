@@ -6,7 +6,8 @@ import {
   matchWinnerOf,
   type SumoRound,
   startRound,
-  tallied
+  tallied,
+  withoutLeftSeats
 } from './sumo-round'
 import { SUMO_PLAYERS, SUMO_TUNING } from './sumo-tuning'
 
@@ -32,6 +33,8 @@ export const GATHERING: SumoMatch = { stage: 'gathering' }
 export type SumoMatchStep = Omit<SumoStep, 'tops'> & {
   /** Seats whose phone is connected, in seating order: who the next round takes. */
   readonly present: readonly SeatId[]
+  /** Every seat the room still holds, phone or not: a top whose seat is gone leaves the round. */
+  readonly seated: ReadonlySet<SeatId>
 }
 
 const NO_WINS: ReadonlyMap<SeatId, number> = new Map()
@@ -57,14 +60,14 @@ const nextRoundOrGathering = ({
 
 export const advanceMatch = (
   match: SumoMatch,
-  { present, ...step }: SumoMatchStep
+  { present, seated, ...step }: SumoMatchStep
 ): SumoMatch => {
   if (match.stage === 'gathering') {
     return nextRoundOrGathering({ present, roundNumber: 1, wins: NO_WINS })
   }
 
   if (match.round.phase !== 'decided') {
-    const round = advanceRound(match.round, step)
+    const round = advanceRound(withoutLeftSeats(match.round, seated), step)
     return { ...match, round, wins: tallied({ round, wins: match.wins }) }
   }
 

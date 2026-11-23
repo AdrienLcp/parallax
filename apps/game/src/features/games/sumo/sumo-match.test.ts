@@ -10,10 +10,15 @@ import type { SpinningTop } from './sumo-physics'
 import { reportedState } from './sumo-state-report'
 import { SUMO_STEP_SECONDS, SUMO_TUNING } from './sumo-tuning'
 
-const step = (present: readonly string[], seconds = SUMO_STEP_SECONDS) => ({
+const step = (
+  present: readonly string[],
+  seconds = SUMO_STEP_SECONDS,
+  seated: ReadonlySet<string> = new Set(present)
+) => ({
   controls: new Map(),
   dashes: new Set<string>(),
   present,
+  seated,
   seconds
 })
 
@@ -84,6 +89,30 @@ describe('sumo match', () => {
     const decided = advanceMatch(fighting, step(['red', 'blue']))
     const paused = advanceMatch(decided, step(['red', 'blue']))
     expect(paused.stage === 'playing' && paused.wins.get('red')).toBe(1)
+  })
+
+  it('[sumo] a seat that left the room takes its top out of the round', () => {
+    const fighting: SumoMatch = {
+      decidedFor: 0,
+      round: {
+        phase: 'fighting',
+        tops: [
+          spinningAt('red', -0.5),
+          spinningAt('blue', 0),
+          spinningAt('green', 0.5)
+        ]
+      },
+      roundNumber: 1,
+      stage: 'playing',
+      wins: new Map()
+    }
+    const next = advanceMatch(
+      fighting,
+      step(['red', 'green'], SUMO_STEP_SECONDS, new Set(['red', 'green']))
+    )
+    expect(
+      next.stage === 'playing' && next.round.tops.map((top) => top.seat)
+    ).toEqual(['red', 'green'])
   })
 
   it('[sumo] the next round starts after the pause, keeping the tally', () => {

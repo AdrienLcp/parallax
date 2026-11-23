@@ -14,7 +14,7 @@ import {
 
 import type { Admission } from '@/domain/room/admission'
 import type { OpenedRoom } from '@/domain/room/room'
-import { roomErasureAtMs } from '@/domain/room/room-lifetime'
+import { roomAlarmAtMs, roomErasureAtMs } from '@/domain/room/room-lifetime'
 import { openRoom } from '@/domain/room/room-service'
 import { handleFrame } from '@/domain/room/room-session'
 import { createRoomStore, type RoomStore } from '@/domain/room/room-store'
@@ -23,6 +23,7 @@ import {
   screenRoomMessageOf,
   seatsSeen
 } from '@/domain/room/room-view'
+import { absenceChanges, heldSeats } from '@/domain/room/seat-release'
 import { isSilent } from '@/domain/room/socket-liveness'
 import { nowMs } from '@/infrastructure/clock'
 import { newSeatId } from '@/infrastructure/ids'
@@ -87,6 +88,25 @@ const closeSocket = (socket: WebSocket, code: number, reason: string) => {
   }
 }
 
+const RESERVED_CLOSE_CODES = new Set([1004, 1005, 1006, 1015])
+
+/**
+ * The runtime answers a phone's close frame itself, but not every local
+ * workerd does: unanswered, the phone's socket stays closing and its
+ * reconnection waits. Answering again is ignored where it already answered.
+ */
+const replyToClose = (socket: WebSocket, code: number, reason: string) => {
+  if (socket.readyState === WebSocket.READY_STATE_CLOSED) {
+    return
+  }
+
+  if (code >= 1000 && code < 5000 && !RESERVED_CLOSE_CODES.has(code)) {
+    socket.close(code, reason)
+  } else {
+    socket.close()
+  }
+}
+
 const errorFrame = (code: ProtocolErrorCode) =>
   encodeChecked(replyMessageSchema, { code, isFatal: true, type: 'error' })
 
@@ -94,7 +114,8 @@ const errorFrame = (code: ProtocolErrorCode) =>
  * One room: its seats, its screen and every phone in it. The phones' inputs
  * pass through to the screen, which runs the game; nothing of the game is
  * stored. Sockets go through the hibernation API, so a quiet room costs
- * nothing, and its alarm erases it once nobody has joined for a while.
+ * nothing. Its one alarm shows a seat left empty for long enough as free,
+ * and erases the room once nobody has joined for a while.
  */
 export class RoomObject extends DurableObject<Env> {
   private readonly store: RoomStore
@@ -128,13 +149,17 @@ export class RoomObject extends DurableObject<Env> {
     return opened
   }
 
-  override alarm(): void {
-    this.store.erase()
+  override async alarm(): Promise<void> {
+    const erasureAtMs = this.store.readErasureAt()
 
-    for (const socket of this.ctx.getWebSockets()) {
-      sendFrame(socket, errorFrame('room_closed'))
-      closeSocket(socket, GOING_AWAY, 'room_closed')
+    if (erasureAtMs === null || nowMs() >= erasureAtMs) {
+      this.erase()
+
+      return
     }
+
+    await this.dropSilentSockets()
+    await this.refreshRoom(null)
   }
 
   override fetch(request: Request): Response | Promise<Response> {
@@ -148,6 +173,7 @@ export class RoomObject extends DurableObject<Env> {
     const outcome = handleFrame({
       admission: admissionOf(socket),
       mintSeatId: newSeatId,
+      nowMs: nowMs(),
       raw: typeof message === 'string' ? message : '',
       store: this.store
     })
@@ -169,7 +195,7 @@ export class RoomObject extends DurableObject<Env> {
         await this.welcome(socket, outcome.admission)
         return
       case 'pinged':
-        this.dropSilentSockets()
+        await this.dropSilentSockets()
         return
       case 'to_screen':
         this.sendToScreens(outcome.event.message)
@@ -182,12 +208,26 @@ export class RoomObject extends DurableObject<Env> {
     }
   }
 
-  override webSocketClose(socket: WebSocket): void {
-    this.letRoomSeeLeave(socket)
+  override async webSocketClose(
+    socket: WebSocket,
+    code: number,
+    reason: string
+  ): Promise<void> {
+    replyToClose(socket, code, reason)
+    await this.letRoomSeeLeave(socket)
   }
 
-  override webSocketError(socket: WebSocket): void {
-    this.letRoomSeeLeave(socket)
+  override async webSocketError(socket: WebSocket): Promise<void> {
+    await this.letRoomSeeLeave(socket)
+  }
+
+  private erase(): void {
+    this.store.erase()
+
+    for (const socket of this.ctx.getWebSockets()) {
+      sendFrame(socket, errorFrame('room_closed'))
+      closeSocket(socket, GOING_AWAY, 'room_closed')
+    }
   }
 
   /** A newer screen takes over: a reloaded display must not wait on its half-dead socket. */
@@ -204,13 +244,13 @@ export class RoomObject extends DurableObject<Env> {
       }
     }
 
-    this.broadcastRoom(null)
-    await this.postponeErasure()
+    this.store.setErasureAt(roomErasureAtMs(nowMs()))
+    await this.refreshRoom(null)
   }
 
-  private letRoomSeeLeave(socket: WebSocket): void {
+  private async letRoomSeeLeave(socket: WebSocket): Promise<void> {
     if (admissionOf(socket)?.role === 'player') {
-      this.broadcastRoom(socket)
+      await this.refreshRoom(socket)
     }
   }
 
@@ -218,7 +258,7 @@ export class RoomObject extends DurableObject<Env> {
    * A tab closed without a close frame leaves its socket open here for good.
    * Each ping, from any socket, is the moment to let the quiet ones go.
    */
-  private dropSilentSockets(): void {
+  private async dropSilentSockets(): Promise<void> {
     const atMs = nowMs()
     const silent = this.ctx
       .getWebSockets()
@@ -229,7 +269,7 @@ export class RoomObject extends DurableObject<Env> {
     }
 
     if (silent.some((socket) => admissionOf(socket)?.role === 'player')) {
-      this.broadcastRoom(null)
+      await this.refreshRoom(null)
     }
   }
 
@@ -265,14 +305,19 @@ export class RoomObject extends DurableObject<Env> {
     }
   }
 
-  /** Every admitted socket's fresh view of the room: a whole snapshot, never a delta. */
-  private broadcastRoom(gone: WebSocket | null): void {
+  /**
+   * Notes which seats just lost or found their phone, sends every admitted
+   * socket its fresh view of the room (a whole snapshot, never a delta), and
+   * sets the alarm for whatever comes next.
+   */
+  private async refreshRoom(gone: WebSocket | null): Promise<void> {
     const room = this.store.readRoom()
 
     if (room === null) {
       return
     }
 
+    const atMs = nowMs()
     const admitted = this.openSockets(gone).map((socket) => ({
       admission: admissionOf(socket),
       socket
@@ -282,7 +327,15 @@ export class RoomObject extends DurableObject<Env> {
         admission?.role === 'player' ? [admission.seatId] : []
       )
     )
-    const seats = seatsSeen(this.store.readSeats(), connectedSeatIds)
+    this.store.recordAbsences(
+      absenceChanges({
+        connectedSeatIds,
+        nowMs: atMs,
+        seats: this.store.readSeats()
+      })
+    )
+    const stored = this.store.readSeats()
+    const seats = seatsSeen(heldSeats(stored, atMs), connectedSeatIds)
 
     for (const { admission, socket } of admitted) {
       if (admission?.role === 'screen') {
@@ -305,9 +358,20 @@ export class RoomObject extends DurableObject<Env> {
         )
       }
     }
+
+    await this.ctx.storage.setAlarm(
+      roomAlarmAtMs({
+        erasureAtMs: this.store.readErasureAt() ?? roomErasureAtMs(atMs),
+        nowMs: atMs,
+        seats: stored
+      })
+    )
   }
 
   private async postponeErasure(): Promise<void> {
-    await this.ctx.storage.setAlarm(roomErasureAtMs(nowMs()))
+    const erasureAtMs = roomErasureAtMs(nowMs())
+
+    this.store.setErasureAt(erasureAtMs)
+    await this.ctx.storage.setAlarm(erasureAtMs)
   }
 }

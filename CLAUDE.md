@@ -38,6 +38,14 @@ reused `sessionId` takes its old seat and a fresh room after many runs answers
 `room_full`: put the process id in the `sessionId`, and clear
 `parallax:screen-room` from localStorage to get a fresh room.
 
+To drop a real controller's connection in Playwright, close only sockets whose
+URL holds `/ws/rooms/`: Vite's HMR socket lives on the same page, and closing it
+reloads the page, which hides the bug under test. `.seat-controller` never
+counts as visible to Playwright: wait on it with `state: 'attached'`.
+
+An absent seat is released after `SEAT_RELEASE_AFTER_MS` (60 s): the room's one
+alarm rings for it, so a release test waits a full minute.
+
 ## Editing files
 
 - Python scripts writing files on Windows open them with `newline=''`, or they

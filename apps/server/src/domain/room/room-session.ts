@@ -57,16 +57,19 @@ const passed = (admission: Admission, event: SessionEvent): FrameOutcome => ({
   shouldClose: false
 })
 
+type RoomContext = {
+  mintSeatId: () => SeatId
+  nowMs: number
+  store: RoomStore
+}
+
 const greet = ({
   admission,
   hello,
-  mintSeatId,
-  store
-}: {
+  ...context
+}: RoomContext & {
   admission: Admission | null
   hello: HelloMessage
-  mintSeatId: () => SeatId
-  store: RoomStore
 }): FrameOutcome => {
   if (admission !== null) {
     return refused({ admission, code: 'invalid_message', isFatal: false })
@@ -80,7 +83,7 @@ const greet = ({
     })
   }
 
-  const admitted = admit({ credentials: hello.credentials, mintSeatId, store })
+  const admitted = admit({ credentials: hello.credentials, ...context })
 
   if (admitted.status === 'failure') {
     return refused({ admission: null, code: admitted.error, isFatal: true })
@@ -110,14 +113,11 @@ const play = (admission: Admission, message: GameMessage): FrameOutcome => {
 /** One frame from one socket, decided without touching the socket. */
 export const handleFrame = ({
   admission,
-  mintSeatId,
   raw,
-  store
-}: {
+  ...context
+}: RoomContext & {
   admission: Admission | null
-  mintSeatId: () => SeatId
   raw: string
-  store: RoomStore
 }): FrameOutcome => {
   const decoded = decodeMessage(clientMessageSchema, raw)
 
@@ -136,7 +136,7 @@ export const handleFrame = ({
         shouldClose: false
       }
     case 'hello':
-      return greet({ admission, hello: message, mintSeatId, store })
+      return greet({ admission, hello: message, ...context })
     default:
       return admission === null
         ? refused({ admission, code: 'hello_required', isFatal: true })

@@ -70,6 +70,15 @@ export const advanceRound = (
   }
 }
 
+/** A seat gone from the room takes its top along: nobody would see it, everyone would bump into it. */
+export const withoutLeftSeats = (
+  round: SumoRound,
+  seated: ReadonlySet<SeatId>
+): SumoRound =>
+  round.tops.every((top) => seated.has(top.seat))
+    ? round
+    : { ...round, tops: round.tops.filter((top) => seated.has(top.seat)) }
+
 /** The tally after a decided round: the winner takes one. */
 export const tallied = ({
   round,

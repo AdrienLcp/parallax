@@ -50,6 +50,7 @@ export const useSumoSimulation = ({
   const controls = useRef(new Map<SeatId, SumoControl>())
   const dashes = useRef(new Set<SeatId>())
   const present = useRef<readonly SeatId[]>([])
+  const seated = useRef<ReadonlySet<SeatId>>(new Set())
   const lastReport = useRef<string | null>(null)
   const drawFrame = useEffectEvent(onFrame)
   const report = useEffectEvent(send)
@@ -58,6 +59,7 @@ export const useSumoSimulation = ({
     present.current = room.seats
       .filter((seat) => seat.isConnected)
       .map((seat) => seat.seatId)
+    seated.current = new Set(room.seats.map((seat) => seat.seatId))
     for (const seat of room.seats) {
       if (!seat.isConnected) {
         controls.current.delete(seat.seatId)
@@ -102,6 +104,7 @@ export const useSumoSimulation = ({
           controls: controls.current,
           dashes: dashes.current,
           present: present.current,
+          seated: seated.current,
           seconds: SUMO_STEP_SECONDS
         })
         dashes.current = new Set()

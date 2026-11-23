@@ -14,6 +14,8 @@ export type OpenedRoom = {
 
 /** A seat as the room keeps it: the session behind it never leaves the server. */
 export type StoredSeat = {
+  /** Since when no phone holds it, `null` while one does. */
+  absentSinceMs: number | null
   seatId: SeatId
   sessionId: SessionId
   slot: SeatSlot

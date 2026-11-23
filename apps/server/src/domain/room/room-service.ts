@@ -7,6 +7,7 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 import type { Admission } from './admission'
 import type { OpenedRoom, StoredSeat } from './room'
 import type { RoomStore } from './room-store'
+import { releasedSeats } from './seat-release'
 
 export type AdmissionRefusal =
   | 'room_full'
@@ -26,23 +27,28 @@ export const openRoom = (
   return Result.success()
 }
 
-const firstFreeSlot = (seats: readonly StoredSeat[]): SeatSlot | null => {
+/** An empty slot first, so a released seat keeps its chance to see its phone back. */
+const slotForNewcomer = (
+  seats: readonly StoredSeat[],
+  nowMs: number
+): SeatSlot | null => {
   const taken = new Set(seats.map((seat) => seat.slot))
-
-  return (
-    Array.from({ length: ROOM_SEAT_LIMIT }, (_, slot) => slot).find(
-      (slot) => !taken.has(slot)
-    ) ?? null
+  const empty = Array.from({ length: ROOM_SEAT_LIMIT }, (_, slot) => slot).find(
+    (slot) => !taken.has(slot)
   )
+
+  return empty ?? releasedSeats(seats, nowMs).at(0)?.slot ?? null
 }
 
-/** A phone gets back the seat its session already holds, or the first free one. */
+/** A phone gets back the seat its session still holds, or a free one. */
 const seatPlayer = ({
   mintSeatId,
+  nowMs,
   sessionId,
   store
 }: {
   mintSeatId: () => SeatId
+  nowMs: number
   sessionId: SessionId
   store: RoomStore
 }): Result<Admission, 'room_full'> => {
@@ -53,14 +59,14 @@ const seatPlayer = ({
     return Result.success({ role: 'player', seatId: kept.seatId })
   }
 
-  const slot = firstFreeSlot(seats)
+  const slot = slotForNewcomer(seats, nowMs)
 
   if (slot === null) {
     return Result.failure('room_full')
   }
 
   const seatId = mintSeatId()
-  store.addSeat({ seatId, sessionId, slot })
+  store.addSeat({ absentSinceMs: null, seatId, sessionId, slot })
 
   return Result.success({ role: 'player', seatId })
 }
@@ -68,10 +74,12 @@ const seatPlayer = ({
 export const admit = ({
   credentials,
   mintSeatId,
+  nowMs,
   store
 }: {
   credentials: Credentials
   mintSeatId: () => SeatId
+  nowMs: number
   store: RoomStore
 }): Result<Admission, AdmissionRefusal> => {
   const room = store.readRoom()
@@ -81,7 +89,12 @@ export const admit = ({
   }
 
   if (credentials.role === 'player') {
-    return seatPlayer({ mintSeatId, sessionId: credentials.sessionId, store })
+    return seatPlayer({
+      mintSeatId,
+      nowMs,
+      sessionId: credentials.sessionId,
+      store
+    })
   }
 
   return credentials.screenToken === room.screenToken
