@@ -27,6 +27,7 @@ export const apiErrorResponseSchema = z.object({
   message: z.string()
 })
 
+export type HttpErrorCode = z.infer<typeof httpErrorCodeSchema>
 export type CreateRoomResponse = z.infer<typeof createRoomResponseSchema>
 export type HealthResponse = z.infer<typeof healthResponseSchema>
 export type ApiErrorResponse = z.infer<typeof apiErrorResponseSchema>

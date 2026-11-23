@@ -36,24 +36,34 @@ export const playerRoomMessageSchema = screenRoomMessageSchema.extend({
   youId: seatIdSchema
 })
 
-export const screenServerMessageSchema = z.discriminatedUnion('type', [
-  errorMessageSchema,
-  pongMessageSchema,
+/** What only a screen hears: the room and the phones' input. */
+export const screenEventSchema = z.discriminatedUnion('type', [
   screenRoomMessageSchema,
   sumoSeatStickSchema,
   sumoSeatDashSchema
 ])
 
-export const playerServerMessageSchema = z.discriminatedUnion('type', [
-  errorMessageSchema,
-  pongMessageSchema,
+/** What only a phone hears: the room and the game as the screen tells it. */
+export const playerEventSchema = z.discriminatedUnion('type', [
   playerRoomMessageSchema,
   sumoStateSchema
+])
+
+export const screenServerMessageSchema = z.discriminatedUnion('type', [
+  ...replyMessageSchema.options,
+  ...screenEventSchema.options
+])
+
+export const playerServerMessageSchema = z.discriminatedUnion('type', [
+  ...replyMessageSchema.options,
+  ...playerEventSchema.options
 ])
 
 export type ErrorMessage = z.infer<typeof errorMessageSchema>
 export type ReplyMessage = z.infer<typeof replyMessageSchema>
 export type ScreenRoomMessage = z.infer<typeof screenRoomMessageSchema>
 export type PlayerRoomMessage = z.infer<typeof playerRoomMessageSchema>
+export type ScreenEvent = z.infer<typeof screenEventSchema>
+export type PlayerEvent = z.infer<typeof playerEventSchema>
 export type ScreenServerMessage = z.infer<typeof screenServerMessageSchema>
 export type PlayerServerMessage = z.infer<typeof playerServerMessageSchema>
