@@ -36,6 +36,18 @@
         .seat-name
           color: var(--chalk-soft)
 
+      &[data-out]
+        .seat-place-top
+          opacity: 0.35
+          transition: opacity var(--transition-slow)
+
+        .seat-name
+          text-decoration: line-through calc(var(--cu) * 0.35) var(--brass)
+
+      &[data-winner]
+        border-radius: calc(var(--cu) * 0.8)
+        box-shadow: inset 0 0 0 calc(var(--cu) * 0.3) var(--brass)
+
     .seat-place-top, .seat-socket
       block-size: calc(var(--cu) * 5.4)
       inline-size: calc(var(--cu) * 5.4)
@@ -67,6 +79,19 @@
 
       color: var(--chalk-soft)
       font-size: calc(var(--cu) * 1.7)
+
+    .score-pips
+      display: flex
+      gap: calc(var(--cu) * 0.6)
+
+    .score-pip
+      block-size: calc(var(--cu) * 1.6)
+      border: calc(var(--cu) * 0.25) solid var(--brass)
+      border-radius: 50%
+      inline-size: calc(var(--cu) * 1.6)
+
+      &[data-won]
+        background: var(--brass)
 
     .seat-cue
       @include typography.label

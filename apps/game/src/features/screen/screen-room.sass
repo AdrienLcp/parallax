@@ -10,6 +10,13 @@
     padding-block: max(var(--screen-safe-block), var(--safe-area-top)) max(var(--screen-safe-block), var(--safe-area-bottom))
     padding-inline: var(--screen-safe-inline)
 
+    .screen-head
+      display: grid
+      grid-template: auto / minmax(0, 1fr)
+
+      & > *
+        grid-area: 1 / 1
+
     .arena
       display: grid
       grid-template: minmax(0, 1fr) / minmax(0, 1fr)

@@ -1,10 +1,7 @@
-@use '@adrienlcp/styles/accessibility'
 @use '../../presentation/styles/typography'
 
 @layer components
   .room-join
-    --plaque-tracking: 0.14em
-
     align-items: start
     display: grid
     gap: calc(var(--cu) * 2.4) calc(var(--cu) * 2.6)
@@ -17,26 +14,7 @@
       font-size: calc(var(--cu) * 5.4)
 
     .room-plaque
-      @include typography.display
-
-      background: var(--enamel)
-      border-radius: calc(var(--cu) * 1.2)
-      box-shadow: inset 0 0 0 calc(var(--cu) * 0.45) var(--enamel), inset 0 0 0 calc(var(--cu) * 0.8) var(--ivory), var(--screen-shadow-raised)
-      color: var(--ivory)
-      display: inline-block
-      font-size: calc(var(--cu) * 6.4)
-      letter-spacing: var(--plaque-tracking)
       margin-block-start: calc(var(--cu) * 1.8)
-      padding: calc(var(--cu) * 0.8) calc(var(--cu) * 2.2)
-      padding-inline-end: calc(var(--cu) * 2.2 - var(--plaque-tracking))
-      user-select: text
-
-      @supports (text-box: trim-both cap alphabetic)
-        padding-block: calc(var(--cu) * 0.8 + (1lh - 1cap) / 2)
-        text-box: trim-both cap alphabetic
-
-    .room-plaque-label
-      @include accessibility.visually-hidden
 
     .join-cues
       border-block-start: calc(var(--cu) * 0.2) solid var(--brass)

@@ -14,17 +14,18 @@ import {
   type SumoMatch
 } from './sumo-match'
 import type { SumoControl } from './sumo-physics'
+import {
+  agedEjection,
+  type ShownEjection,
+  type SumoStandings,
+  standingsOf,
+  withEjected
+} from './sumo-standings'
 import { reportedState } from './sumo-state-report'
 import { SUMO_STATE_REPORT_SECONDS, SUMO_STEP_SECONDS } from './sumo-tuning'
 
 /** A frame later than this, after a hidden tab or a stall, is not caught up: the game pauses instead. */
 const LONGEST_FRAME_SECONDS = 0.25
-
-export type Ejection = {
-  /** Unique for the screen's lifetime: the band's key. */
-  readonly id: number
-  readonly seat: SeatId
-}
 
 type SumoSimulationInput = {
   events: EventSubscription<ScreenGameEvent>
@@ -37,18 +38,15 @@ type SumoSimulationInput = {
 /**
  * Runs the sumo on the screen: hears the phones' sticks and dashes, steps the
  * match at a fixed rate whatever the display's refresh, tells the phones when
- * its state changes, and lists the ejections for the room to read.
+ * its state changes, and keeps the standings the room reads around the arena.
  */
 export const useSumoSimulation = ({
   events,
   onFrame,
   room,
   send
-}: SumoSimulationInput): {
-  dismissEjection: (id: number) => void
-  ejections: readonly Ejection[]
-} => {
-  const [ejections, setEjections] = useState<readonly Ejection[]>([])
+}: SumoSimulationInput): SumoStandings | null => {
+  const [standings, setStandings] = useState<SumoStandings | null>(null)
   const controls = useRef(new Map<SeatId, SumoControl>())
   const dashes = useRef(new Set<SeatId>())
   const present = useRef<readonly SeatId[]>([])
@@ -86,7 +84,8 @@ export const useSumoSimulation = ({
     let match: SumoMatch = GATHERING
     let pendingSeconds = 0
     let sinceReport = SUMO_STATE_REPORT_SECONDS
-    let nextEjectionId = 0
+    let ejection: ShownEjection | null = null
+    let lastStandings: string | null = null
     let previousTime: number | null = null
     let frame = requestAnimationFrame(function step(time) {
       const seconds =
@@ -106,14 +105,17 @@ export const useSumoSimulation = ({
           seconds: SUMO_STEP_SECONDS
         })
         dashes.current = new Set()
+        ejection = withEjected({
+          ejected: ejectedBetween({ next: match, previous }),
+          shown: agedEjection({ seconds: SUMO_STEP_SECONDS, shown: ejection })
+        })
+      }
 
-        const ejected = ejectedBetween({ next: match, previous })
-        if (ejected.length > 0) {
-          setEjections((shown) => [
-            ...shown,
-            ...ejected.map((seat) => ({ id: nextEjectionId++, seat }))
-          ])
-        }
+      const nextStandings = standingsOf({ ejection, match })
+      const serializedStandings = JSON.stringify(nextStandings)
+      if (serializedStandings !== lastStandings) {
+        lastStandings = serializedStandings
+        setStandings(nextStandings)
       }
 
       sinceReport += seconds
@@ -133,9 +135,5 @@ export const useSumoSimulation = ({
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  return {
-    dismissEjection: (id) =>
-      setEjections((shown) => shown.filter((ejection) => ejection.id !== id)),
-    ejections
-  }
+  return standings
 }

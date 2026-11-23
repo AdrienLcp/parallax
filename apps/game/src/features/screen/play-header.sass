@@ -1,0 +1,38 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .play-header
+    align-items: end
+    border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
+    display: grid
+    gap: calc(var(--cu) * 2)
+    grid-template-columns: minmax(0, 1fr) auto
+    padding-block: var(--cu) calc(var(--cu) * 1.4)
+
+    .play-title
+      @include typography.display
+
+      font-size: calc(var(--cu) * 8)
+      white-space: nowrap
+
+    .play-subtitle
+      @include typography.label
+
+      color: var(--chalk-soft)
+      font-size: calc(var(--cu) * 2.2)
+      margin-block-start: calc(var(--cu) * 0.6)
+
+    .late-join
+      align-items: center
+      display: grid
+      gap: calc(var(--cu) * 1.2)
+      grid-template-columns: auto calc(var(--cu) * 9)
+
+    .late-join-label
+      @include typography.label
+
+      color: var(--chalk-soft)
+      display: grid
+      font-size: calc(var(--cu) * 1.6)
+      gap: calc(var(--cu) * 0.6)
+      justify-items: end

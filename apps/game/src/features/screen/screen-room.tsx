@@ -8,14 +8,19 @@ import {
   screenEventSchema
 } from '@parallax/protocol/server-message'
 
-import type { ScreenGameEvent } from '@/features/games/game-definition'
+import type {
+  SceneStandings,
+  ScreenGameEvent
+} from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
 import { createEventChannel } from '@/helpers/event-channel'
 import { reloadPage } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
+import { AnnouncementBand } from './announcement-band'
 import { ArenaPlan } from './arena-plan'
+import { PlayHeader } from './play-header'
 import { RoomJoin } from './room-join'
 import { ScreenNotice } from './screen-notice'
 import { SeatRoster } from './seat-roster'
@@ -35,11 +40,12 @@ type ScreenRoomProps = {
   room: CreateRoomResponse
 }
 
-/** The room on the display: how to join it, the arena the game plays on, and its seats. */
+/** The room on the display: how to join it or how the game stands, the arena the game plays on, and its seats. */
 export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
   const translate = useTranslate()
   const [roomView, setRoomView] = useState<ScreenRoomMessage | null>(null)
   const [gameEvents] = useState(createEventChannel<ScreenGameEvent>)
+  const [standings, setStandings] = useState<SceneStandings | null>(null)
   const game = games[CURRENT_GAME]
 
   const socket = useRoomSocket({
@@ -81,7 +87,18 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
 
   return (
     <div className='screen-room'>
-      <RoomJoin code={room.code} />
+      <div className='screen-head'>
+        {standings === null ? (
+          <RoomJoin code={room.code} />
+        ) : (
+          <PlayHeader
+            code={room.code}
+            subtitle={standings.subtitle}
+            title={standings.title}
+          />
+        )}
+        <AnnouncementBand announcement={standings?.announcement ?? null} />
+      </div>
       <div className='arena'>
         {roomView === null ? (
           <ArenaPlan />
@@ -89,6 +106,7 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
           <Suspense fallback={<ArenaPlan />}>
             <game.Scene
               events={gameEvents}
+              onStandings={setStandings}
               room={roomView}
               send={socket.send}
             />
@@ -100,7 +118,7 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
           </p>
         )}
       </div>
-      <SeatRoster seats={roomView?.seats ?? []} />
+      <SeatRoster seats={roomView?.seats ?? []} standings={standings} />
     </div>
   )
 }

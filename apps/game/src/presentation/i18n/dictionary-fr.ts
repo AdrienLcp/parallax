@@ -78,8 +78,8 @@ export default defineDictionary({
       knockOut: 'Faites-les tomber dans la rigole',
       steer: 'Pilotez au pouce'
     },
-    ejected: '{seat} à la rigole',
     join: 'Scannez pour jouer',
+    nextRound: 'Prochaine manche',
     openFailed: 'La salle ne s’est pas ouverte.',
     players: '{fewest:number} à {most:number} joueurs',
     qr: 'QR code pour rejoindre la salle {code}',
@@ -90,7 +90,10 @@ export default defineDictionary({
     roomCode: 'Code de la salle',
     seat: {
       absent: 'absent',
-      free: 'Libre'
+      free: 'Libre',
+      score: defineTranslation('{score:plural} sur {goal:number}', {
+        plural: { score: { one: '{?} manche', other: '{?} manches' } }
+      })
     },
     takeBack: 'Reprendre'
   },
@@ -117,6 +120,19 @@ export default defineDictionary({
       title: 'À la rigole'
     },
     playInLandscape: 'Jouez en paysage',
+    standings: {
+      ejected: '{seats:list} à la rigole',
+      firstTo: defineTranslation('Premier à {rounds:plural}', {
+        plural: { rounds: { one: '{?} manche', other: '{?} manches' } }
+      }),
+      inPlay: defineTranslation('{count:plural}', {
+        plural: { count: { one: '{?} en lice', other: '{?} en lice' } }
+      }),
+      matchWon: '{seat} gagne la partie',
+      round: 'Manche {number:number}',
+      roundDrawn: 'Manche nulle',
+      roundWon: '{seat} gagne la manche'
+    },
     turnToLandscape: 'Passez en paysage',
     won: {
       title: 'Gagné'

@@ -41,6 +41,7 @@ const decidedFor = ({
     ],
     winner
   },
+  roundNumber: 1,
   stage: 'playing',
   wins
 })
@@ -75,6 +76,7 @@ describe('sumo match', () => {
           { position: { x: 2, y: 0 }, seat: 'blue', status: 'out' }
         ]
       },
+      roundNumber: 1,
       stage: 'playing',
       wins: new Map()
     }
@@ -91,7 +93,10 @@ describe('sumo match', () => {
       decided,
       step(['red', 'blue'], SUMO_TUNING.roundPauseSeconds)
     )
-    expect(next).toMatchObject({ round: { phase: 'countdown' } })
+    expect(next).toMatchObject({
+      round: { phase: 'countdown' },
+      roundNumber: 2
+    })
     expect(next.stage === 'playing' && next.wins.get('red')).toBe(1)
   })
 
@@ -109,7 +114,7 @@ describe('sumo match', () => {
       decided,
       step(['red', 'blue'], SUMO_TUNING.matchPauseSeconds)
     )
-    expect(fresh.stage === 'playing' && fresh.wins.size).toBe(0)
+    expect(fresh).toMatchObject({ roundNumber: 1, wins: new Map() })
   })
 
   it('[sumo] the room gathers again when too few phones stay for the next round', () => {
@@ -129,6 +134,7 @@ describe('sumo match', () => {
           spinningAt('blue', SUMO_TUNING.arenaRadius - 0.001, 1)
         ]
       },
+      roundNumber: 1,
       stage: 'playing',
       wins: new Map()
     }
@@ -166,6 +172,7 @@ describe('sumo state report', () => {
           }
         ]
       },
+      roundNumber: 1,
       stage: 'playing',
       wins: new Map([['blue', 2]])
     }

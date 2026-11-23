@@ -1,0 +1,40 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .announcement-band
+    align-items: center
+    align-self: stretch
+    background: var(--slate)
+    border-block: calc(var(--cu) * 0.3) solid var(--brass)
+    clip-path: inset(0)
+    column-gap: calc(var(--cu) * 2)
+    display: flex
+    margin-inline: calc(var(--screen-safe-inline) * -1)
+    padding-inline: var(--screen-safe-inline)
+    position: relative
+    transition: clip-path var(--transition-slow) var(--ease-out)
+    z-index: 1
+
+    @starting-style
+      clip-path: inset(0 100% 0 0)
+
+    &[data-exiting]
+      clip-path: inset(0 0 0 100%)
+
+    .announced-tops
+      display: flex
+      flex-shrink: 0
+
+    .announced-top
+      block-size: calc(var(--cu) * 7)
+      inline-size: calc(var(--cu) * 7)
+
+      & + .announced-top
+        margin-inline-start: calc(var(--cu) * -2.2)
+
+    .announcement-message
+      @include typography.display
+
+      color: var(--chalk)
+      font-size: calc(var(--cu) * 5.5)
+      text-wrap: balance

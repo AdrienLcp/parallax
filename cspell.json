@@ -38,6 +38,7 @@
     "metalness",
     "minmax",
     "nointeraction",
+    "nowrap",
     "oklab",
     "oklch",
     "overscroll",

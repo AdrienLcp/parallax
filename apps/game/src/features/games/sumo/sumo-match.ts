@@ -21,6 +21,8 @@ export type SumoMatch =
       /** Seconds since the round was decided; 0 while it is still on. */
       readonly decidedFor: number
       readonly round: SumoRound
+      /** 1 for the match's first round. */
+      readonly roundNumber: number
       readonly stage: 'playing'
       readonly wins: ReadonlyMap<SeatId, number>
     }
@@ -36,15 +38,18 @@ const NO_WINS: ReadonlyMap<SeatId, number> = new Map()
 
 const nextRoundOrGathering = ({
   present,
+  roundNumber,
   wins
 }: {
   present: readonly SeatId[]
+  roundNumber: number
   wins: ReadonlyMap<SeatId, number>
 }): SumoMatch =>
   present.length >= SUMO_PLAYERS.fewest
     ? {
         decidedFor: 0,
         round: startRound(present.slice(0, SUMO_PLAYERS.most)),
+        roundNumber,
         stage: 'playing',
         wins
       }
@@ -55,7 +60,7 @@ export const advanceMatch = (
   { present, ...step }: SumoMatchStep
 ): SumoMatch => {
   if (match.stage === 'gathering') {
-    return nextRoundOrGathering({ present, wins: NO_WINS })
+    return nextRoundOrGathering({ present, roundNumber: 1, wins: NO_WINS })
   }
 
   if (match.round.phase !== 'decided') {
@@ -75,6 +80,7 @@ export const advanceMatch = (
 
   return nextRoundOrGathering({
     present,
+    roundNumber: isMatchOver ? 1 : match.roundNumber + 1,
     wins: isMatchOver ? NO_WINS : match.wins
   })
 }

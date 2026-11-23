@@ -80,8 +80,8 @@ export const EN_DICTIONARY = defineDictionary({
       knockOut: 'Knock them into the gutter',
       steer: 'Steer with your thumb'
     },
-    ejected: '{seat} in the gutter',
     join: 'Scan to play',
+    nextRound: 'Next round',
     openFailed: 'The room did not open.',
     players: '{fewest:number} to {most:number} players',
     qr: 'QR code to join room {code}',
@@ -92,7 +92,10 @@ export const EN_DICTIONARY = defineDictionary({
     roomCode: 'Room code',
     seat: {
       absent: 'away',
-      free: 'Free'
+      free: 'Free',
+      score: defineTranslation('{score:plural} won of {goal:number}', {
+        plural: { score: { one: '{?} round', other: '{?} rounds' } }
+      })
     },
     takeBack: 'Take back'
   },
@@ -119,6 +122,19 @@ export const EN_DICTIONARY = defineDictionary({
       title: 'In the gutter'
     },
     playInLandscape: 'Play in landscape',
+    standings: {
+      ejected: '{seats:list} in the gutter',
+      firstTo: defineTranslation('First to {rounds:plural}', {
+        plural: { rounds: { one: '{?} round', other: '{?} rounds' } }
+      }),
+      inPlay: defineTranslation('{count:plural}', {
+        plural: { count: { one: '{?} in play', other: '{?} in play' } }
+      }),
+      matchWon: '{seat} wins the match',
+      round: 'Round {number:number}',
+      roundDrawn: 'Round drawn',
+      roundWon: '{seat} wins the round'
+    },
     turnToLandscape: 'Turn to landscape',
     won: {
       title: 'Won'

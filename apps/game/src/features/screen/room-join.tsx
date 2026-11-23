@@ -4,6 +4,7 @@ import type { RoomCode } from '@parallax/protocol/identifiers'
 
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
+import { RoomPlaque } from './room-plaque'
 import { RoomQr } from './room-qr'
 
 import './room-join.sass'
@@ -21,12 +22,7 @@ export const RoomJoin: React.FC<RoomJoinProps> = ({ code }) => {
       <RoomQr code={code} />
       <div>
         <h1 className='join-heading'>{translate('screen.join')}</h1>
-        <p className='room-plaque'>
-          <span className='room-plaque-label'>
-            {translate('screen.roomCode')}
-          </span>{' '}
-          {code}
-        </p>
+        <RoomPlaque code={code} />
       </div>
       <ul className='join-cues'>
         <li>
