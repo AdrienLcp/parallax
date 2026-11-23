@@ -12,6 +12,12 @@ const pageFor = {
   }),
   [paths.legal]: async () => ({
     Component: (await import('@/features/legal/legal-page')).LegalPage
+  }),
+  [paths.play]: async () => ({
+    Component: (await import('@/features/play/play-page')).PlayPage
+  }),
+  [paths.screen]: async () => ({
+    Component: (await import('@/features/screen/screen-page')).ScreenPage
   })
 } satisfies Record<RoutedPath, RouteObject['lazy']>
 

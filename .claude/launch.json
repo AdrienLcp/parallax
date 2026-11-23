@@ -1,11 +1,11 @@
 {
-  "version": "0.0.1",
   "configurations": [
     {
       "name": "parallax",
-      "runtimeExecutable": "corepack",
+      "port": 5560,
       "runtimeArgs": ["pnpm", "dev"],
-      "port": 5560
+      "runtimeExecutable": "corepack"
     }
-  ]
+  ],
+  "version": "0.0.1"
 }

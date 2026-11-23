@@ -1,6 +1,13 @@
 import { defineDictionary, defineTranslation } from '@adrienlcp/i18n'
 
 export default defineDictionary({
+  games: {
+    sumo: { name: 'Sumo' }
+  },
+  home: {
+    host: 'Héberger',
+    title: 'Parallax'
+  },
   legal: {
     host: {
       body: 'Le site est hébergé par :',
@@ -53,6 +60,27 @@ export default defineDictionary({
       heading: 'Qui d’autre reçoit vos données'
     },
     title: 'Mentions légales et confidentialité'
+  },
+  play: {
+    reconnecting: 'Reconnexion…',
+    refused: {
+      outdated: 'Cette page est périmée. Rechargez-la.',
+      roomFull: 'Cette salle est pleine.',
+      roomGone: 'Aucune salle ici.',
+      unexpected: 'La salle a refusé l’entrée.'
+    }
+  },
+  screen: {
+    openFailed: 'La salle ne s’est pas ouverte.',
+    reconnecting: 'Reconnexion…',
+    refused: 'La salle a refusé cet affichage.',
+    replaced: 'Un autre affichage a pris la salle.',
+    retry: 'Réessayer',
+    takeBack: 'Reprendre'
+  },
+  seat: {
+    away: 'Joueur {number} · absent',
+    present: 'Joueur {number}'
   },
   shell: {
     footer: {

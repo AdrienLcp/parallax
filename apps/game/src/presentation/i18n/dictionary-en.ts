@@ -1,6 +1,13 @@
 import { defineDictionary, defineTranslation } from '@adrienlcp/i18n'
 
 export const EN_DICTIONARY = defineDictionary({
+  games: {
+    sumo: { name: 'Sumo' }
+  },
+  home: {
+    host: 'Host',
+    title: 'Parallax'
+  },
   legal: {
     host: {
       body: 'The site is hosted by:',
@@ -55,6 +62,27 @@ export const EN_DICTIONARY = defineDictionary({
       heading: 'Who else receives your data'
     },
     title: 'Legal notice and privacy'
+  },
+  play: {
+    reconnecting: 'Reconnecting…',
+    refused: {
+      outdated: 'This page is out of date. Reload it.',
+      roomFull: 'This room is full.',
+      roomGone: 'No room here.',
+      unexpected: 'The room turned you away.'
+    }
+  },
+  screen: {
+    openFailed: 'The room did not open.',
+    reconnecting: 'Reconnecting…',
+    refused: 'The room turned this display away.',
+    replaced: 'Another display took this room.',
+    retry: 'Retry',
+    takeBack: 'Take back'
+  },
+  seat: {
+    away: 'Player {number} · away',
+    present: 'Player {number}'
   },
   shell: {
     footer: {

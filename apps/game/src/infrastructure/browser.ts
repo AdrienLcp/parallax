@@ -14,3 +14,10 @@ export const preferredLocales = (): readonly string[] => navigator.languages
  */
 export const sendsGlobalPrivacyControl = (): boolean =>
   'globalPrivacyControl' in navigator && navigator.globalPrivacyControl === true
+
+/** A path on this page's own origin, made whole: what a QR code or another device needs. */
+export const sameOriginUrl = (path: string): string =>
+  new URL(path, location.origin).href
+
+/** Starts the page over from the server: a fresh socket, a fresh state. */
+export const reloadPage = (): void => location.reload()
