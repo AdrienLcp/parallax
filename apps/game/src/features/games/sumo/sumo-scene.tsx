@@ -9,11 +9,12 @@ import type { ArenaRenderer } from './arena-renderer'
 import { createFlatPortraitRenderer } from './flat-portrait-renderer'
 import { countdownShown } from './sumo-match'
 import { sceneStandingsOf } from './sumo-scene-standings'
+import { TopTags, type TopTagsHandle } from './top-tags'
 import { useSumoSimulation } from './use-sumo-simulation'
 
 import './sumo-scene.sass'
 
-/** The sumo on the display: the arena drawn by its renderer and the countdown; the standings go up to the room. */
+/** The sumo on the display: the arena drawn by its renderer, a name tag over each top and the countdown; the standings go up to the room. */
 export const SumoScene: React.FC<GameSceneProps> = ({
   events,
   onStandings,
@@ -23,6 +24,7 @@ export const SumoScene: React.FC<GameSceneProps> = ({
   const translate = useTranslate()
   const host = useRef<HTMLDivElement>(null)
   const renderer = useRef<ArenaRenderer | null>(null)
+  const tags = useRef<TopTagsHandle>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
 
   useEffect(() => {
@@ -42,10 +44,9 @@ export const SumoScene: React.FC<GameSceneProps> = ({
   const standings = useSumoSimulation({
     events,
     onFrame: (match, seconds) => {
-      renderer.current?.draw(
-        arenaFrameOf({ match, seats: room.seats }),
-        seconds
-      )
+      const frame = arenaFrameOf({ match, seats: room.seats })
+      const anchors = renderer.current?.draw(frame, seconds) ?? []
+      tags.current?.place(frame, anchors)
       setCountdown(countdownShown(match))
     },
     room,
@@ -69,7 +70,9 @@ export const SumoScene: React.FC<GameSceneProps> = ({
 
   return (
     <div className='sumo-scene'>
-      <div className='arena-view' ref={host} />
+      <div className='arena-view' ref={host}>
+        <TopTags ref={tags} seats={room.seats} />
+      </div>
       {countdown !== null && (
         <p aria-hidden='true' className='countdown' key={countdown}>
           {countdown}

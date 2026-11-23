@@ -1,0 +1,66 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .top-tags
+    inset: 0
+    pointer-events: none
+    position: absolute
+
+  .top-tag
+    --seat-top-ring: var(--chalk)
+
+    align-items: center
+    display: flex
+    flex-direction: column
+    inset: 0 auto auto 0
+    position: absolute
+    transform: translate(-50%, -100%)
+
+    &[hidden]
+      display: none
+
+  .top-tag-plate
+    @include typography.display
+
+    align-items: center
+    background: var(--slate)
+    border-radius: calc(var(--cu) * 2)
+    box-shadow: 0 calc(var(--cu) * 0.3) calc(var(--cu) * 0.8) color-mix(in oklab, var(--lacquer-ink) 35%, transparent)
+    color: var(--chalk)
+    display: flex
+    font-size: calc(var(--cu) * 2.2)
+    gap: calc(var(--cu) * 0.6)
+    padding: calc(var(--cu) * 0.4) calc(var(--cu) * 1.1) calc(var(--cu) * 0.4) calc(var(--cu) * 0.4)
+    transition: background-color var(--transition-fast) var(--ease-out), color var(--transition-fast) var(--ease-out)
+    white-space: nowrap
+
+  .top-tag-top
+    block-size: calc(var(--cu) * 2.6)
+    inline-size: calc(var(--cu) * 2.6)
+
+  .top-tag-stem
+    background: var(--chalk)
+    block-size: calc(var(--cu) * 1.2)
+    inline-size: calc(var(--cu) * 0.2)
+    opacity: 0.8
+
+  .top-tag.is-recharging
+    --seat-top-ring: var(--lacquer-ink)
+
+    .top-tag-plate
+      background: var(--brass)
+      color: var(--lacquer-ink)
+
+  .top-tag.is-absent
+    .top-tag-plate
+      background: transparent
+      box-shadow: none
+      color: var(--chalk-soft)
+      outline: calc(var(--cu) * 0.2) dashed var(--chalk-soft)
+      outline-offset: calc(var(--cu) * -0.2)
+
+    .top-tag-top
+      opacity: 0.5
+
+    .top-tag-stem
+      background: var(--chalk-soft)

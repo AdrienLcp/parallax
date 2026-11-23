@@ -9,6 +9,10 @@ import { SUMO_TUNING } from './sumo-tuning'
 export type DrawnTop = {
   /** 0 while it stands on the platform, rising to 1 as it reaches the bottom of the gutter. */
   readonly fall: number
+  /** Its phone went silent: the top stays on the board with nobody driving it. */
+  readonly isAbsent: boolean
+  /** It dashed less than a cooldown ago and cannot dash again yet. */
+  readonly isDashRecharging: boolean
   readonly position: PlanarVector
   readonly slot: SeatSlot
   readonly velocity: PlanarVector
@@ -32,20 +36,22 @@ export const arenaFrameOf = ({
     return EMPTY_ARENA
   }
 
-  const slotBySeat = new Map(seats.map((seat) => [seat.seatId, seat.slot]))
+  const seatById = new Map(seats.map((seat) => [seat.seatId, seat]))
 
   return {
     tops: match.round.tops.flatMap((top): DrawnTop[] => {
-      const slot = slotBySeat.get(top.seat)
-      if (slot === undefined || top.status === 'out') return []
+      const seat = seatById.get(top.seat)
+      if (seat === undefined || top.status === 'out') return []
       return [
         {
           fall:
             top.status === 'falling'
               ? top.fallElapsed / SUMO_TUNING.fallSeconds
               : 0,
+          isAbsent: !seat.isConnected,
+          isDashRecharging: top.status === 'spinning' && top.dashCooldown > 0,
           position: top.position,
-          slot,
+          slot: seat.slot,
           velocity: top.velocity
         }
       ]

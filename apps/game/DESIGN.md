@@ -182,7 +182,7 @@ Six seats, by slot 0 to 5: **Red** (seat-red), **Ivory** (seat-ivory), **Black**
 
 **The Lacquer Rule.** The six seat lacquers are the only saturated colours, and they appear only as a seat: a top, a phone ground, a named seat. A seat colour never decorates anything that is not a player.
 
-**The Two Marks Rule.** A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone. The arena is the one exception: there the top moves alone, and the roster and the announcement band carry the names.
+**The Two Marks Rule.** A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone. In the arena, the modelled top carries a name tag hung above it.
 
 **The One Source Rule.** The 3D scene owns no colour. It resolves every token (`--felt`, `--brass`, `--seat`, `--seat-cap`, `--seat-mark`, `--seat-top-ring`, `color-mix` included) through a hidden probe in the page and draws without tone mapping, so the lacquer on the table is the lacquer in the roster.
 
@@ -195,7 +195,7 @@ Six seats, by slot 0 to 5: **Red** (seat-red), **Ivory** (seat-ivory), **Black**
 
 ### Hierarchy
 
-- **Display** (900, uppercase, 0.9 line-height, 0.02em tracking, balanced): every name, title, room code and button label. Sized by the caller: on the phone the lobby name (4.875rem), the band title (4rem), the plaque (3.625rem), the notice headline and rotate cue (2.875rem), the seat badge (2rem), the dash label (1.375rem). On the display, in `--cu`: countdown (16), play title (8), plaque (6.4, compact 2.6), announcement (5.5), join heading and notice (5.4), roster name (3.2).
+- **Display** (900, uppercase, 0.9 line-height, 0.02em tracking, balanced): every name, title, room code and button label. Sized by the caller: on the phone the lobby name (4.875rem), the band title (4rem), the plaque (3.625rem), the notice headline and rotate cue (2.875rem), the seat badge (2rem), the dash label (1.375rem). On the display, in `--cu`: countdown (16), play title (8), plaque (6.4, compact 2.6), announcement (5.5), join heading and notice (5.4), roster name (3.2), top tag (2.2).
 - **Plaque** (display voice, 0.14em tracking): the four-letter room code only, its trailing tracking removed from the end padding.
 - **Label** (700, 1.4 line-height): cues, statuses, the free / absent seat text, band detail. 1.25rem on the phone; 1.6 to 2.4 `--cu` on the display (late-join label 1.6, absence 1.7, cues 1.9, subtitle and roster cue 2.2, free seat 2.4).
 - **Body** (500, 1rem, 1.6 line-height, `text-wrap: pretty`): running text on the host's secondary pages.
@@ -265,6 +265,10 @@ The one place the display speaks to the whole room: a slate band with 0.3cu bras
 ### Arena
 
 The 3D scene described under Elevation & Depth, filling its row. Before the scene loads, and while no room is known, the flat SVG plan stands in at the same radii. The countdown sits over the centre in chalk display numerals (16cu), each number beating in from 125 % scale and transparent.
+
+### Top Tag
+
+A name tag over each top on the arena, so a player finds their own top from across the room: a slate pill (2cu radius, raised by an ink shadow at 35 %) holding the flat seat top (2.6cu, ringed in chalk) and the seat's name in chalk display lettering (2.2cu), above a 0.2cu chalk stem at 80 % that ends on the top's far rim. The renderer projects that rim to the page; the tag follows it every frame. While the top's dash recharges, the pill turns brass with lacquer-ink lettering and an ink ring. An absent player's tag loses its fill for a dashed soft-chalk outline, its top at 50 %. A falling top's tag fades out by the time the top is halfway down the gutter. Decorative: the roster names the seats for assistive technology.
 
 ### Buttons
 

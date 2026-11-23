@@ -23,6 +23,7 @@ import {
   SRGBColorSpace,
   TorusGeometry,
   Vector2,
+  Vector3,
   WebGLRenderer
 } from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
@@ -32,7 +33,7 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 import { prefersReducedMotion } from '@/infrastructure/browser'
 
 import type { ArenaFrame, DrawnTop } from './arena-frame'
-import type { CreateArenaRenderer } from './arena-renderer'
+import type { CreateArenaRenderer, TagAnchor } from './arena-renderer'
 import { SUMO_TUNING } from './sumo-tuning'
 
 /** The plan's radii and filet widths, in arena units: the same plan the room sees before the scene loads. */
@@ -369,6 +370,30 @@ const placeTop = ({
   }
 }
 
+/** Projects the far edge of a top's crown (the top of it, as the room sees it) onto the canvas, in CSS pixels. */
+const tagAnchorOf = ({
+  camera,
+  canvas,
+  slot,
+  top
+}: {
+  camera: PerspectiveCamera
+  canvas: { height: number; width: number }
+  slot: SeatSlot
+  top: Group
+}): TagAnchor => {
+  const crown = new Vector3(
+    top.position.x,
+    top.position.y + TOP_HEIGHT,
+    top.position.z - TOP_RADIUS
+  ).project(camera)
+  return {
+    slot,
+    x: ((crown.x + 1) / 2) * canvas.width,
+    y: ((1 - crown.y) / 2) * canvas.height
+  }
+}
+
 const disposeTree = (root: Scene): void => {
   root.traverse((node) => {
     if (node instanceof Mesh) {
@@ -451,9 +476,13 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
   const camera = new PerspectiveCamera(FIELD_OF_VIEW_DEGREES, 1, 0.1, 30)
   camera.up.set(0, 0, -1)
 
+  const canvas = { height: 0, width: 0 }
+
   const frameTheTable = () => {
     const { clientHeight: height, clientWidth: width } = host
     if (width === 0 || height === 0) return
+    canvas.height = height
+    canvas.width = width
     renderer.setSize(width, height, false)
     camera.aspect = width / height
     const halfVertical = (FIELD_OF_VIEW_DEGREES * Math.PI) / 360
@@ -489,11 +518,15 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
     draw: (arena: ArenaFrame, seconds: number) => {
       spinAngle += spinRate * seconds
       for (const top of tops) top.visible = false
+      const anchors: TagAnchor[] = []
       for (const drawn of arena.tops) {
         const top = tops[drawn.slot]
-        if (top !== undefined) placeTop({ drawn, spinAngle, top })
+        if (top === undefined) continue
+        placeTop({ drawn, spinAngle, top })
+        anchors.push(tagAnchorOf({ camera, canvas, slot: drawn.slot, top }))
       }
       renderer.render(scene, camera)
+      return anchors
     }
   }
 }
