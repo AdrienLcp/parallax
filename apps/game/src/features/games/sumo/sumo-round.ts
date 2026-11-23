@@ -1,7 +1,8 @@
 import type { SeatId } from '@parallax/protocol/identifiers'
 
-import { ORIGIN, pointsOnCircle } from '@/helpers/planar-vector'
+import { ORIGIN } from '@/helpers/planar-vector'
 
+import { roundMarksOf } from './round-marks'
 import { type SumoStep, stepTops, type Top } from './sumo-physics'
 import { SUMO_TUNING } from './sumo-tuning'
 
@@ -25,10 +26,7 @@ export type SumoRound =
 
 /** Places each seat on its mark around the centre, in seating order. */
 export const startRound = (seats: readonly SeatId[]): SumoRound => {
-  const marks = pointsOnCircle({
-    count: seats.length,
-    radius: SUMO_TUNING.spawnRadius
-  })
+  const marks = roundMarksOf(seats.length)
   return {
     phase: 'countdown',
     remaining: SUMO_TUNING.countdownSeconds,

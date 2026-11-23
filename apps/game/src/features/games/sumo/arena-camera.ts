@@ -70,21 +70,27 @@ export const cameraPositionOf = ({ distance }: ArenaFraming) => ({
   z: Math.sin(CAMERA_TILT_RADIANS) * distance
 })
 
-/** Where a point of the table lands on the canvas, seen through the scene's camera. */
+/**
+ * Where a point of the scene lands on the canvas, seen through the scene's
+ * camera: a point of the table, or `height` above it.
+ */
 export const projectOnCanvas = (
   framing: ArenaFraming,
-  point: TablePoint
+  point: TablePoint,
+  height = 0
 ): CanvasPoint => {
-  const depth = framing.distance - Math.sin(CAMERA_TILT_RADIANS) * point.z
+  const depth =
+    framing.distance -
+    Math.sin(CAMERA_TILT_RADIANS) * point.z -
+    Math.cos(CAMERA_TILT_RADIANS) * height
+  const down =
+    Math.cos(CAMERA_TILT_RADIANS) * point.z -
+    Math.sin(CAMERA_TILT_RADIANS) * height
   return {
     x:
       (framing.width / 2) *
       (1 + point.x / depth / Math.tan(framing.halfHorizontal)),
     y:
-      (framing.height / 2) *
-      (1 +
-        (Math.cos(CAMERA_TILT_RADIANS) * point.z) /
-          depth /
-          Math.tan(framing.halfVertical))
+      (framing.height / 2) * (1 + down / depth / Math.tan(framing.halfVertical))
   }
 }

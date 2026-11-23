@@ -3,10 +3,8 @@ import type { SeatSlot } from '@parallax/protocol/room'
 
 import { type ArenaFrame, drawnTopsOf } from './arena-frame'
 import { botInputsOf } from './showcase-bots'
+import { SHOWCASE_SLOTS } from './showcase-slots'
 import { advanceRound, type SumoRound, startRound } from './sumo-round'
-
-/** The demo tops, by seat: four lacquers spread around the arena. */
-export const SHOWCASE_SLOTS: readonly SeatSlot[] = [0, 3, 4, 1]
 
 /** How long the demo tops stand on their marks before a round starts. */
 export const SHOWCASE_MARK_SECONDS = 0.8

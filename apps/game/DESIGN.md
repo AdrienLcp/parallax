@@ -296,7 +296,7 @@ Slate panel in a walnut frame, a 3 × 2 grid of seats; while a game runs it is t
 
 ### Game Showcase
 
-The middle of the game choice: the real arena and its lacquered tops, driven by bots round after round (four demo seats, a short beat on their marks, a beat on a decided round, a stalled round started over). No room and no names. The game's `Preview` stands in while it loads. Reduced motion leaves the tops still on their marks. A touch on it opens the room, like the brass button.
+The middle of the game choice: the real arena and its lacquered tops, driven by bots round after round (four demo seats, a short beat on their marks, a beat on a decided round, a stalled round started over). No room and no names. While it loads, the game's `Preview` stands in with the demo tops drawn flat on their marks through the same camera (lacquer, brass edge, cap and glyph over a soft ink shadow), the marks its first round starts from, so the first screen is never an empty arena. Reduced motion leaves the tops still on their marks. A touch on it opens the room, like the brass button.
 
 ### Floating Stick
 

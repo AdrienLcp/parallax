@@ -48,7 +48,7 @@ export const HomePage: React.FC = () => {
           key={gameId}
           onClick={openRoom}
         >
-          <Suspense fallback={<game.Preview />}>
+          <Suspense fallback={<game.Preview isShowcase />}>
             <game.Showcase />
           </Suspense>
         </div>

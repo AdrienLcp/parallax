@@ -1,6 +1,8 @@
 import type React from 'react'
 import { useLayoutEffect, useRef, useState } from 'react'
 
+import type { GamePreviewProps } from '@/features/games/game-definition'
+
 import {
   ARENA_PLAN,
   type ArenaFraming,
@@ -9,6 +11,7 @@ import {
   projectOnCanvas,
   type TablePoint
 } from './arena-camera'
+import { PreviewTops } from './preview-tops'
 import { SUMO_TUNING } from './sumo-tuning'
 
 import './sumo-preview.sass'
@@ -68,7 +71,10 @@ const TICKS = Array.from({ length: ARENA_PLAN.ticks }, (_, tick) => ({
   tick
 }))
 
-const ArenaPlanDrawing: React.FC<{ framing: ArenaFraming }> = ({ framing }) => (
+const ArenaPlanDrawing: React.FC<{
+  framing: ArenaFraming
+  isShowcase: boolean
+}> = ({ framing, isShowcase }) => (
   <svg aria-hidden='true' viewBox={`0 0 ${framing.width} ${framing.height}`}>
     <path className='gutter' d={discPath(framing, ARENA_PLAN.gutter)} />
     <path className='platform' d={discPath(framing, SUMO_TUNING.arenaRadius)} />
@@ -85,15 +91,19 @@ const ArenaPlanDrawing: React.FC<{ framing: ArenaFraming }> = ({ framing }) => (
     {TICKS.map(({ square, tick }) => (
       <path className='tick' d={pathThrough(framing, square)} key={tick} />
     ))}
+    {isShowcase && <PreviewTops framing={framing} />}
   </svg>
 )
 
 /**
  * The sumo's arena before its scene exists: the felt, filets and ticks drawn
  * through the very camera the scene frames the table with, sized to its host,
- * so the scene appears over it without a jump.
+ * so the scene appears over it without a jump. Standing in for the showcase,
+ * it also draws the demo tops on the marks the showcase starts from.
  */
-export const SumoPreview: React.FC = () => {
+export const SumoPreview: React.FC<GamePreviewProps> = ({
+  isShowcase = false
+}) => {
   const host = useRef<HTMLDivElement>(null)
   const [framing, setFraming] = useState<ArenaFraming | null>(null)
 
@@ -118,7 +128,9 @@ export const SumoPreview: React.FC = () => {
 
   return (
     <div className='sumo-preview' ref={host}>
-      {framing !== null && <ArenaPlanDrawing framing={framing} />}
+      {framing !== null && (
+        <ArenaPlanDrawing framing={framing} isShowcase={isShowcase} />
+      )}
     </div>
   )
 }

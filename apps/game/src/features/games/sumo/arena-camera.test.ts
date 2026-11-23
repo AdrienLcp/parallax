@@ -42,6 +42,16 @@ describe('projectOnCanvas', () => {
     expect(near.y - centre).toBeGreaterThan(centre - far.y)
     expect((near.y + far.y) / 2).toBeGreaterThan(centre)
   })
+
+  it('lifts a point above the table toward the far side, and draws it nearer the camera larger', () => {
+    const framing = frameTheTable(PORTRAIT)
+    const onTable = projectOnCanvas(framing, { x: 0.5, z: 0 })
+    const raised = projectOnCanvas(framing, { x: 0.5, z: 0 }, 0.2)
+    expect(raised.y).toBeLessThan(onTable.y)
+    expect(raised.x - PORTRAIT.width / 2).toBeGreaterThan(
+      onTable.x - PORTRAIT.width / 2
+    )
+  })
 })
 
 describe('frameTheTable', () => {

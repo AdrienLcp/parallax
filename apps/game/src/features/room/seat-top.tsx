@@ -9,7 +9,7 @@ import './seat-top.sass'
  * The mark carved in each slot's cap, so seats differ by shape as well as by
  * lacquer for colour-blind players. Drawn in a 100 × 100 box.
  */
-const SEAT_GLYPHS = [
+export const SEAT_GLYPHS = [
   <circle cx='50' cy='50' key='circle' r='41' />,
   <path d='M50 8 L95 86 L5 86 Z' key='triangle' />,
   <rect height='72' key='square' width='72' x='14' y='14' />,

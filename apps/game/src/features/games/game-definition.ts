@@ -69,6 +69,12 @@ export type GameControllerProps = {
 }
 
 /** One game the room can play: what each side draws, and who may play it. */
+/** What the host asks of a game's `Preview`. */
+export type GamePreviewProps = {
+  /** It stands in for the `Showcase` on the game choice, not for a room's scene. */
+  isShowcase?: boolean
+}
+
 export type GameDefinition = {
   /** What a player holds, drawn on each phone of the room. */
   Controller: React.ComponentType<GameControllerProps>
@@ -87,7 +93,7 @@ export type GameDefinition = {
    * scene and should frame the game the same way, so the scene takes over
    * without a jump. Loaded with the app, so it must stay light.
    */
-  Preview: React.ComponentType
+  Preview: React.ComponentType<GamePreviewProps>
   /** What the room watches, drawn on the screen, which runs the game. */
   Scene: React.ComponentType<GameSceneProps>
   /**

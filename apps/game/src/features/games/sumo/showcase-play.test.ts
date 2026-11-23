@@ -4,11 +4,11 @@ import {
   advanceShowcase,
   SHOWCASE_DECIDED_SECONDS,
   SHOWCASE_LONGEST_ROUND_SECONDS,
-  SHOWCASE_SLOTS,
   type ShowcasePlay,
   showcaseFrameOf,
   startShowcase
 } from './showcase-play'
+import { SHOWCASE_SLOTS } from './showcase-slots'
 import { SUMO_STEP_SECONDS, SUMO_TUNING } from './sumo-tuning'
 
 const step = { random: () => 0.999, seconds: SUMO_STEP_SECONDS }
