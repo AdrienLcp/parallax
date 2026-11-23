@@ -7,6 +7,7 @@ import { SUMO_TUNING } from './sumo-tuning'
 
 const spinning = (seat: string): SpinningTop => ({
   dashCooldown: 0,
+  lastContact: null,
   position: { x: 0, y: 0 },
   seat,
   status: 'spinning',
@@ -14,7 +15,7 @@ const spinning = (seat: string): SpinningTop => ({
 })
 
 const out = (seat: string) =>
-  ({ position: { x: 2, y: 0 }, seat, status: 'out' }) as const
+  ({ outBy: null, position: { x: 2, y: 0 }, seat, status: 'out' }) as const
 
 const fighting: SumoMatch = {
   decidedFor: 0,

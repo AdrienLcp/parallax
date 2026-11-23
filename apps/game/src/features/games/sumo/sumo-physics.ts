@@ -14,10 +14,17 @@ import {
 
 import { SUMO_TUNING } from './sumo-tuning'
 
+/** The last top this one touched, and how long ago. */
+export type TopContact = {
+  readonly seat: SeatId
+  readonly since: number
+}
+
 /** One player's top. Only a spinning top is driven and collides. */
 export type Top =
   | {
       readonly dashCooldown: number
+      readonly lastContact: TopContact | null
       readonly position: PlanarVector
       readonly seat: SeatId
       readonly status: 'spinning'
@@ -25,12 +32,15 @@ export type Top =
     }
   | {
       readonly fallElapsed: number
+      /** The seat credited with the push, `null` when the top drove itself off. */
+      readonly outBy: SeatId | null
       readonly position: PlanarVector
       readonly seat: SeatId
       readonly status: 'falling'
       readonly velocity: PlanarVector
     }
   | {
+      readonly outBy: SeatId | null
       readonly position: PlanarVector
       readonly seat: SeatId
       readonly status: 'out'
@@ -78,6 +88,10 @@ const driven = (
   return {
     ...top,
     dashCooldown: isDashing ? SUMO_TUNING.dashCooldownSeconds : cooldown,
+    lastContact:
+      top.lastContact === null
+        ? null
+        : { ...top.lastContact, since: top.lastContact.since + seconds },
     position: added(top.position, scaled(velocity, seconds)),
     velocity
   }
@@ -85,7 +99,8 @@ const driven = (
 
 /**
  * Pushes two overlapping tops apart and exchanges their momentum along the
- * line between their centres: equal masses, slightly lossy.
+ * line between their centres: equal masses, slightly lossy. Each remembers
+ * the other as its last contact.
  */
 export const collided = ({
   first,
@@ -110,11 +125,13 @@ export const collided = ({
   return [
     {
       ...first,
+      lastContact: { seat: second.seat, since: 0 },
       position: subtracted(first.position, separation),
       velocity: subtracted(first.velocity, exchange)
     },
     {
       ...second,
+      lastContact: { seat: first.seat, since: 0 },
       position: added(second.position, separation),
       velocity: added(second.velocity, exchange)
     }
@@ -143,10 +160,17 @@ const withCollisions = (tops: readonly SpinningTop[]): SpinningTop[] => {
 const isOverTheEdge = (position: PlanarVector): boolean =>
   lengthOf(position) > SUMO_TUNING.arenaRadius
 
+const pusherOf = (top: SpinningTop): SeatId | null =>
+  top.lastContact !== null &&
+  top.lastContact.since <= SUMO_TUNING.pushCreditSeconds
+    ? top.lastContact.seat
+    : null
+
 const settled = (top: SpinningTop): Top =>
   isOverTheEdge(top.position)
     ? {
         fallElapsed: 0,
+        outBy: pusherOf(top),
         position: top.position,
         seat: top.seat,
         status: 'falling',
@@ -158,7 +182,12 @@ const fallen = (top: Top, seconds: number): Top => {
   if (top.status !== 'falling') return top
   const fallElapsed = top.fallElapsed + seconds
   if (fallElapsed >= SUMO_TUNING.fallSeconds) {
-    return { position: top.position, seat: top.seat, status: 'out' }
+    return {
+      outBy: top.outBy,
+      position: top.position,
+      seat: top.seat,
+      status: 'out'
+    }
   }
   return {
     ...top,

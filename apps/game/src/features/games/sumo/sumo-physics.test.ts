@@ -7,6 +7,7 @@ import { SUMO_STEP_SECONDS, SUMO_TUNING } from './sumo-tuning'
 
 const spinningTop = (overrides: Partial<SpinningTop> = {}): SpinningTop => ({
   dashCooldown: 0,
+  lastContact: null,
   position: ORIGIN,
   seat: 'red',
   status: 'spinning',
@@ -121,5 +122,41 @@ describe('sumo physics', () => {
     const fallSteps = Math.ceil(SUMO_TUNING.fallSeconds / SUMO_STEP_SECONDS) + 1
     const [out] = stepped([edge], {}, fallSteps)
     expect(out?.status).toBe('out')
+  })
+
+  it('[sumo] a top pushed off is credited to the last top it touched', () => {
+    const fallSteps = Math.ceil(SUMO_TUNING.fallSeconds / SUMO_STEP_SECONDS) + 1
+    const [, struck] = stepped(
+      [
+        spinningTop({
+          position: { x: SUMO_TUNING.arenaRadius - 0.3, y: 0 },
+          velocity: { x: 1.5, y: 0 }
+        }),
+        spinningTop({
+          position: {
+            x: SUMO_TUNING.arenaRadius - 0.3 + SUMO_TUNING.topRadius * 1.9,
+            y: 0
+          },
+          seat: 'blue'
+        })
+      ],
+      {},
+      fallSteps + 30
+    )
+    expect(struck).toMatchObject({ outBy: 'red', status: 'out' })
+  })
+
+  it('[sumo] a top that drives itself off long after its last contact is credited to no one', () => {
+    const [falling] = stepped([
+      spinningTop({
+        lastContact: {
+          seat: 'blue',
+          since: SUMO_TUNING.pushCreditSeconds + 0.1
+        },
+        position: { x: SUMO_TUNING.arenaRadius - 0.001, y: 0 },
+        velocity: { x: 0.5, y: 0 }
+      })
+    ])
+    expect(falling).toMatchObject({ outBy: null, status: 'falling' })
   })
 })

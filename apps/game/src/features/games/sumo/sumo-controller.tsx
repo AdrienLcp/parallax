@@ -126,6 +126,11 @@ export const SumoController: React.FC<GameControllerProps> = ({
   }
 
   const isRoundOver = view === 'out' || view === 'won'
+  const pushedBy = room.seats.find(
+    (seat) =>
+      seat.seatId ===
+      state?.tops.find((top) => top.seatId === room.youId)?.outBy
+  )?.slot
 
   return (
     <div
@@ -163,7 +168,9 @@ export const SumoController: React.FC<GameControllerProps> = ({
         </div>
       </section>
       <div className='round-outcome' role='status'>
-        {view === 'out' && <SumoBand outcome='out' slot={ownSeat.slot} />}
+        {view === 'out' && (
+          <SumoBand outcome='out' pushedBy={pushedBy} slot={ownSeat.slot} />
+        )}
         {view === 'won' && <SumoBand outcome='won' slot={ownSeat.slot} />}
       </div>
     </div>

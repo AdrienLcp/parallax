@@ -10,10 +10,10 @@ const stateOf = (
 ): SumoState => ({
   phase,
   tops: [
-    { roundsWon: 0, seatId: 'rival', status: 'spinning' },
+    { outBy: null, roundsWon: 0, seatId: 'rival', status: 'spinning' },
     ...(ownStatus === null
       ? []
-      : [{ roundsWon: 0, seatId: 'own', status: ownStatus }])
+      : [{ outBy: null, roundsWon: 0, seatId: 'own', status: ownStatus }])
   ],
   type: 'sumo.state'
 })

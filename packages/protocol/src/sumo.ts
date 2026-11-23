@@ -38,6 +38,8 @@ export const sumoStateSchema = z.object({
   phase: z.enum(['lobby', 'countdown', 'fighting', 'decided']),
   tops: z.array(
     z.object({
+      /** Who pushed this top into the gutter: `null` while it spins, or when it drove itself off. */
+      outBy: seatIdSchema.nullable(),
       roundsWon: z.number().int().nonnegative(),
       seatId: seatIdSchema,
       status: sumoTopStatusSchema

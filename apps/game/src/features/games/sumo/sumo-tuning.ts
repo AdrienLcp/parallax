@@ -13,6 +13,8 @@ export const SUMO_TUNING = {
   /** How long the match's winner stays on the arena before the room gathers again. */
   matchPauseSeconds: 6,
   maximumDriveSpeed: 0.9,
+  /** A top that leaves the platform this soon after touching another is credited to that other. */
+  pushCreditSeconds: 1.5,
   restitution: 0.9,
   /** How long a decided round stays on the arena: time to read the last ejection. */
   roundPauseSeconds: 3,

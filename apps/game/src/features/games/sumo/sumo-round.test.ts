@@ -46,12 +46,13 @@ describe('sumo round', () => {
         tops: [
           {
             dashCooldown: 0,
+            lastContact: null,
             position: { x: 0, y: 0 },
             seat: 'red',
             status: 'spinning',
             velocity: { x: 0, y: 0 }
           },
-          { position: { x: 2, y: 0 }, seat: 'blue', status: 'out' }
+          { outBy: null, position: { x: 2, y: 0 }, seat: 'blue', status: 'out' }
         ]
       },
       idle
@@ -66,6 +67,7 @@ describe('sumo round', () => {
         tops: [
           {
             dashCooldown: 0,
+            lastContact: null,
             position: { x: 0, y: 0 },
             seat: 'red',
             status: 'spinning',
@@ -73,6 +75,7 @@ describe('sumo round', () => {
           },
           {
             fallElapsed: 0,
+            outBy: null,
             position: { x: 1.2, y: 0 },
             seat: 'blue',
             status: 'falling',

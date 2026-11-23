@@ -19,6 +19,7 @@ const step = (present: readonly string[], seconds = SUMO_STEP_SECONDS) => ({
 
 const spinningAt = (seat: string, x: number, speed = 0): SpinningTop => ({
   dashCooldown: 0,
+  lastContact: null,
   position: { x, y: 0 },
   seat,
   status: 'spinning',
@@ -37,7 +38,7 @@ const decidedFor = ({
     phase: 'decided',
     tops: [
       spinningAt(winner, 0),
-      { position: { x: 2, y: 0 }, seat: 'other', status: 'out' }
+      { outBy: null, position: { x: 2, y: 0 }, seat: 'other', status: 'out' }
     ],
     winner
   },
@@ -73,7 +74,7 @@ describe('sumo match', () => {
         phase: 'fighting',
         tops: [
           spinningAt('red', 0),
-          { position: { x: 2, y: 0 }, seat: 'blue', status: 'out' }
+          { outBy: null, position: { x: 2, y: 0 }, seat: 'blue', status: 'out' }
         ]
       },
       roundNumber: 1,
@@ -165,6 +166,7 @@ describe('sumo state report', () => {
           spinningAt('red', 0),
           {
             fallElapsed: 0,
+            outBy: null,
             position: { x: 1.1, y: 0 },
             seat: 'blue',
             status: 'falling',
@@ -177,8 +179,8 @@ describe('sumo state report', () => {
       wins: new Map([['blue', 2]])
     }
     expect(reportedState(match).tops).toEqual([
-      { roundsWon: 0, seatId: 'red', status: 'spinning' },
-      { roundsWon: 2, seatId: 'blue', status: 'out' }
+      { outBy: null, roundsWon: 0, seatId: 'red', status: 'spinning' },
+      { outBy: null, roundsWon: 2, seatId: 'blue', status: 'out' }
     ])
   })
 })
