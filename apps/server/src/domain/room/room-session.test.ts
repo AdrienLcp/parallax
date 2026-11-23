@@ -185,6 +185,7 @@ describe('handleFrame', () => {
     })
 
     expect(ping.reply).toEqual({ type: 'pong' })
+    expect(ping.event).toEqual({ kind: 'pinged' })
     expect(stick.reply?.type === 'error' && stick.reply.code).toBe(
       'hello_required'
     )

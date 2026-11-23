@@ -21,6 +21,7 @@ import type { RoomStore } from './room-store'
 /** What a frame asks of the room beyond answering its sender. */
 export type SessionEvent =
   | { kind: 'admitted' }
+  | { kind: 'pinged' }
   | { kind: 'to_screen'; message: SumoSeatDash | SumoSeatStick }
   | { kind: 'to_players'; message: SumoState }
 
@@ -130,7 +131,7 @@ export const handleFrame = ({
     case 'ping':
       return {
         admission,
-        event: null,
+        event: { kind: 'pinged' },
         reply: { type: 'pong' },
         shouldClose: false
       }

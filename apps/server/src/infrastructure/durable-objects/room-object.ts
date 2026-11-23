@@ -12,7 +12,7 @@ import {
   screenServerMessageSchema
 } from '@parallax/protocol/server-message'
 
-import { type Admission, admissionSchema } from '@/domain/room/admission'
+import type { Admission } from '@/domain/room/admission'
 import type { OpenedRoom } from '@/domain/room/room'
 import { roomErasureAtMs } from '@/domain/room/room-lifetime'
 import { openRoom } from '@/domain/room/room-service'
@@ -23,11 +23,16 @@ import {
   screenRoomMessageOf,
   seatsSeen
 } from '@/domain/room/room-view'
+import { isSilent } from '@/domain/room/socket-liveness'
 import { nowMs } from '@/infrastructure/clock'
 import { newSeatId } from '@/infrastructure/ids'
 
 import { ROOM_OBJECT_MIGRATIONS } from './room-object-schema'
 import { migrateSchema } from './schema-migrations'
+import {
+  type SocketAttachment,
+  socketAttachmentSchema
+} from './socket-attachment'
 import type { SqlDatabase } from './sql-database'
 
 const POLICY_VIOLATION = 1008
@@ -39,14 +44,35 @@ const sqlDatabaseOf = (storage: DurableObjectStorage): SqlDatabase => ({
   transaction: (work) => storage.transactionSync(work)
 })
 
-const admissionOf = (socket: WebSocket): Admission | null => {
-  const parsed = admissionSchema.safeParse(socket.deserializeAttachment())
+const attachmentOf = (socket: WebSocket): SocketAttachment | null => {
+  const parsed = socketAttachmentSchema.safeParse(
+    socket.deserializeAttachment()
+  )
 
   return parsed.success ? parsed.data : null
 }
 
+const admissionOf = (socket: WebSocket): Admission | null =>
+  attachmentOf(socket)?.admission ?? null
+
+const stampFrame = (socket: WebSocket, admission: Admission | null): void => {
+  const attachment: SocketAttachment = { admission, lastFrameAtMs: nowMs() }
+
+  socket.serializeAttachment(attachment)
+}
+
 const isOpen = (socket: WebSocket): boolean =>
   socket.readyState === WebSocket.READY_STATE_OPEN
+
+/** Open by the runtime's account, yet quiet past the limit: the tab behind it is gone. */
+const isSilentSocket = (socket: WebSocket, atMs: number): boolean => {
+  const attachment = attachmentOf(socket)
+
+  return (
+    attachment === null ||
+    isSilent({ lastFrameAtMs: attachment.lastFrameAtMs, nowMs: atMs })
+  )
+}
 
 /** A socket can close between the frame that woke the room and the answer. */
 const sendFrame = (socket: WebSocket, frame: string): void => {
@@ -80,6 +106,7 @@ export class RoomObject extends DurableObject<Env> {
     const { 0: client, 1: server } = new WebSocketPair()
 
     this.ctx.acceptWebSocket(server)
+    stampFrame(server, null)
 
     return new Response(null, { status: 101, webSocket: client })
   })
@@ -125,7 +152,7 @@ export class RoomObject extends DurableObject<Env> {
       store: this.store
     })
 
-    socket.serializeAttachment(outcome.admission)
+    stampFrame(socket, outcome.admission)
 
     if (outcome.reply !== null) {
       sendFrame(socket, encodeChecked(replyMessageSchema, outcome.reply))
@@ -140,6 +167,9 @@ export class RoomObject extends DurableObject<Env> {
     switch (outcome.event?.kind) {
       case 'admitted':
         await this.welcome(socket, outcome.admission)
+        return
+      case 'pinged':
+        this.dropSilentSockets()
         return
       case 'to_screen':
         this.sendToScreens(outcome.event.message)
@@ -184,11 +214,35 @@ export class RoomObject extends DurableObject<Env> {
     }
   }
 
-  /** The sockets still open, but for one that is leaving. */
+  /**
+   * A tab closed without a close frame leaves its socket open here for good.
+   * Each ping, from any socket, is the moment to let the quiet ones go.
+   */
+  private dropSilentSockets(): void {
+    const atMs = nowMs()
+    const silent = this.ctx
+      .getWebSockets()
+      .filter((socket) => isOpen(socket) && isSilentSocket(socket, atMs))
+
+    for (const socket of silent) {
+      closeSocket(socket, GOING_AWAY, 'silent')
+    }
+
+    if (silent.some((socket) => admissionOf(socket)?.role === 'player')) {
+      this.broadcastRoom(null)
+    }
+  }
+
+  /** The sockets still open and speaking, but for one that is leaving. */
   private openSockets(gone: WebSocket | null): WebSocket[] {
+    const atMs = nowMs()
+
     return this.ctx
       .getWebSockets()
-      .filter((socket) => socket !== gone && isOpen(socket))
+      .filter(
+        (socket) =>
+          socket !== gone && isOpen(socket) && !isSilentSocket(socket, atMs)
+      )
   }
 
   private sendToScreens(message: ScreenServerMessage): void {
