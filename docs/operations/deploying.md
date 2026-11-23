@@ -1,8 +1,9 @@
 # Deploying
 
-The CI workflow validates every push to `main` and deploys it; a newer push
-cancels the run of the one before. Shipping is pushing; nothing is built or
-deployed from this machine.
+The CI workflow validates every push to `main` and deploys it to the Worker
+`parallax` with `wrangler deploy`; a newer push cancels the run of the one
+before. There is no staging: a green push is live. Shipping is pushing;
+nothing is built or deployed from this machine.
 
 ## Ship — `pnpm ship`
 
@@ -13,8 +14,9 @@ pnpm ship
 ```
 
 Expected: `git push` output, then `ship: pushed; watching CI run <id>`, the
-run's jobs ticking green, and `ship: deployed to https://project.adrienlcp.com`.
-Open the site and check the change.
+run's jobs ticking green, and `ship: deployed to https://parallax.adrienlcp.com`.
+Open the site and check the change. A room in progress survives a deploy: its
+Durable Object keeps its state and the screens reconnect.
 
 | Error                                         | Fix                                                                                                      |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -37,6 +39,12 @@ git revert <commit>
 pnpm ship
 ```
 
-Faster, while the fix is prepared: Cloudflare dashboard → _Workers & Pages →
-project → Deployments_, a previous deployment → _Rollback_. The next deploy
-replaces the rollback.
+Faster, while the fix is prepared: put the previous version back at once,
+with no build (unlocked as in [secrets.md](secrets.md), _Unlocking_):
+
+```powershell
+$env:CLOUDFLARE_ACCOUNT_ID = "431a529079f2d76802b95056e39950f0"; $env:CLOUDFLARE_API_TOKEN = bw get password "Cloudflare Pages token"; pnpm --filter @parallax/server exec wrangler rollback
+```
+
+Or the dashboard: _Workers & Pages → parallax → Deployments_, a previous
+version → _Rollback_. The next deploy replaces the rollback.

@@ -24,19 +24,20 @@ gh run rerun <id> --failed
 
 ## By step
 
-| Step              | Symptom                                           | Fix                                                                                                                    |
-| ----------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| CI `pnpm install` | `ERR_PNPM_OUTDATED_LOCKFILE`                      | `pnpm install` here, commit `pnpm-lock.yaml`, ship.                                                                    |
-| CI lint           | `biome ci` errors                                 | `pnpm lint` here, commit, ship.                                                                                        |
-| CI spelling       | `Unknown word`                                    | Fix the typo, or add a real word to `cspell.json` → `words`.                                                           |
-| CI build or tests | A failing test or type error                      | Reproduce with `pnpm validate` here; fix; ship.                                                                        |
-| CI deploy         | Step _skipped_                                    | The repository lacks `CLOUDFLARE_API_TOKEN`: `pnpm secrets:sync` ([secrets.md](secrets.md)), then `gh run rerun <id>`. |
-| CI deploy         | `Authentication error [code: 10000]`              | The Cloudflare token expired or lost a permission: renew it ([secrets.md](secrets.md)).                                |
-| CI deploy         | The project is not found                          | The hosting is gone: recreate it ([hosting.md](hosting.md)).                                                           |
-| Site              | Old version still showing                         | Hard-reload. Check the CI run deployed the commit you expect.                                                          |
-| Site              | Blank page, console errors                        | Undo the deploy ([deploying.md](deploying.md)), then reproduce locally.                                                |
-| Any script        | A `Bitwarden …` message                           | [secrets.md](secrets.md), _Common errors_.                                                                             |
-| Any script        | `pnpm: command not found` or a wrong pnpm version | `corepack enable`, open a new terminal.                                                                                |
+| Step              | Symptom                                                 | Fix                                                                                                                         |
+| ----------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| CI `pnpm install` | `ERR_PNPM_OUTDATED_LOCKFILE`                            | `pnpm install` here, commit `pnpm-lock.yaml`, ship.                                                                         |
+| CI lint           | `biome ci` errors                                       | `pnpm lint` here, commit, ship.                                                                                             |
+| CI spelling       | `Unknown word`                                          | Fix the typo, or add a real word to `cspell.json` → `words`.                                                                |
+| CI build or tests | A failing test or type error                            | Reproduce with `pnpm validate` here; fix; ship.                                                                             |
+| CI deploy         | Step _skipped_                                          | The repository lacks `CLOUDFLARE_API_TOKEN`: `pnpm secrets:sync` ([secrets.md](secrets.md)), then `gh run rerun <id>`.      |
+| CI deploy         | `Authentication error [code: 10000]`                    | The Cloudflare token expired or lost a permission: renew it ([secrets.md](secrets.md)).                                     |
+| CI deploy         | `No access to the specified resource` after `Uploaded`  | The token lacks _Zone · Workers Routes · Edit_ on `adrienlcp.com`, needed for the custom domain ([secrets.md](secrets.md)). |
+| CI build          | `wrangler types --check` says the types are out of date | `wrangler.jsonc` or Wrangler changed without its types: `pnpm --filter @parallax/server cf-typegen`, commit, ship.          |
+| Site              | Old version still showing                               | Hard-reload. Check the CI run deployed the commit you expect.                                                               |
+| Site              | Blank page, console errors                              | Undo the deploy ([deploying.md](deploying.md)), then reproduce locally.                                                     |
+| Any script        | A `Bitwarden …` message                                 | [secrets.md](secrets.md), _Common errors_.                                                                                  |
+| Any script        | `pnpm: command not found` or a wrong pnpm version       | `corepack enable`, open a new terminal.                                                                                     |
 
 ## Still stuck
 

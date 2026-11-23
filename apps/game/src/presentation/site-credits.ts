@@ -14,4 +14,4 @@ export const AUTHOR = {
  * own, or `null` when its source is private: the footer then links none.
  */
 export const SOURCE_REPOSITORY_HREF: string | null =
-  'https://github.com/AdrienLcp/project-name'
+  'https://github.com/AdrienLcp/parallax'

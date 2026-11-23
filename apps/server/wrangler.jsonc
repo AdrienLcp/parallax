@@ -28,5 +28,8 @@
       "simple": { "limit": 10, "period": 60 }
     }
   ],
+  // `wrangler deploy` creates the custom domain and its DNS record. No
+  // workers.dev host: the subdomain is the only address anything links to.
+  "routes": [{ "custom_domain": true, "pattern": "parallax.adrienlcp.com" }],
   "workers_dev": false
 }

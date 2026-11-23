@@ -4,20 +4,21 @@ Everything needed to run this app without help: one page per action, each
 with its prerequisites, the exact command, what a good run prints, and the
 errors met most often.
 
-| Action                         | Command               | Page                                                 |
-| ------------------------------ | --------------------- | ---------------------------------------------------- |
-| Deploy                         | `pnpm ship`           | [deploying.md](deploying.md)                         |
-| Update the dependencies        | `pnpm deps:upgrade`   | [updating-dependencies.md](updating-dependencies.md) |
-| Create or recreate the hosting | `pnpm hosting:create` | [hosting.md](hosting.md)                             |
-| Set or renew the secrets       | `pnpm secrets:sync`   | [secrets.md](secrets.md)                             |
-| A step broke                   | —                     | [troubleshooting.md](troubleshooting.md)             |
+| Action                   | Command             | Page                                                 |
+| ------------------------ | ------------------- | ---------------------------------------------------- |
+| Deploy                   | `pnpm ship`         | [deploying.md](deploying.md)                         |
+| Update the dependencies  | `pnpm deps:upgrade` | [updating-dependencies.md](updating-dependencies.md) |
+| Understand the hosting   | —                   | [hosting.md](hosting.md)                             |
+| Set or renew the secrets | `pnpm secrets:sync` | [secrets.md](secrets.md)                             |
+| A step broke             | —                   | [troubleshooting.md](troubleshooting.md)             |
 
 ## Where things live
 
 | What                  | Where                                                                                             |
 | --------------------- | ------------------------------------------------------------------------------------------------- |
-| The site              | https://project.adrienlcp.com — Cloudflare Pages project `project`, deployed by CI                |
-| Repository            | `AdrienLcp/project` on GitHub; a push to `main` runs `.github/workflows/ci.yml`                   |
+| The app               | https://parallax.adrienlcp.com — Cloudflare Worker `parallax`, deployed by CI                     |
+| Its configuration     | `apps/server/wrangler.jsonc`: assets, Durable Object, rate limit, custom domain                   |
+| Repository            | `AdrienLcp/parallax` on GitHub; a push to `main` runs `.github/workflows/ci.yml`                  |
 | Secrets               | The personal Bitwarden account, read at run time; never a file in this repository, never a `.env` |
 | Hosting identifiers   | `scripts/operations/hosting.ts`                                                                   |
 | Bitwarden entry names | `scripts/operations/secret-entries.ts`                                                            |

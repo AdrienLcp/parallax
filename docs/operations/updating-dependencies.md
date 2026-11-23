@@ -22,7 +22,9 @@ Then:
    pnpm validate
    ```
 
-   Expected: lint, spelling, build and tests all pass.
+   Expected: lint, spelling, build and tests all pass. A Wrangler bump
+   fails the server build until its types are regenerated:
+   `pnpm --filter @parallax/server cf-typegen`.
 3. Commit, then `pnpm ship` ([deploying.md](deploying.md)).
 
 The CI actions (`.github/workflows/ci.yml`, the `uses:` lines) are not touched

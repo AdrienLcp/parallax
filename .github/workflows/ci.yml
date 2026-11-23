@@ -13,6 +13,9 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v7
 
@@ -38,6 +41,13 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # One Worker serves the built game and the rooms. A room in progress
+      # survives it: its Durable Object keeps its state and the sockets come
+      # back. `pnpm secrets:sync` sets the secrets; a fork without them skips.
+      - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != ''
+        run: pnpm --filter @parallax/server exec wrangler deploy
 
   # Workflows break at run time: a typo in an expression or a context passes
   # as plain YAML and only fails when the step is reached.
