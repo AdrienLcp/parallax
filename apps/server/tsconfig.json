@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@parallax/protocol/*": ["../../packages/protocol/src/*"]
+    },
+    "types": ["./worker-configuration.d.ts", "node"]
+  },
+  "extends": "../../tsconfig.json",
+  "include": ["src", "vitest.config.ts", "worker-configuration.d.ts"]
+}

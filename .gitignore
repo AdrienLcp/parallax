@@ -6,3 +6,7 @@ node_modules
 *.tsbuildinfo
 
 .claude/settings.local.json
+
+# Wrangler's local state: the Durable Objects' SQLite files and build cache.
+.wrangler
+*.dev.vars

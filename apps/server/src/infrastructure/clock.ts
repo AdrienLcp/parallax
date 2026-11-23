@@ -1,0 +1,2 @@
+/** The only reader of the wall clock: the server's time is the one that counts. */
+export const nowMs = (): number => Date.now()

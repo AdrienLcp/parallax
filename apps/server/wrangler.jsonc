@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "assets": {
+    "directory": "../game/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/ws/*"]
+  },
+  "compatibility_date": "2026-11-05",
+  // Offset from 8787 like the app from 5173: other dev servers run on this
+  // machine, and Vite proxies `/api` and `/ws` here.
+  "dev": {
+    "port": 8798
+  },
+  "durable_objects": {
+    "bindings": [{ "class_name": "RoomObject", "name": "ROOMS" }]
+  },
+  "main": "src/index.ts",
+  // The free plan only offers Durable Objects backed by SQLite.
+  "migrations": [{ "new_sqlite_classes": ["RoomObject"], "tag": "v1" }],
+  "name": "parallax",
+  "observability": { "enabled": true },
+  "workers_dev": false
+}
