@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 
 import type { SeatSlot } from '@parallax/protocol/room'
 
@@ -66,12 +66,14 @@ type FloatingStickProps = {
 /**
  * The left thumb's stick: its base, the arena's plan, jumps to where the
  * thumb lands and goes back to the centre when it lets go; its knob is the
- * player's own top, turning faster as it is pushed.
+ * player's own top, turning faster as it is pushed. A pad gone inert or a
+ * hidden page never sends the thumb's `pointerup`: the stick lets go then too.
  */
 export const FloatingStick: React.FC<FloatingStickProps> = ({
   onStick,
   slot
 }) => {
+  const zoneRef = useRef<HTMLDivElement>(null)
   const baseRef = useRef<HTMLDivElement>(null)
   const knobRef = useRef<HTMLDivElement>(null)
   const heldPointerRef = useRef<number | null>(null)
@@ -101,12 +103,55 @@ export const FloatingStick: React.FC<FloatingStickProps> = ({
     onStick(reading.stick)
   }
 
-  const grab = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (heldPointerRef.current !== null) {
+  const release = () => {
+    if (heldPointerRef.current === null) {
       return
     }
 
+    heldPointerRef.current = null
+    stickLengthRef.current = 0
+    showKnob(ORIGIN)
+    setAnchor(null)
+    onStick(ORIGIN)
+  }
+
+  const releaseOutsideTheThumb = useEffectEvent(release)
+
+  useEffect(() => {
+    const releaseOnceInert = () => {
+      if (zoneRef.current?.closest('[inert]')) {
+        releaseOutsideTheThumb()
+      }
+    }
+    const releaseOnceHidden = () => {
+      if (document.hidden) {
+        releaseOutsideTheThumb()
+      }
+    }
+    const inertWatch = new MutationObserver(releaseOnceInert)
+
+    inertWatch.observe(document.body, {
+      attributeFilter: ['inert'],
+      subtree: true
+    })
+    document.addEventListener('visibilitychange', releaseOnceHidden)
+
+    return () => {
+      inertWatch.disconnect()
+      document.removeEventListener('visibilitychange', releaseOnceHidden)
+    }
+  }, [])
+
+  const grab = (event: React.PointerEvent<HTMLDivElement>) => {
     const zone = event.currentTarget
+    const heldPointer = heldPointerRef.current
+
+    if (heldPointer !== null && zone.hasPointerCapture(heldPointer)) {
+      return
+    }
+
+    release()
+
     const baseRadius = (baseRef.current?.offsetWidth ?? 0) / 2
     const grabbedAt = stickAnchor({
       baseRadius,
@@ -125,15 +170,9 @@ export const FloatingStick: React.FC<FloatingStickProps> = ({
   }
 
   const letGo = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerId !== heldPointerRef.current) {
-      return
+    if (event.pointerId === heldPointerRef.current) {
+      release()
     }
-
-    heldPointerRef.current = null
-    stickLengthRef.current = 0
-    showKnob(ORIGIN)
-    setAnchor(null)
-    onStick(ORIGIN)
   }
 
   return (
@@ -145,6 +184,7 @@ export const FloatingStick: React.FC<FloatingStickProps> = ({
       onPointerDown={grab}
       onPointerMove={follow}
       onPointerUp={letGo}
+      ref={zoneRef}
     >
       <div
         className='stick-base'
