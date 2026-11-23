@@ -10,31 +10,36 @@ import lighthouse, {
 import desktopConfig from 'lighthouse/core/config/desktop-config.js'
 
 import { type ColorScheme, launchMutedBrowser } from './checks/muted-browser.ts'
-import {
-  type RunningPreview,
-  startPreviewServer
-} from './checks/preview-server.ts'
 
 /**
  * Every audited page, on a phone and on a desktop, in daylight and at night,
- * scores 100 in accessibility, best practices and SEO, and stays inside its
+ * scores 100 in accessibility and best practices, and stays inside its
  * budgets, or the run fails. An app gates no performance score and no LCP:
  * simulated throttling swings them by ten points between two runs of one
  * build. They are printed for every run, to read, not to judge.
  *
- * `LIGHTHOUSE_BASE_URL` audits a deployment; otherwise the built `dist` is
- * served by `vite preview`. `LIGHTHOUSE_DEBUGGING_PORT` pins the browser's
- * debugging port; otherwise the system hands out a free one, so two projects'
- * runs never meet on it.
+ * It audits the deployed Worker: `vite preview` serves no rooms, so the
+ * display would show its failure to open one. CI runs it right after the
+ * deploy. `LIGHTHOUSE_BASE_URL` audits another origin, a local `wrangler dev`
+ * included. `LIGHTHOUSE_DEBUGGING_PORT` pins the browser's debugging port;
+ * otherwise the system hands out a free one, so two projects' runs never meet
+ * on it.
  */
 
 const ROOT = join(import.meta.dirname, '..')
 const REPORT_DIR = join(ROOT, 'lighthouse-reports')
 
-/** A public site reads its pages from its sitemap instead. */
-const AUDITED_PATHS = ['/', '/legal']
+const PRODUCTION_ORIGIN = 'https://parallax.adrienlcp.com'
 
-const GATED_CATEGORIES = ['accessibility', 'best-practices', 'seo']
+/**
+ * Each `/screen` run opens a real room, well under the 10 a minute an address
+ * may open. The phone's code holds a `0`, outside the room code alphabet, so
+ * the audit never takes a seat in someone's room.
+ */
+const AUDITED_PATHS = ['/', '/screen', '/play/0000', '/legal']
+
+/** No `seo`: the app answers `noindex` everywhere, which that category fails. */
+const GATED_CATEGORIES = ['accessibility', 'best-practices']
 const MIN_SCORE = 100
 
 /**
@@ -44,8 +49,12 @@ const MIN_SCORE = 100
  */
 const BUDGETS_WITH_HEADROOM = {
   'cumulative-layout-shift': 0.01,
-  'resource-summary:script:size': 140_000
+  'resource-summary:script:size': 140_000,
+  'three-chunk:size': 160_000
 }
+
+/** `three` in `vite.config.ts`: the 3D engine, weighed apart from the app. */
+const THREE_CHUNK = /\/assets\/three-[\w-]+\.js$/
 
 /**
  * Every page is measured three times and judged on the median, the way
@@ -64,6 +73,7 @@ type Measure = {
   scores: Record<string, number>
   scriptBytes: number
   tbtMs: number
+  threeBytes: number
 }
 
 const configFor: Record<FormFactor, Config | undefined> = {
@@ -92,12 +102,28 @@ const DEBUGGING_PORT =
 const numericValueOf = (result: RunnerResult, audit: string): number =>
   result.lhr.audits[audit]?.numericValue ?? 0
 
-const scriptBytesIn = (result: RunnerResult): number => {
-  const details = result.lhr.audits['resource-summary']?.details
-  const rows = details?.type === 'table' ? details.items : []
-  const scripts = rows.find((row) => row.resourceType === 'script')
+type ScriptBytes = {
+  app: number
+  three: number
+}
 
-  return typeof scripts?.transferSize === 'number' ? scripts.transferSize : 0
+const scriptBytesIn = (result: RunnerResult): ScriptBytes => {
+  const details = result.lhr.audits['network-requests']?.details
+  const rows = details?.type === 'table' ? details.items : []
+  const bytes: ScriptBytes = { app: 0, three: 0 }
+
+  for (const { resourceType, transferSize, url } of rows) {
+    if (resourceType !== 'Script' || typeof transferSize !== 'number') {
+      continue
+    }
+    if (typeof url === 'string' && THREE_CHUNK.test(url)) {
+      bytes.three += transferSize
+    } else {
+      bytes.app += transferSize
+    }
+  }
+
+  return bytes
 }
 
 /** Throws on a run that measured nothing: a page that never painted is no score of 0. */
@@ -139,14 +165,17 @@ const measure = async (
     })
   )
 
+  const scriptBytes = scriptBytesIn(result)
+
   return {
     cls: numericValueOf(result, 'cumulative-layout-shift'),
     fcpMs: numericValueOf(result, 'first-contentful-paint'),
     lcpMs: numericValueOf(result, 'largest-contentful-paint'),
     report: String(result.report),
     scores,
-    scriptBytes: scriptBytesIn(result),
-    tbtMs: numericValueOf(result, 'total-blocking-time')
+    scriptBytes: scriptBytes.app,
+    tbtMs: numericValueOf(result, 'total-blocking-time'),
+    threeBytes: scriptBytes.three
   }
 }
 
@@ -162,6 +191,9 @@ const failuresOf = (reading: Measure): string[] => [
     ? [
         `resource-summary:script:size ${Math.round(reading.scriptBytes / 1000)} kB`
       ]
+    : []),
+  ...(reading.threeBytes > BUDGETS_WITH_HEADROOM['three-chunk:size']
+    ? [`three-chunk:size ${Math.round(reading.threeBytes / 1000)} kB`]
     : [])
 ]
 
@@ -183,7 +215,8 @@ const medianOf = (readings: Measure[]): Measure => ({
     ])
   ),
   scriptBytes: median(readings.map(({ scriptBytes }) => scriptBytes)),
-  tbtMs: median(readings.map(({ tbtMs }) => tbtMs))
+  tbtMs: median(readings.map(({ tbtMs }) => tbtMs)),
+  threeBytes: median(readings.map(({ threeBytes }) => threeBytes))
 })
 
 const reportNameFor = (
@@ -222,7 +255,7 @@ const auditEveryPage = async (origin: string): Promise<string[]> => {
           const broken = failuresOf(reading)
 
           console.info(
-            `${broken.length === 0 ? 'ok  ' : 'FAIL'} ${label.padEnd(24)} CLS ${reading.cls.toFixed(3)} · JS ${Math.round(reading.scriptBytes / 1000)} kB${broken.length === 0 ? '' : ` · ${broken.join(', ')}`}`
+            `${broken.length === 0 ? 'ok  ' : 'FAIL'} ${label.padEnd(24)} CLS ${reading.cls.toFixed(3)} · JS ${Math.round(reading.scriptBytes / 1000)} kB + three ${Math.round(reading.threeBytes / 1000)} kB${broken.length === 0 ? '' : ` · ${broken.join(', ')}`}`
           )
 
           if (broken.length > 0) {
@@ -242,12 +275,10 @@ const auditEveryPage = async (origin: string): Promise<string[]> => {
   return failures
 }
 
-const baseUrl = process.env.LIGHTHOUSE_BASE_URL
-const local: RunningPreview | undefined =
-  baseUrl === undefined ? await startPreviewServer() : undefined
-
 try {
-  const failures = await auditEveryPage(baseUrl ?? local?.origin ?? '')
+  const failures = await auditEveryPage(
+    process.env.LIGHTHOUSE_BASE_URL ?? PRODUCTION_ORIGIN
+  )
 
   if (failures.length > 0) {
     console.error(
@@ -262,6 +293,4 @@ try {
 } catch (error) {
   console.error('\nThe Lighthouse gate could not measure:', error)
   process.exitCode = 1
-} finally {
-  await local?.close()
 }

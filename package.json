@@ -22,6 +22,7 @@
     "build": "pnpm -r build",
     "deps:upgrade": "corepack use pnpm@latest && pnpm -r up -L && biome migrate --write",
     "dev": "pnpm --parallel --filter @parallax/server --filter @parallax/game dev",
+    "lighthouse": "pnpm --filter @parallax/game lighthouse",
     "lint": "biome check --write",
     "lint:ci": "biome ci",
     "secrets:sync": "node scripts/operations/sync-secrets.ts",

@@ -26,6 +26,16 @@ const FALLBACK_FACES_WRITTEN_BY_HAND = new Set([
 ])
 
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      output: {
+        // `scripts/lighthouse.ts` weighs this chunk apart from the app's JS.
+        codeSplitting: {
+          groups: [{ name: 'three', test: /[\\/]node_modules[\\/]three[\\/]/ }]
+        }
+      }
+    }
+  },
   css: {
     postcss: {
       plugins: [
