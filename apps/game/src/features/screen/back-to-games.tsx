@@ -13,7 +13,8 @@ export const HOLD_TO_LEAVE_MS = 1200
 
 /**
  * Leaves the room for the game choice once held down, so a passing touch never
- * ends a game: a brass ring fills while held and empties on release.
+ * ends a game: a brass ring fills while held and empties on release. Leaving
+ * ends the match: reopening the room keeps its seats and starts from round 1.
  */
 export const BackToGames: React.FC = () => {
   const translate = useTranslate()
