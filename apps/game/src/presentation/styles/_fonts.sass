@@ -12,13 +12,17 @@
 $big-shoulders-metrics: (ascent: 0.984, descent: 0.213, cap-height: 0.8)
 $barlow-metrics: (ascent: 1, descent: 0.2, cap-height: 0.7)
 
+// `swap`, not the toolkit's `optional`: the display is a kiosk loaded once and
+// never reloaded, and `optional` left it in the fallback after a cold start.
+// The metric-matched fallback faces below keep the swap from shifting layout.
+
 @layer base
-  @include fonts.font-face('Big Shoulders Display', '/fonts/big-shoulders-display-black-latin.woff2', fonts.$latin, $weight: 900)
-  @include fonts.font-face('Big Shoulders Display', '/fonts/big-shoulders-display-black-latin-ext.woff2', fonts.$latin-ext, $weight: 900)
-  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-medium-latin.woff2', fonts.$latin, $weight: 500)
-  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-medium-latin-ext.woff2', fonts.$latin-ext, $weight: 500)
-  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-bold-latin.woff2', fonts.$latin, $weight: 700)
-  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-bold-latin-ext.woff2', fonts.$latin-ext, $weight: 700)
+  @include fonts.font-face('Big Shoulders Display', '/fonts/big-shoulders-display-black-latin.woff2', fonts.$latin, $weight: 900, $display: swap)
+  @include fonts.font-face('Big Shoulders Display', '/fonts/big-shoulders-display-black-latin-ext.woff2', fonts.$latin-ext, $weight: 900, $display: swap)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-medium-latin.woff2', fonts.$latin, $weight: 500, $display: swap)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-medium-latin-ext.woff2', fonts.$latin-ext, $weight: 500, $display: swap)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-bold-latin.woff2', fonts.$latin, $weight: 700, $display: swap)
+  @include fonts.font-face('Barlow Semi Condensed', '/fonts/barlow-semi-condensed-bold-latin-ext.woff2', fonts.$latin-ext, $weight: 700, $display: swap)
 
   // fontaine's size-adjust for each family's first file; each width ratio is
   // the scaled Arial's over the file's, measured with `measure-font` over both
