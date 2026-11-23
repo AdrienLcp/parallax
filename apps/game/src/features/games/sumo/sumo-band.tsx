@@ -61,10 +61,7 @@ export const SumoBand: React.FC<SumoBandProps> = (props) => {
           {props.pushedBy !== undefined && <PushedBy slot={props.pushedBy} />}
         </div>
       ) : (
-        <div>
-          <p className='band-title'>{translate('sumo.won.title')}</p>
-          <p className='band-detail'>{translate('sumo.won.detail')}</p>
-        </div>
+        <p className='band-title'>{translate('sumo.won.title')}</p>
       )}
     </div>
   )

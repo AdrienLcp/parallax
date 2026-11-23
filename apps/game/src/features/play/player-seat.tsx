@@ -11,6 +11,7 @@ import {
 import type { PlayerGameEvent } from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
 import { createEventChannel } from '@/helpers/event-channel'
+import { paintBrowserBarBehind } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import type { PlainTranslationKey } from '@/presentation/i18n/translation'
@@ -92,7 +93,11 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
   const isReconnecting = socket.status.kind === 'reconnecting'
 
   return (
-    <div className='player-seat' data-seat-slot={ownSeat.slot}>
+    <div
+      className='player-seat'
+      data-seat-slot={ownSeat.slot}
+      ref={paintBrowserBarBehind}
+    >
       <div className='seat-controller' inert={isReconnecting}>
         <Suspense fallback={null}>
           <game.Controller

@@ -121,7 +121,6 @@ export const EN_DICTIONARY = defineDictionary({
     playInLandscape: 'Play in landscape',
     turnToLandscape: 'Turn to landscape',
     won: {
-      detail: 'Last one on the board',
       title: 'Won'
     }
   }

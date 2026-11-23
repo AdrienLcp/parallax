@@ -119,7 +119,6 @@ export default defineDictionary({
     playInLandscape: 'Jouez en paysage',
     turnToLandscape: 'Passez en paysage',
     won: {
-      detail: 'Dernier sur le plateau',
       title: 'Gagné'
     }
   }

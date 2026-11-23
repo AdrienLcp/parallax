@@ -1,0 +1,619 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-23T18:47:35.784Z",
+  "title": "Design System: Parallax",
+  "extensions": {
+    "colorMeta": {
+      "felt": {
+        "role": "primary",
+        "displayName": "Billiard Felt",
+        "canonical": "oklch(31.7% 0.051 162.2)",
+        "tonalRamp": [
+          "oklch(15% 0.014 162.2)",
+          "oklch(25% 0.023 162.2)",
+          "oklch(35% 0.032 162.2)",
+          "oklch(45% 0.042 162.2)",
+          "oklch(55% 0.051 162.2)",
+          "oklch(65% 0.042 162.2)",
+          "oklch(80% 0.028 162.2)",
+          "oklch(95% 0.014 162.2)"
+        ]
+      },
+      "felt-deep": {
+        "role": "primary",
+        "displayName": "Deep Felt",
+        "canonical": "oklch(26.3% 0.041 163.2)",
+        "tonalRamp": [
+          "oklch(15% 0.011 163.2)",
+          "oklch(25% 0.019 163.2)",
+          "oklch(35% 0.026 163.2)",
+          "oklch(45% 0.034 163.2)",
+          "oklch(55% 0.041 163.2)",
+          "oklch(65% 0.034 163.2)",
+          "oklch(80% 0.022 163.2)",
+          "oklch(95% 0.011 163.2)"
+        ]
+      },
+      "brass": {
+        "role": "secondary",
+        "displayName": "Brass",
+        "canonical": "oklch(73.1% 0.115 85.2)",
+        "tonalRamp": [
+          "oklch(15% 0.031 85.2)",
+          "oklch(25% 0.052 85.2)",
+          "oklch(35% 0.073 85.2)",
+          "oklch(45% 0.094 85.2)",
+          "oklch(55% 0.115 85.2)",
+          "oklch(65% 0.094 85.2)",
+          "oklch(80% 0.063 85.2)",
+          "oklch(95% 0.031 85.2)"
+        ]
+      },
+      "brass-deep": {
+        "role": "secondary",
+        "displayName": "Deep Brass",
+        "canonical": "oklch(54.3% 0.095 83.4)",
+        "tonalRamp": [
+          "oklch(15% 0.026 83.4)",
+          "oklch(25% 0.043 83.4)",
+          "oklch(35% 0.060 83.4)",
+          "oklch(45% 0.078 83.4)",
+          "oklch(55% 0.095 83.4)",
+          "oklch(65% 0.078 83.4)",
+          "oklch(80% 0.052 83.4)",
+          "oklch(95% 0.026 83.4)"
+        ]
+      },
+      "enamel": {
+        "role": "tertiary",
+        "displayName": "Enamel Blue",
+        "canonical": "oklch(37.6% 0.105 261)",
+        "tonalRamp": [
+          "oklch(15% 0.029 261)",
+          "oklch(25% 0.048 261)",
+          "oklch(35% 0.067 261)",
+          "oklch(45% 0.086 261)",
+          "oklch(55% 0.105 261)",
+          "oklch(65% 0.086 261)",
+          "oklch(80% 0.057 261)",
+          "oklch(95% 0.029 261)"
+        ]
+      },
+      "walnut": {
+        "role": "tertiary",
+        "displayName": "Walnut",
+        "canonical": "oklch(38% 0.058 56.8)",
+        "tonalRamp": [
+          "oklch(15% 0.016 56.8)",
+          "oklch(25% 0.026 56.8)",
+          "oklch(35% 0.037 56.8)",
+          "oklch(45% 0.047 56.8)",
+          "oklch(55% 0.058 56.8)",
+          "oklch(65% 0.047 56.8)",
+          "oklch(80% 0.032 56.8)",
+          "oklch(95% 0.016 56.8)"
+        ]
+      },
+      "maple": {
+        "role": "tertiary",
+        "displayName": "Maple (defined, unused)",
+        "canonical": "oklch(82.6% 0.079 77.2)",
+        "tonalRamp": [
+          "oklch(15% 0.022 77.2)",
+          "oklch(25% 0.036 77.2)",
+          "oklch(35% 0.050 77.2)",
+          "oklch(45% 0.065 77.2)",
+          "oklch(55% 0.079 77.2)",
+          "oklch(65% 0.065 77.2)",
+          "oklch(80% 0.043 77.2)",
+          "oklch(95% 0.022 77.2)"
+        ]
+      },
+      "slate": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "oklch(28.3% 0.008 169.8)",
+        "tonalRamp": [
+          "oklch(15% 0.002 169.8)",
+          "oklch(25% 0.004 169.8)",
+          "oklch(35% 0.005 169.8)",
+          "oklch(45% 0.007 169.8)",
+          "oklch(55% 0.008 169.8)",
+          "oklch(65% 0.007 169.8)",
+          "oklch(80% 0.004 169.8)",
+          "oklch(95% 0.002 169.8)"
+        ]
+      },
+      "slate-line": {
+        "role": "neutral",
+        "displayName": "Slate Line",
+        "canonical": "oklch(42.7% 0.011 160.9)",
+        "tonalRamp": [
+          "oklch(15% 0.003 160.9)",
+          "oklch(25% 0.005 160.9)",
+          "oklch(35% 0.007 160.9)",
+          "oklch(45% 0.009 160.9)",
+          "oklch(55% 0.011 160.9)",
+          "oklch(65% 0.009 160.9)",
+          "oklch(80% 0.006 160.9)",
+          "oklch(95% 0.003 160.9)"
+        ]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Chalk",
+        "canonical": "oklch(93.1% 0.015 90.2)",
+        "tonalRamp": [
+          "oklch(15% 0.004 90.2)",
+          "oklch(25% 0.007 90.2)",
+          "oklch(35% 0.010 90.2)",
+          "oklch(45% 0.012 90.2)",
+          "oklch(55% 0.015 90.2)",
+          "oklch(65% 0.012 90.2)",
+          "oklch(80% 0.008 90.2)",
+          "oklch(95% 0.004 90.2)"
+        ]
+      },
+      "chalk-soft": {
+        "role": "neutral",
+        "displayName": "Soft Chalk",
+        "canonical": "oklch(79.2% 0.015 124.6)",
+        "tonalRamp": [
+          "oklch(15% 0.004 124.6)",
+          "oklch(25% 0.007 124.6)",
+          "oklch(35% 0.010 124.6)",
+          "oklch(45% 0.012 124.6)",
+          "oklch(55% 0.015 124.6)",
+          "oklch(65% 0.012 124.6)",
+          "oklch(80% 0.008 124.6)",
+          "oklch(95% 0.004 124.6)"
+        ]
+      },
+      "ivory": {
+        "role": "neutral",
+        "displayName": "Ivory",
+        "canonical": "oklch(94.4% 0.023 87.2)",
+        "tonalRamp": [
+          "oklch(15% 0.006 87.2)",
+          "oklch(25% 0.010 87.2)",
+          "oklch(35% 0.015 87.2)",
+          "oklch(45% 0.019 87.2)",
+          "oklch(55% 0.023 87.2)",
+          "oklch(65% 0.019 87.2)",
+          "oklch(80% 0.013 87.2)",
+          "oklch(95% 0.006 87.2)"
+        ]
+      },
+      "lacquer-ink": {
+        "role": "neutral",
+        "displayName": "Lacquer Ink",
+        "canonical": "oklch(20.8% 0.009 59.2)",
+        "tonalRamp": [
+          "oklch(15% 0.002 59.2)",
+          "oklch(25% 0.004 59.2)",
+          "oklch(35% 0.006 59.2)",
+          "oklch(45% 0.007 59.2)",
+          "oklch(55% 0.009 59.2)",
+          "oklch(65% 0.007 59.2)",
+          "oklch(80% 0.005 59.2)",
+          "oklch(95% 0.002 59.2)"
+        ]
+      },
+      "seat-red": {
+        "role": "seat",
+        "displayName": "Seat 0 Red",
+        "canonical": "oklch(56.6% 0.175 31.9)",
+        "tonalRamp": [
+          "oklch(15% 0.048 31.9)",
+          "oklch(25% 0.080 31.9)",
+          "oklch(35% 0.111 31.9)",
+          "oklch(45% 0.143 31.9)",
+          "oklch(55% 0.175 31.9)",
+          "oklch(65% 0.143 31.9)",
+          "oklch(80% 0.095 31.9)",
+          "oklch(95% 0.048 31.9)"
+        ]
+      },
+      "seat-ivory": {
+        "role": "seat",
+        "displayName": "Seat 1 Ivory",
+        "canonical": "oklch(91.8% 0.032 87.3)",
+        "tonalRamp": [
+          "oklch(15% 0.009 87.3)",
+          "oklch(25% 0.015 87.3)",
+          "oklch(35% 0.020 87.3)",
+          "oklch(45% 0.026 87.3)",
+          "oklch(55% 0.032 87.3)",
+          "oklch(65% 0.026 87.3)",
+          "oklch(80% 0.017 87.3)",
+          "oklch(95% 0.009 87.3)"
+        ]
+      },
+      "seat-black": {
+        "role": "seat",
+        "displayName": "Seat 2 Black",
+        "canonical": "oklch(24.7% 0.01 67.4)",
+        "tonalRamp": [
+          "oklch(15% 0.003 67.4)",
+          "oklch(25% 0.005 67.4)",
+          "oklch(35% 0.006 67.4)",
+          "oklch(45% 0.008 67.4)",
+          "oklch(55% 0.010 67.4)",
+          "oklch(65% 0.008 67.4)",
+          "oklch(80% 0.005 67.4)",
+          "oklch(95% 0.003 67.4)"
+        ]
+      },
+      "seat-ochre": {
+        "role": "seat",
+        "displayName": "Seat 3 Ochre",
+        "canonical": "oklch(72.4% 0.138 78.8)",
+        "tonalRamp": [
+          "oklch(15% 0.038 78.8)",
+          "oklch(25% 0.063 78.8)",
+          "oklch(35% 0.088 78.8)",
+          "oklch(45% 0.113 78.8)",
+          "oklch(55% 0.138 78.8)",
+          "oklch(65% 0.113 78.8)",
+          "oklch(80% 0.075 78.8)",
+          "oklch(95% 0.038 78.8)"
+        ]
+      },
+      "seat-blue": {
+        "role": "seat",
+        "displayName": "Seat 4 Blue",
+        "canonical": "oklch(45.9% 0.094 251.4)",
+        "tonalRamp": [
+          "oklch(15% 0.026 251.4)",
+          "oklch(25% 0.043 251.4)",
+          "oklch(35% 0.060 251.4)",
+          "oklch(45% 0.077 251.4)",
+          "oklch(55% 0.094 251.4)",
+          "oklch(65% 0.077 251.4)",
+          "oklch(80% 0.051 251.4)",
+          "oklch(95% 0.026 251.4)"
+        ]
+      },
+      "seat-green": {
+        "role": "seat",
+        "displayName": "Seat 5 Green",
+        "canonical": "oklch(72.1% 0.107 131.3)",
+        "tonalRamp": [
+          "oklch(15% 0.029 131.3)",
+          "oklch(25% 0.049 131.3)",
+          "oklch(35% 0.068 131.3)",
+          "oklch(45% 0.088 131.3)",
+          "oklch(55% 0.107 131.3)",
+          "oklch(65% 0.088 131.3)",
+          "oklch(80% 0.058 131.3)",
+          "oklch(95% 0.029 131.3)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Host Ground",
+        "canonical": "light-dark(oklch(100% 0 0), oklch(0% 0 0))",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(25% 0.000 0)",
+          "oklch(35% 0.000 0)",
+          "oklch(45% 0.000 0)",
+          "oklch(55% 0.000 0)",
+          "oklch(65% 0.000 0)",
+          "oklch(80% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Host Ink",
+        "canonical": "light-dark(oklch(20% 0 0), oklch(95% 0 0))",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(25% 0.000 0)",
+          "oklch(35% 0.000 0)",
+          "oklch(45% 0.000 0)",
+          "oklch(55% 0.000 0)",
+          "oklch(65% 0.000 0)",
+          "oklch(80% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Host Ink Muted",
+        "canonical": "light-dark(oklch(45% 0 0), oklch(72% 0 0))",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(25% 0.000 0)",
+          "oklch(35% 0.000 0)",
+          "oklch(45% 0.000 0)",
+          "oklch(55% 0.000 0)",
+          "oklch(65% 0.000 0)",
+          "oklch(80% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Host Rule",
+        "canonical": "light-dark(oklch(85% 0 0), oklch(30% 0 0))",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(25% 0.000 0)",
+          "oklch(35% 0.000 0)",
+          "oklch(45% 0.000 0)",
+          "oklch(55% 0.000 0)",
+          "oklch(65% 0.000 0)",
+          "oklch(80% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Host Rule Strong",
+        "canonical": "light-dark(oklch(60% 0 0), oklch(55% 0 0))",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(25% 0.000 0)",
+          "oklch(35% 0.000 0)",
+          "oklch(45% 0.000 0)",
+          "oklch(55% 0.000 0)",
+          "oklch(65% 0.000 0)",
+          "oklch(80% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "selection": {
+        "role": "neutral",
+        "displayName": "Selection",
+        "canonical": "light-dark(oklch(88% 0.06 85), oklch(44% 0.08 84))",
+        "tonalRamp": [
+          "oklch(15% 0.019 85)",
+          "oklch(25% 0.032 85)",
+          "oklch(35% 0.045 85)",
+          "oklch(45% 0.057 85)",
+          "oklch(55% 0.070 85)",
+          "oklch(65% 0.057 85)",
+          "oklch(80% 0.038 85)",
+          "oklch(95% 0.019 85)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Every name, title and button label, uppercase; sized by the caller (the phone lobby name shown). Display surfaces size it in --cu."
+      },
+      "headline": {
+        "displayName": "Band Title",
+        "purpose": "Outcome band title on the phone."
+      },
+      "plaque": {
+        "displayName": "Plaque",
+        "purpose": "The four-letter room code on the enamel plaque."
+      },
+      "title": {
+        "displayName": "Seat Badge",
+        "purpose": "Player name beside their top on the phone."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text on the host secondary pages."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Cues, statuses, seat states, band detail."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Footer and notes on the host pages."
+      }
+    },
+    "shadows": [
+      {
+        "name": "screen-shadow-raised",
+        "value": "0 calc(var(--cu) * 0.5) calc(var(--cu) * 1.2) color-mix(in oklab, var(--lacquer-ink) 40%, transparent)",
+        "purpose": "QR card, plaque, roster and brass button on the display."
+      },
+      {
+        "name": "plaque-inlay",
+        "value": "inset 0 0 0 4px var(--enamel), inset 0 0 0 7px var(--ivory), 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 40%, transparent)",
+        "purpose": "Enamel plaque with its ivory inner filet (phone values; the display uses 0.45cu / 0.8cu)."
+      },
+      {
+        "name": "walnut-frame",
+        "value": "inset 0 0 0 calc(var(--cu) * 0.5) var(--walnut), inset 0 0 0 calc(var(--cu) * 0.7) color-mix(in oklab, var(--walnut) 55%, var(--lacquer-ink))",
+        "purpose": "Frame around the slate roster."
+      },
+      {
+        "name": "brass-inlay",
+        "value": "inset 0 0 0 calc(var(--cu) * 0.4) var(--brass-deep), inset 0 0 0 calc(var(--cu) * 0.7) var(--brass)",
+        "purpose": "Inner filet of the brass button on the display."
+      },
+      {
+        "name": "shadow-dash",
+        "value": "0 6px 14px color-mix(in oklab, var(--lacquer-ink) 32%, transparent)",
+        "purpose": "Dash disc on the phone."
+      },
+      {
+        "name": "shadow-knob",
+        "value": "drop-shadow(0 5px 6px color-mix(in oklab, var(--lacquer-ink) 35%, transparent))",
+        "purpose": "Stick knob (filter)."
+      },
+      {
+        "name": "shadow-lobby-top",
+        "value": "drop-shadow(0 10px 14px color-mix(in oklab, var(--lacquer-ink) 30%, transparent))",
+        "purpose": "Large spinning top in the phone lobby (filter)."
+      },
+      {
+        "name": "shadow-bubble",
+        "value": "0 8px 20px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)",
+        "purpose": "Reconnecting bubble on the phone."
+      },
+      {
+        "name": "shadow-control",
+        "value": "0 4px 10px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)",
+        "purpose": "Brass retry button on the phone."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-fast",
+        "value": "var(--transition-fast)",
+        "purpose": "Press scale, hover fill, knob follow, gauge opacity. Value comes from @adrienlcp/styles tokens.defaults."
+      },
+      {
+        "name": "transition-base",
+        "value": "var(--transition-base)",
+        "purpose": "Stick base re-anchoring, pad fade when inert."
+      },
+      {
+        "name": "transition-slow",
+        "value": "var(--transition-slow)",
+        "purpose": "Band wipe (clip-path), seat ground change; multiples drive spins (x2 status ring, x6 won top and rotate cue, x15 lobby top)."
+      },
+      {
+        "name": "ease-out",
+        "value": "var(--ease-out)",
+        "purpose": "Default easing for wipes and presses."
+      },
+      {
+        "name": "sumo-turn",
+        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
+        "purpose": "Rotate-the-phone pictogram, holding then turning -90deg."
+      },
+      {
+        "name": "dash-refill",
+        "value": "linear, var(--dash-cooldown)",
+        "purpose": "Cooldown ring refilling from dashoffset 101 to 0."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "56.25rem"
+      },
+      {
+        "name": "portrait",
+        "value": "(orientation: portrait)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Seat Top",
+      "kind": "custom",
+      "refersTo": "seat-top",
+      "description": "A lacquered top seen from above with its carved glyph; the signature object.",
+      "html": "<svg class=\"ds-seat-top\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><circle class=\"ds-lacquer\" cx=\"50\" cy=\"50\" r=\"46\"/><circle class=\"ds-cap\" cx=\"50\" cy=\"50\" r=\"30\"/><g class=\"ds-glyph\" transform=\"translate(32 32) scale(0.36)\"><path d=\"M50 8 L95 86 L5 86 Z\"/></g></svg>",
+      "css": ".ds-seat-top { width: 96px; height: 96px; overflow: visible; } .ds-lacquer { fill: oklch(91.8% 0.032 87.3); stroke: oklch(73.1% 0.115 85.2); stroke-width: 4; } .ds-cap { fill: oklch(20.8% 0.009 59.2); } .ds-glyph { fill: oklch(94.4% 0.023 87.2); }"
+    },
+    {
+      "name": "Room Plaque",
+      "kind": "custom",
+      "refersTo": "room-plaque",
+      "description": "The room code on an enamel plaque with an ivory inner filet.",
+      "html": "<div class=\"ds-plaque\">KLMB</div>",
+      "css": ".ds-plaque { display: inline-block; background: oklch(37.6% 0.105 261); color: oklch(94.4% 0.023 87.2); font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 3.625rem; letter-spacing: 0.14em; padding: 0.5rem calc(1.5rem - 0.14em) 0.5rem 1.5rem; border-radius: 12px; box-shadow: inset 0 0 0 4px oklch(37.6% 0.105 261), inset 0 0 0 7px oklch(94.4% 0.023 87.2), 0 4px 10px color-mix(in oklab, oklch(20.8% 0.009 59.2) 40%, transparent); }"
+    },
+    {
+      "name": "Brass Button",
+      "kind": "button",
+      "refersTo": "brass-button",
+      "description": "The one primary action (display notice, phone retry).",
+      "html": "<button class=\"ds-brass-btn\">Retry</button>",
+      "css": ".ds-brass-btn { background: oklch(73.1% 0.115 85.2); color: oklch(20.8% 0.009 59.2); border: 0; border-radius: 4px; font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 1.25rem; min-height: 3rem; padding: 0 3rem; box-shadow: 0 4px 10px color-mix(in oklab, oklch(20.8% 0.009 59.2) 35%, transparent); cursor: pointer; transition: background-color 150ms ease-out, scale 150ms ease-out; } .ds-brass-btn:hover { background: color-mix(in oklab, oklch(73.1% 0.115 85.2), oklch(94.4% 0.023 87.2) 22%); } .ds-brass-btn:focus-visible { outline: 3px solid oklch(73.1% 0.115 85.2); outline-offset: 3px; } .ds-brass-btn:active { scale: 0.96; }"
+    },
+    {
+      "name": "Dash Button",
+      "kind": "button",
+      "refersTo": "dash-button",
+      "description": "Seat-cap disc with the lacquer as text, ringed by a brass cooldown gauge (ivory seat shown).",
+      "html": "<button class=\"ds-dash\"><svg class=\"ds-dash-gauge\" viewBox=\"0 0 34 34\"><circle cx=\"17\" cy=\"17\" r=\"16\" pathLength=\"100\"/></svg>Dash</button>",
+      "css": ".ds-dash { position: relative; width: 140px; height: 140px; border: 0; border-radius: 999px; background: oklch(20.8% 0.009 59.2); color: oklch(91.8% 0.032 87.3); font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 1.375rem; box-shadow: 0 6px 14px color-mix(in oklab, oklch(20.8% 0.009 59.2) 32%, transparent); transition: scale 150ms ease-out; } .ds-dash:active { scale: 0.94; } .ds-dash:focus-visible { outline: 3px solid oklch(20.8% 0.009 59.2); outline-offset: 16px; } .ds-dash-gauge { position: absolute; inset: -11px; width: calc(100% + 22px); height: calc(100% + 22px); rotate: -90deg; overflow: visible; pointer-events: none; } .ds-dash-gauge circle { fill: none; stroke: oklch(73.1% 0.115 85.2); stroke-width: 1; stroke-dasharray: 101; }"
+    },
+    {
+      "name": "Seat Roster",
+      "kind": "card",
+      "refersTo": "seat-roster",
+      "description": "Slate scoreboard in a walnut frame listing the seats.",
+      "html": "<div class=\"ds-roster\"><div class=\"ds-seat\"><span class=\"ds-dot\"></span><b>Ivory</b></div><div class=\"ds-seat ds-free\"><span class=\"ds-socket\"></span>Free</div></div>",
+      "css": ".ds-roster { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px 20px; background: oklch(28.3% 0.008 169.8); color: oklch(93.1% 0.015 90.2); border-radius: 8px; box-shadow: inset 0 0 0 5px oklch(38% 0.058 56.8), inset 0 0 0 7px color-mix(in oklab, oklch(38% 0.058 56.8) 55%, oklch(20.8% 0.009 59.2)); } .ds-seat { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1.5px solid oklch(42.7% 0.011 160.9); } .ds-seat b { font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 1.75rem; } .ds-dot { width: 40px; height: 40px; border-radius: 50%; background: oklch(91.8% 0.032 87.3); box-shadow: 0 0 0 2px oklch(73.1% 0.115 85.2); } .ds-free { color: oklch(79.2% 0.015 124.6); font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; } .ds-socket { width: 40px; height: 40px; border-radius: 50%; border: 2px dashed color-mix(in oklab, oklch(73.1% 0.115 85.2) 70%, transparent); }"
+    },
+    {
+      "name": "Outcome Band",
+      "kind": "custom",
+      "refersTo": "sumo-band",
+      "description": "Full-width slate band with brass borders, wiped in from the left; won variant in brass.",
+      "html": "<div class=\"ds-band\">Out</div><div class=\"ds-band ds-band-won\">Won</div>",
+      "css": ".ds-band { background: oklch(28.3% 0.008 169.8); color: oklch(93.1% 0.015 90.2); border-block: 3px solid oklch(73.1% 0.115 85.2); padding: 1rem 1.5rem; text-align: center; font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 4rem; margin-bottom: 8px; } .ds-band-won { background: oklch(73.1% 0.115 85.2); color: oklch(20.8% 0.009 59.2); border-color: oklch(20.8% 0.009 59.2); }"
+    },
+    {
+      "name": "Status Bubble",
+      "kind": "chip",
+      "refersTo": "reconnecting-bubble",
+      "description": "Slate reconnecting status with a spinning ring.",
+      "html": "<div class=\"ds-bubble\"><span class=\"ds-spin\"></span>Reconnecting</div>",
+      "css": ".ds-bubble { display: inline-flex; align-items: center; gap: 0.75rem; background: oklch(28.3% 0.008 169.8); color: oklch(93.1% 0.015 90.2); border-radius: 6px; padding: 1rem 1.5rem; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; box-shadow: 0 8px 20px color-mix(in oklab, oklch(20.8% 0.009 59.2) 35%, transparent); } .ds-spin { width: 1em; height: 1em; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 999px; animation: ds-spin 1s linear infinite; } @keyframes ds-spin { to { rotate: 1turn; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Plateau de bistrot",
+    "overview": "A table game seen from directly above. The display is a billiard-green felt tabletop; every structure on it (arena rim, gutter edge, ticks, rules between zones, cooldown gauge) is a brass filet drawn on that felt, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.\n\nThe display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so it carries only the player's top and name, a stick and one button. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond two pictogram cues.\n\nThe bistrot look is fixed whatever the system theme. Only the host's secondary pages (home, legal, footer) follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.",
+    "keyCharacteristics": [
+      "Felt ground, brass filets for every line and ring, no gradients, no glass.",
+      "Six lacquered tops, each with a carved glyph, so seats differ by shape as well as colour.",
+      "Big Shoulders Display Black, uppercase, for everything named; Barlow Semi Condensed for everything read.",
+      "Depth from soft ink-tinted shadows and inset double filets, never from blur or glow.",
+      "Display sized in `--cu` units inside a 3 % safe area; controller sized in rem and `--pad-unit`."
+    ],
+    "rules": [
+      {
+        "name": "The Filet Rule",
+        "body": "Structure is drawn, not filled: a ring, a rule, a tick or a gauge is a brass stroke on felt or slate, with opacity carrying its rank. No filled shapes stand in for lines.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lacquer Rule",
+        "body": "The six seat lacquers are the only saturated colours, and they appear only as a seat: a top, a phone ground, a named seat. A seat colour never decorates anything that is not a player.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Marks Rule",
+        "body": "A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Weights Rule",
+        "body": "The body face ships 500 and 700 only; anything heavier than regular is written 700, and font synthesis is off.",
+        "section": "typography"
+      },
+      {
+        "name": "The Names Are Capitals Rule",
+        "body": "What a player must read from across the room (a name, the code, an outcome) is in the display voice; everything else is a label in the body face.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ink Shadow Rule",
+        "body": "Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %. No hard offsets, no glow, no coloured shadows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** draw every ring, rule, tick and gauge as a brass filet, ranking them by opacity (100 / 70 / 55 / 40 %).",
+      "**Do** show a seat with its top and its name together, using `data-seat-slot` to resolve `--seat`, `--seat-cap` and `--seat-mark`.",
+      "**Do** set names, codes, titles and button labels in Big Shoulders Display 900 uppercase, and everything else in Barlow Semi Condensed 500 / 700.",
+      "**Do** size display surfaces in `--cu` and keep them inside the 3 % safe area.",
+      "**Do** tint every shadow with lacquer ink at 30 to 40 %.",
+      "**Do** keep the bistrot look fixed regardless of system theme; only host secondary pages follow light / dark."
+    ],
+    "donts": [
+      "**Don't** use gradients, glass, blur or glow; the table is flat felt and lacquer.",
+      "**Don't** use a seat lacquer for anything that is not a player.",
+      "**Don't** wrap content in generic UI cards; a panel is a table object (slate in walnut, enamel plaque, ivory QR card).",
+      "**Don't** add a third weight to the body face or a second weight to the display face.",
+      "**Don't** model the arena as an object in this layer; it is a plan in filets until the 3D scene replaces it."
+    ]
+  }
+}

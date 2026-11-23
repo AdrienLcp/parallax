@@ -2,7 +2,7 @@ import type React from 'react'
 
 import type { RoomCode } from '@parallax/protocol/identifiers'
 
-import { reloadPage } from '@/infrastructure/browser'
+import { paintBrowserBarBehind, reloadPage } from '@/infrastructure/browser'
 import { Button } from '@/presentation/components/button'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import type { PlainTranslationKey } from '@/presentation/i18n/translation'
@@ -29,7 +29,7 @@ export const RoomNotice: React.FC<RoomNoticeProps> = (props) => {
   const translate = useTranslate()
 
   return (
-    <section className='room-notice'>
+    <section className='room-notice' ref={paintBrowserBarBehind}>
       {props.roomCode !== null && (
         <p className='room-plaque'>
           <span className='plaque-label'>{translate('play.room')} </span>

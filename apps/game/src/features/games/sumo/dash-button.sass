@@ -26,6 +26,9 @@
     touch-action: none
     transition: scale var(--transition-fast) var(--ease-out), opacity var(--transition-fast)
 
+    &:focus-visible
+      outline-offset: calc(var(--dash-gauge-gap) + var(--pad-unit) * 1.25)
+
     &[data-pressed]
       scale: 0.94
 
@@ -52,13 +55,15 @@
       circle
         fill: none
         stroke: var(--brass)
-        stroke-dasharray: 100
+        // One unit longer than the circle, so a full gauge closes over its own
+        // start instead of leaving a seam at twelve o'clock.
+        stroke-dasharray: 101
         stroke-dashoffset: 0
         stroke-width: 4
 
   @keyframes dash-refill
     from
-      stroke-dashoffset: 100
+      stroke-dashoffset: 101
 
     to
       stroke-dashoffset: 0

@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "nested-cards",
+        "value": "*",
+        "files": [
+          "apps/game/.impeccable/mocks/directions/manette-bistrot.html"
+        ],
+        "createdAt": "2026-11-23T16:27:59.722Z",
+        "reason": "Claude triage: the outer rounded box is the mock's phone bezel (.device), not a card; the pill and plaque inside are the controller's own UI"
+      }
+    ]
+  }
+}

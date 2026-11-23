@@ -10,3 +10,6 @@ node_modules
 # Wrangler's local state: the Durable Objects' SQLite files and build cache.
 .wrangler
 *.dev.vars
+
+# Impeccable session cache; its mocks/, review/ and questions/ carry their own ignore files.
+**/.impeccable/hook.cache.json

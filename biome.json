@@ -32,7 +32,11 @@
   },
   "extends": ["@adrienlcp/biome-config", "@adrienlcp/biome-config/react"],
   "files": {
-    "includes": ["!.claude/skills", "!**/worker-configuration.d.ts"]
+    "includes": [
+      "!.claude/skills",
+      "!**/.impeccable",
+      "!**/worker-configuration.d.ts"
+    ]
   },
   "linter": {
     "rules": {
