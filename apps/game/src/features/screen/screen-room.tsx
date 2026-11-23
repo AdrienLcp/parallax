@@ -19,7 +19,6 @@ import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { AnnouncementBand } from './announcement-band'
-import { ArenaPlan } from './arena-plan'
 import { PlayHeader } from './play-header'
 import { RoomJoin } from './room-join'
 import { ScreenNotice } from './screen-notice'
@@ -101,9 +100,9 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
       </div>
       <div className='arena'>
         {roomView === null ? (
-          <ArenaPlan />
+          <game.Preview />
         ) : (
-          <Suspense fallback={<ArenaPlan />}>
+          <Suspense fallback={<game.Preview />}>
             <game.Scene
               events={gameEvents}
               onStandings={setStandings}

@@ -1,29 +1,12 @@
 @use '@adrienlcp/styles/accessibility'
-@use '../../presentation/styles/typography'
+@use '../../presentation/styles/plaque'
 
 @layer components
   .room-plaque
-    --plaque-filet: calc(var(--cu) * 0.8)
-    --plaque-pad-block: calc(var(--cu) * 0.8)
-    --plaque-pad-inline: calc(var(--cu) * 2.2)
-    --plaque-tracking: 0.14em
+    @include plaque.enamel
 
-    @include typography.display
-
-    background: var(--enamel)
-    border-radius: calc(var(--cu) * 1.2)
-    box-shadow: inset 0 0 0 calc(var(--plaque-filet) * 0.56) var(--enamel), inset 0 0 0 var(--plaque-filet) var(--ivory), var(--screen-shadow-raised)
-    color: var(--ivory)
     display: inline-block
-    font-size: calc(var(--cu) * 6.4)
-    letter-spacing: var(--plaque-tracking)
-    padding: var(--plaque-pad-block) var(--plaque-pad-inline)
-    padding-inline-end: calc(var(--plaque-pad-inline) - var(--plaque-tracking))
     user-select: text
-
-    @supports (text-box: trim-both cap alphabetic)
-      padding-block: calc(var(--plaque-pad-block) + (1lh - 1cap) / 2)
-      text-box: trim-both cap alphabetic
 
     &[data-compact]
       --plaque-filet: calc(var(--cu) * 0.45)

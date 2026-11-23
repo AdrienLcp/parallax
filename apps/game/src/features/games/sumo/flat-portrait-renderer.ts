@@ -32,30 +32,19 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 
 import { prefersReducedMotion } from '@/infrastructure/browser'
 
+import {
+  ARENA_PLAN,
+  cameraPositionOf,
+  FIELD_OF_VIEW_DEGREES,
+  FILET_WIDTHS,
+  frameTheTable,
+  TOP_HEIGHT
+} from './arena-camera'
 import type { ArenaFrame, DrawnTop } from './arena-frame'
 import type { CreateArenaRenderer, TagAnchor } from './arena-renderer'
 import { SUMO_TUNING } from './sumo-tuning'
 
-/** The plan's radii and filet widths, in arena units: the same plan the room sees before the scene loads. */
-const PLAN = {
-  centreRing: 0.503,
-  centreSpot: 0.056,
-  gutter: 1.14,
-  gutterEdge: 1.135,
-  rim: 0.991,
-  tickRadius: 0.5,
-  tickSize: 0.035,
-  ticks: 8
-} as const
-
-const FIELD_OF_VIEW_DEGREES = 28
-/** How far the camera leans from straight above, toward the people standing in front. */
-const CAMERA_TILT_RADIANS = (14 * Math.PI) / 180
-/** Room kept around the gutter so a falling top stays in frame. */
-const FRAMING_MARGIN = 1.06
-
 const TOP_RADIUS = SUMO_TUNING.topRadius
-const TOP_HEIGHT = TOP_RADIUS * 1.2
 /** About a turn every two seconds: alive, and the carved glyph stays readable. */
 const SPIN_RADIANS_PER_SECOND = 3
 const LEAN_PER_SPEED = 0.35
@@ -284,7 +273,7 @@ const buildPlan = (read: (cssColor: string) => Color): Group => {
   occluder.renderOrder = -1
   const gutter = laidFlat(
     new Mesh(
-      new CircleGeometry(PLAN.gutter, 160),
+      new CircleGeometry(ARENA_PLAN.gutter, 160),
       new MeshBasicMaterial({ color: read('var(--felt-deep)') })
     ),
     0.0001
@@ -304,20 +293,30 @@ const buildPlan = (read: (cssColor: string) => Color): Group => {
     occluder,
     gutter,
     platform,
-    filet({ color: brass, opacity: 1, radius: PLAN.rim, width: 0.018 }),
+    filet({
+      color: brass,
+      opacity: 1,
+      radius: ARENA_PLAN.rim,
+      width: FILET_WIDTHS.rim
+    }),
     filet({
       color: brass,
       opacity: 0.55,
-      radius: PLAN.gutterEdge,
-      width: 0.01
+      radius: ARENA_PLAN.gutterEdge,
+      width: FILET_WIDTHS.gutterEdge
     }),
     filet({
       color: brass,
       opacity: 0.4,
-      radius: PLAN.centreRing,
-      width: 0.006
+      radius: ARENA_PLAN.centreRing,
+      width: FILET_WIDTHS.centreRing
     }),
-    filet({ color: brass, opacity: 1, radius: PLAN.centreSpot, width: 0.012 })
+    filet({
+      color: brass,
+      opacity: 1,
+      radius: ARENA_PLAN.centreSpot,
+      width: FILET_WIDTHS.centreSpot
+    })
   )
 
   const tickMaterial = new MeshBasicMaterial({
@@ -326,14 +325,17 @@ const buildPlan = (read: (cssColor: string) => Color): Group => {
     opacity: 0.7,
     transparent: true
   })
-  for (let tick = 0; tick < PLAN.ticks; tick++) {
-    const angle = (tick * 2 * Math.PI) / PLAN.ticks
+  for (let tick = 0; tick < ARENA_PLAN.ticks; tick++) {
+    const angle = (tick * 2 * Math.PI) / ARENA_PLAN.ticks
     const square = laidFlat(
-      new Mesh(new PlaneGeometry(PLAN.tickSize, PLAN.tickSize), tickMaterial),
+      new Mesh(
+        new PlaneGeometry(ARENA_PLAN.tickSize, ARENA_PLAN.tickSize),
+        tickMaterial
+      ),
       0.0004
     )
-    square.position.x = Math.cos(angle) * PLAN.tickRadius
-    square.position.z = Math.sin(angle) * PLAN.tickRadius
+    square.position.x = Math.cos(angle) * ARENA_PLAN.tickRadius
+    square.position.z = Math.sin(angle) * ARENA_PLAN.tickRadius
     square.rotation.z = -angle
     plan.add(square)
   }
@@ -414,12 +416,12 @@ const buildKeyLight = (color: Color): DirectionalLight => {
   key.shadow.radius = 5
   key.shadow.blurSamples = 16
   Object.assign(key.shadow.camera, {
-    bottom: -PLAN.gutter,
+    bottom: -ARENA_PLAN.gutter,
     far: 6,
-    left: -PLAN.gutter,
+    left: -ARENA_PLAN.gutter,
     near: 0.5,
-    right: PLAN.gutter,
-    top: PLAN.gutter
+    right: ARENA_PLAN.gutter,
+    top: ARENA_PLAN.gutter
   })
   return key
 }
@@ -448,7 +450,10 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
 
   const shadowCatcher = laidFlat(
     new Mesh(
-      new PlaneGeometry(2 * PLAN.gutter + 0.4, 2 * PLAN.gutter + 0.4),
+      new PlaneGeometry(
+        2 * ARENA_PLAN.gutter + 0.4,
+        2 * ARENA_PLAN.gutter + 0.4
+      ),
       new ShadowMaterial({
         color: colors.read('var(--lacquer-ink)'),
         depthWrite: false,
@@ -478,29 +483,21 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
 
   const canvas = { height: 0, width: 0 }
 
-  const frameTheTable = () => {
+  const fitToHost = () => {
     const { clientHeight: height, clientWidth: width } = host
     if (width === 0 || height === 0) return
     canvas.height = height
     canvas.width = width
     renderer.setSize(width, height, false)
     camera.aspect = width / height
-    const halfVertical = (FIELD_OF_VIEW_DEGREES * Math.PI) / 360
-    const halfHorizontal = Math.atan(Math.tan(halfVertical) * camera.aspect)
-    const distance =
-      ((PLAN.gutter + TOP_HEIGHT) * FRAMING_MARGIN) /
-      Math.tan(Math.min(halfVertical, halfHorizontal))
-    camera.position.set(
-      0,
-      Math.cos(CAMERA_TILT_RADIANS) * distance,
-      Math.sin(CAMERA_TILT_RADIANS) * distance
-    )
+    const { x, y, z } = cameraPositionOf(frameTheTable({ height, width }))
+    camera.position.set(x, y, z)
     camera.lookAt(0, 0, 0)
     camera.updateProjectionMatrix()
   }
-  const resizing = new ResizeObserver(frameTheTable)
+  const resizing = new ResizeObserver(fitToHost)
   resizing.observe(host)
-  frameTheTable()
+  fitToHost()
 
   const spinRate = prefersReducedMotion() ? 0 : SPIN_RADIANS_PER_SECOND
   let spinAngle = 0

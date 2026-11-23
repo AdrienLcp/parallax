@@ -72,9 +72,28 @@ export type GameControllerProps = {
 export type GameDefinition = {
   /** What a player holds, drawn on each phone of the room. */
   Controller: React.ComponentType<GameControllerProps>
+  /**
+   * How the game plays, in pictograms a passer-by reads from across the room:
+   * under the room's join block, and on the game choice. Loaded with the app,
+   * so it must stay light.
+   */
+  Cues: React.ComponentType
   name: PlainTranslationKey
   /** Seated players the game needs to start, and the most it takes. */
   players: { fewest: number; most: number }
+  /**
+   * A still stand-in for the scene, drawn on the screen while the room has not
+   * reached it yet or its code is still loading. It fills the same box as the
+   * scene and should frame the game the same way, so the scene takes over
+   * without a jump. Loaded with the app, so it must stay light.
+   */
+  Preview: React.ComponentType
   /** What the room watches, drawn on the screen, which runs the game. */
   Scene: React.ComponentType<GameSceneProps>
+  /**
+   * The game playing by itself on the game choice, with nobody's phone: what a
+   * passer-by watches before opening a room. It fills the same box as the
+   * `Preview`, which stands in for it while it loads.
+   */
+  Showcase: React.ComponentType
 }

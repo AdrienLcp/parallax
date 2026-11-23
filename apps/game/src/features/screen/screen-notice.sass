@@ -1,3 +1,4 @@
+@use '../../presentation/styles/brass-button'
 @use '../../presentation/styles/typography'
 
 @layer components
@@ -15,21 +16,8 @@
       font-size: calc(var(--cu) * 5.4)
 
     .notice-action
-      @include typography.display
+      @include brass-button.brass
 
-      background: var(--brass)
-      border: 0
-      border-radius: calc(var(--cu) * 0.5)
-      box-shadow: inset 0 0 0 calc(var(--cu) * 0.4) var(--brass-deep), inset 0 0 0 calc(var(--cu) * 0.7) var(--brass), var(--screen-shadow-raised)
-      color: var(--lacquer-ink)
-      cursor: pointer
       font-size: calc(var(--cu) * 2.8)
       min-block-size: max(var(--target), calc(var(--cu) * 7.2))
       padding-inline: calc(var(--cu) * 3.6)
-      transition: background-color var(--transition-fast) var(--ease-out), scale var(--transition-fast) var(--ease-out)
-
-      &[data-hovered]
-        background: color-mix(in oklab, var(--brass), var(--ivory) 22%)
-
-      &[data-pressed]
-        scale: 0.97

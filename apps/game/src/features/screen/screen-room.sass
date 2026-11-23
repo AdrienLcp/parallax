@@ -1,14 +1,13 @@
 @use '@adrienlcp/styles/motion'
+@use '../../presentation/styles/display'
 @use '../../presentation/styles/typography'
 
 @layer components
   .screen-room
-    block-size: calc(var(--cu) * 100)
+    @include display.column
+
     display: grid
     grid-template-rows: auto minmax(0, 1fr) calc(var(--cu) * 22)
-    inline-size: calc(var(--cu) * 56.25)
-    padding-block: max(var(--screen-safe-block), var(--safe-area-top)) max(var(--screen-safe-block), var(--safe-area-bottom))
-    padding-inline: var(--screen-safe-inline)
 
     .screen-head
       display: grid

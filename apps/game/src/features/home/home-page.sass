@@ -1,4 +1,74 @@
+@use '../../presentation/styles/brass-button'
+@use '../../presentation/styles/display'
+@use '../../presentation/styles/typography'
+
 @layer components
+  // The game choice stands on the felt, footer included: the host's neutral
+  // tokens take the bistrot's values while it is shown.
+  :root:has(.home-page)
+    --ground: var(--felt)
+    --ink: var(--chalk)
+    --ink-muted: var(--chalk-soft)
+    --rule: color-mix(in oklab, var(--brass) 40%, transparent)
+    --rule-strong: var(--brass-deep)
+    --focus: var(--brass)
+
   .home-page
-    padding-block: var(--page-padding-block-start) var(--page-padding-block-end)
-    padding-inline: var(--gutter-left) var(--gutter-right)
+    @include display.units
+
+    display: grid
+    min-block-size: 100dvh
+    place-items: center
+
+  .home-display
+    @include display.column
+
+    -webkit-touch-callout: none
+    display: grid
+    grid-template-rows: auto minmax(0, 1fr) auto
+    user-select: none
+
+  .home-head
+    display: grid
+    gap: calc(var(--cu) * 2)
+
+  .game-head
+    align-items: end
+    border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
+    display: flex
+    gap: calc(var(--cu) * 2)
+    justify-content: space-between
+    padding-block: calc(var(--cu) * 1.5) calc(var(--cu) * 1.6)
+
+  .game-name
+    @include typography.display
+
+    font-size: calc(var(--cu) * 15)
+
+  .game-players
+    @include typography.label
+
+    color: var(--chalk-soft)
+    font-size: calc(var(--cu) * 2.6)
+    padding-block-end: calc(var(--cu) * 0.6)
+
+  .game-showcase
+    cursor: pointer
+    display: grid
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr)
+    min-block-size: 0
+    padding-block: calc(var(--cu) * 1.5)
+
+  .home-foot
+    display: grid
+    gap: calc(var(--cu) * 2.4)
+    padding-block-end: calc(var(--cu) * 0.5)
+
+  .open-room
+    @include brass-button.brass
+
+    block-size: calc(var(--cu) * 10)
+    display: grid
+    font-size: calc(var(--cu) * 5.4)
+    place-items: center
+    text-decoration: none

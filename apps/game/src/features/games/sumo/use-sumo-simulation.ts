@@ -22,10 +22,11 @@ import {
   withEjected
 } from './sumo-standings'
 import { reportedState } from './sumo-state-report'
-import { SUMO_STATE_REPORT_SECONDS, SUMO_STEP_SECONDS } from './sumo-tuning'
-
-/** A frame later than this, after a hidden tab or a stall, is not caught up: the game pauses instead. */
-const LONGEST_FRAME_SECONDS = 0.25
+import {
+  LONGEST_FRAME_SECONDS,
+  SUMO_STATE_REPORT_SECONDS,
+  SUMO_STEP_SECONDS
+} from './sumo-tuning'
 
 type SumoSimulationInput = {
   events: EventSubscription<ScreenGameEvent>

@@ -9,6 +9,8 @@ import { seatNameKey } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
+import { BackToGames } from './back-to-games'
+
 import './seat-roster.sass'
 
 const SLOTS = Array.from({ length: ROOM_SEAT_LIMIT }, (_, slot) => slot)
@@ -81,13 +83,16 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({ seats, standings }) => {
           )
         })}
       </ul>
-      <p className='seat-cue'>
-        {standings?.cue ??
-          translate('screen.players', {
-            fewest: players.fewest,
-            most: players.most
-          })}
-      </p>
+      <div className='seat-foot'>
+        <p className='seat-cue'>
+          {standings?.cue ??
+            translate('screen.players', {
+              fewest: players.fewest,
+              most: players.most
+            })}
+        </p>
+        <BackToGames />
+      </div>
     </div>
   )
 }

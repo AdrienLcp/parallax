@@ -1,0 +1,17 @@
+@use '../../presentation/styles/plaque'
+
+@layer components
+  .game-tabs
+    display: flex
+    flex-wrap: wrap
+    gap: calc(var(--cu) * 1.4)
+
+  .game-tab
+    @include plaque.enamel
+
+    border: 0
+    cursor: pointer
+    font-size: calc(var(--cu) * 3.4)
+
+    &:not([data-selected])
+      @include plaque.unpainted

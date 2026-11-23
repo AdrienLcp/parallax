@@ -5,7 +5,8 @@ export const EN_DICTIONARY = defineDictionary({
     sumo: { name: 'Sumo' }
   },
   home: {
-    host: 'Host',
+    games: 'Games',
+    open: 'Open the room',
     title: 'Parallax'
   },
   legal: {
@@ -79,12 +80,11 @@ export const EN_DICTIONARY = defineDictionary({
     plural: { score: { one: '{?} round', other: '{?} rounds' } }
   }),
   screen: {
-    cue: {
-      knockOut: 'Knock them into the gutter',
-      steer: 'Steer with your thumb'
+    backToGames: {
+      hold: 'Back to games (hold)',
+      label: 'Games'
     },
     join: 'Scan to play',
-    nextRound: 'Next round',
     openFailed: 'The room did not open.',
     players: '{fewest:number} to {most:number} players',
     qr: 'QR code to join room {code}',
@@ -97,7 +97,8 @@ export const EN_DICTIONARY = defineDictionary({
       absent: 'away',
       free: 'Free'
     },
-    takeBack: 'Take back'
+    takeBack: 'Take back',
+    tapToPlay: 'Touch to play'
   },
   seat: {
     black: 'Black',
@@ -116,6 +117,10 @@ export const EN_DICTIONARY = defineDictionary({
     skipLink: 'Skip to content'
   },
   sumo: {
+    cue: {
+      knockOut: 'Knock them into the gutter',
+      steer: 'Steer with your thumb'
+    },
     dash: 'Dash',
     out: {
       pushedBy: 'by <seat>{name}</seat>',

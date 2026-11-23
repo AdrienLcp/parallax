@@ -1,0 +1,34 @@
+@use './typography'
+
+// Pure: the enamel plaque, as a mixin a component includes. Emits no CSS of
+// its own. Sized on the display's `--cu`.
+
+/// Enamel ground, ivory capitals and an ivory inner filet, raised off the felt.
+/// A caller resizes it through `font-size` and the `--plaque-*` properties.
+@mixin enamel
+  --plaque-filet: calc(var(--cu) * 0.8)
+  --plaque-pad-block: calc(var(--cu) * 0.8)
+  --plaque-pad-inline: calc(var(--cu) * 2.2)
+  --plaque-tracking: 0.14em
+
+  @include typography.display
+
+  background: var(--enamel)
+  border-radius: calc(var(--cu) * 1.2)
+  box-shadow: inset 0 0 0 calc(var(--plaque-filet) * 0.56) var(--enamel), inset 0 0 0 var(--plaque-filet) var(--ivory), var(--screen-shadow-raised)
+  color: var(--ivory)
+  font-size: calc(var(--cu) * 6.4)
+  letter-spacing: var(--plaque-tracking)
+  padding: var(--plaque-pad-block) var(--plaque-pad-inline)
+  padding-inline-end: calc(var(--plaque-pad-inline) - var(--plaque-tracking))
+
+  @supports (text-box: trim-both cap alphabetic)
+    padding-block: calc(var(--plaque-pad-block) + (1lh - 1cap) / 2)
+    text-box: trim-both cap alphabetic
+
+/// The same plaque left unpainted: only its ivory filet, faded, around soft
+/// chalk capitals. What a plaque looks like when it is not the chosen one.
+@mixin unpainted
+  background: transparent
+  box-shadow: inset 0 0 0 calc(var(--cu) * 0.25) color-mix(in oklab, var(--ivory) 45%, transparent)
+  color: var(--chalk-soft)

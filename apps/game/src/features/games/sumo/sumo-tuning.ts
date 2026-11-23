@@ -29,5 +29,8 @@ export const SUMO_PLAYERS = { fewest: 2, most: 6 } as const
 /** The screen steps the simulation at this fixed rate, whatever its display refresh. */
 export const SUMO_STEP_SECONDS = 1 / 60
 
+/** A frame later than this, after a hidden tab or a stall, is not caught up: the game pauses instead. */
+export const LONGEST_FRAME_SECONDS = 0.25
+
 /** How often, at most, the screen tells the phones the state of the game. */
 export const SUMO_STATE_REPORT_SECONDS = 0.2

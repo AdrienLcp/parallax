@@ -86,8 +86,14 @@
       --pip-size: calc(var(--cu) * 1.6)
       --pip-stroke: calc(var(--cu) * 0.25)
 
+    .seat-foot
+      align-items: center
+      display: flex
+      gap: calc(var(--cu) * 2)
+      justify-content: space-between
+      padding-block-start: calc(var(--cu) * 0.9)
+
     .seat-cue
       @include typography.label
 
       font-size: calc(var(--cu) * 2.2)
-      padding-block-start: calc(var(--cu) * 0.9)

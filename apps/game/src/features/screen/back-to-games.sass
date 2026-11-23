@@ -1,0 +1,50 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .back-to-games
+    @include typography.label
+
+    align-items: center
+    background: none
+    border: 0
+    border-radius: calc(var(--cu) * 0.6)
+    color: var(--chalk-soft)
+    cursor: pointer
+    display: flex
+    font-size: calc(var(--cu) * 2.2)
+    gap: calc(var(--cu) * 0.7)
+    padding: calc(var(--cu) * 0.3) calc(var(--cu) * 0.6)
+    touch-action: none
+    user-select: none
+
+    .hold-gauge
+      block-size: calc(var(--cu) * 3.4)
+      inline-size: calc(var(--cu) * 3.4)
+
+    .hold-track, .hold-fill, .hold-chevron
+      fill: none
+
+    .hold-track
+      stroke: var(--slate-line)
+      stroke-width: 3
+
+    .hold-fill
+      rotate: -90deg
+      stroke: var(--brass)
+      stroke-dasharray: 0 101
+      stroke-width: 3.5
+      transform-box: view-box
+      transform-origin: 50% 50%
+
+    .hold-chevron
+      stroke: currentColor
+      stroke-linecap: round
+      stroke-linejoin: round
+      stroke-width: 4
+
+    &[data-pressed]
+      color: var(--chalk)
+
+      .hold-fill
+        stroke-dasharray: 101 101
+        transition: stroke-dasharray var(--hold-to-leave-duration) linear

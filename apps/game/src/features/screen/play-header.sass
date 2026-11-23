@@ -8,6 +8,14 @@
     gap: calc(var(--cu) * 2)
     grid-template-columns: minmax(0, 1fr) auto
     padding-block: var(--cu) calc(var(--cu) * 1.4)
+    position: relative
+
+    &[data-revealed]
+      border-block-end-color: color-mix(in oklab, var(--brass) 25%, transparent)
+
+      .late-join
+        min-inline-size: calc(var(--cu) * 12)
+        position: relative
 
     .play-title
       @include typography.display
@@ -23,16 +31,79 @@
       margin-block-start: calc(var(--cu) * 0.6)
 
     .late-join
-      align-items: center
+      align-content: end
+      align-self: stretch
       display: grid
-      gap: calc(var(--cu) * 1.2)
-      grid-template-columns: auto calc(var(--cu) * 9)
+      gap: calc(var(--cu) * 0.8)
+      justify-items: end
 
-    .late-join-label
+    .tap-cue
       @include typography.label
 
-      color: var(--chalk-soft)
+      align-items: center
+      color: var(--chalk)
       display: grid
-      font-size: calc(var(--cu) * 1.6)
-      gap: calc(var(--cu) * 0.6)
-      justify-items: end
+      font-size: calc(var(--cu) * 2.2)
+      gap: calc(var(--cu) * 0.9)
+      grid-template-columns: calc(var(--cu) * 5) auto
+
+    .tap-icon
+      block-size: calc(var(--cu) * 5)
+      color: var(--brass)
+      inline-size: calc(var(--cu) * 5)
+
+    .tap-ripple, .tap-ring
+      fill: none
+      stroke: currentColor
+      stroke-width: 3.5
+
+    .tap-ripple
+      animation: tap-ripple calc(var(--transition-slow) * 6) var(--ease-out) infinite
+      stroke-dasharray: 4 4
+      transform-box: fill-box
+      transform-origin: center
+
+    .tap-dot
+      fill: currentColor
+
+    .late-join-qr
+      animation: qr-unfold var(--transition-slow) var(--ease-out)
+      inline-size: calc(var(--cu) * 12)
+      inset-block-end: calc(var(--cu) * -0.4)
+      inset-inline-end: 0
+      position: absolute
+      transform-origin: 100% 50%
+
+    .reveal-drain
+      animation: qr-drain var(--qr-reveal-duration) linear forwards
+      background: var(--brass)
+      block-size: calc(var(--cu) * 0.2)
+      inline-size: 100%
+      inset-block-end: calc(var(--cu) * -0.2)
+      inset-inline-start: 0
+      position: absolute
+      transform-origin: left
+
+      @media (prefers-reduced-motion: reduce)
+        animation-name: none
+
+  @keyframes tap-ripple
+    0%
+      opacity: 0
+      scale: 0.6
+
+    30%
+      opacity: 1
+
+    100%
+      opacity: 0
+      scale: 1.05
+
+  @keyframes qr-unfold
+    from
+      opacity: 0
+      scale: 0.35
+
+  @keyframes qr-drain
+    to
+      scale: 0 1

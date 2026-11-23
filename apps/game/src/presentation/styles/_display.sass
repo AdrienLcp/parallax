@@ -1,0 +1,28 @@
+// The office display's frame, as mixins a page includes. The display is read
+// from metres away and never scrolled, so it is sized on one unit, `--cu`:
+// 1 % of the portrait panel's height, capped by its 9:16 width.
+
+// Registered as a length, `--cu` is resolved once on the page and inherited as
+// is, so `cqi` measures the body, scrollbar excluded, wherever it is used.
+@property --cu
+  syntax: '<length>'
+  inherits: true
+  initial-value: 0
+
+/// The display's unit, its 3 % safe area and its raised shadow, on the page
+/// that holds a display column.
+@mixin units
+  --cu: min(1dvh, calc(1cqi * 16 / 9))
+  --screen-safe-block: calc(var(--cu) * 1.7)
+  --screen-safe-inline: calc(var(--cu) * 1.6875)
+  --screen-shadow-ink: color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
+  --screen-shadow-raised: 0 calc(var(--cu) * 0.5) calc(var(--cu) * 1.2) var(--screen-shadow-ink)
+  --focus: var(--brass)
+
+/// The portrait column itself, 56.25 × 100 units, its content kept inside the
+/// safe area that never touches the alcove's walls.
+@mixin column
+  block-size: calc(var(--cu) * 100)
+  inline-size: calc(var(--cu) * 56.25)
+  padding-block: max(var(--screen-safe-block), var(--safe-area-top)) max(var(--screen-safe-block), var(--safe-area-bottom))
+  padding-inline: var(--screen-safe-inline)

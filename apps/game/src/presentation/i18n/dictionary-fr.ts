@@ -5,7 +5,8 @@ export default defineDictionary({
     sumo: { name: 'Sumo' }
   },
   home: {
-    host: 'Héberger',
+    games: 'Jeux',
+    open: 'Ouvrir la salle',
     title: 'Parallax'
   },
   legal: {
@@ -77,12 +78,11 @@ export default defineDictionary({
     plural: { score: { one: '{?} manche', other: '{?} manches' } }
   }),
   screen: {
-    cue: {
-      knockOut: 'Faites-les tomber dans la rigole',
-      steer: 'Pilotez au pouce'
+    backToGames: {
+      hold: 'Retour aux jeux (maintenir)',
+      label: 'Jeux'
     },
     join: 'Scannez pour jouer',
-    nextRound: 'Prochaine manche',
     openFailed: 'La salle ne s’est pas ouverte.',
     players: '{fewest:number} à {most:number} joueurs',
     qr: 'QR code pour rejoindre la salle {code}',
@@ -95,7 +95,8 @@ export default defineDictionary({
       absent: 'absent',
       free: 'Libre'
     },
-    takeBack: 'Reprendre'
+    takeBack: 'Reprendre',
+    tapToPlay: 'Touchez pour jouer'
   },
   seat: {
     black: 'Noir',
@@ -114,6 +115,10 @@ export default defineDictionary({
     skipLink: 'Aller au contenu'
   },
   sumo: {
+    cue: {
+      knockOut: 'Faites-les tomber dans la rigole',
+      steer: 'Pilotez au pouce'
+    },
     dash: 'Foncer',
     out: {
       pushedBy: 'par <seat>{name}</seat>',

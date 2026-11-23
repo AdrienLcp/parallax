@@ -18,34 +18,5 @@
 
     .join-cues
       border-block-start: calc(var(--cu) * 0.2) solid var(--brass)
-      display: grid
-      gap: calc(var(--cu) * 1.6)
       grid-column: 1 / -1
-      grid-template-columns: repeat(2, 1fr)
-      list-style: none
-      padding: calc(var(--cu) * 1.2) 0 0
-
-      li
-        @include typography.label
-
-        align-items: center
-        display: grid
-        font-size: calc(var(--cu) * 1.9)
-        gap: calc(var(--cu) * 1.1)
-        grid-template-columns: calc(var(--cu) * 5.2) 1fr
-        text-wrap: balance
-
-    .cue-icon
-      block-size: calc(var(--cu) * 5.2)
-      inline-size: calc(var(--cu) * 5.2)
-
-    .cue-line
-      fill: none
-      stroke: currentColor
-      stroke-width: 3.5
-
-    .cue-dashed
-      stroke-dasharray: 4 4
-
-    .cue-fill
-      fill: currentColor
+      padding-block-start: calc(var(--cu) * 1.2)
