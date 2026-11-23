@@ -4,6 +4,7 @@ import { ROOM_SEAT_LIMIT, type Seat } from '@parallax/protocol/room'
 
 import type { SceneStandings } from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
+import { ScorePips } from '@/features/room/score-pips'
 import { seatNameKey } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
@@ -11,32 +12,6 @@ import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import './seat-roster.sass'
 
 const SLOTS = Array.from({ length: ROOM_SEAT_LIMIT }, (_, slot) => slot)
-
-type ScorePipsProps = {
-  goal: number
-  score: number
-}
-
-/** One brass ring per round the match needs, filled for each round won. */
-const ScorePips: React.FC<ScorePipsProps> = ({ goal, score }) => {
-  const translate = useTranslate()
-
-  return (
-    <span
-      aria-label={translate('screen.seat.score', { goal, score })}
-      className='score-pips'
-      role='img'
-    >
-      {Array.from({ length: goal }, (_, pip) => pip + 1).map((round) => (
-        <span
-          className='score-pip'
-          data-won={round <= score ? '' : undefined}
-          key={round}
-        />
-      ))}
-    </span>
-  )
-}
 
 type SeatRosterProps = {
   /** The seats taken; a slot no seat holds shows as free. */

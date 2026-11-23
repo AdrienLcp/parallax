@@ -73,6 +73,9 @@ export default defineDictionary({
     retry: 'Réessayer',
     room: 'Salle'
   },
+  score: defineTranslation('{score:plural} sur {goal:number}', {
+    plural: { score: { one: '{?} manche', other: '{?} manches' } }
+  }),
   screen: {
     cue: {
       knockOut: 'Faites-les tomber dans la rigole',
@@ -90,10 +93,7 @@ export default defineDictionary({
     roomCode: 'Code de la salle',
     seat: {
       absent: 'absent',
-      free: 'Libre',
-      score: defineTranslation('{score:plural} sur {goal:number}', {
-        plural: { score: { one: '{?} manche', other: '{?} manches' } }
-      })
+      free: 'Libre'
     },
     takeBack: 'Reprendre'
   },
@@ -135,7 +135,8 @@ export default defineDictionary({
     },
     turnToLandscape: 'Passez en paysage',
     won: {
-      title: 'Gagné'
+      match: 'Partie gagnée',
+      round: 'Manche gagnée'
     }
   }
 })

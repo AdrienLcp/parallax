@@ -26,13 +26,18 @@ import { useSumoState } from './use-sumo-state'
 import './sumo-controller.sass'
 
 const OUTCOME_BUZZ = {
+  matchWon: [30, 30, 30, 30, 30, 30, 240],
   out: [60, 40, 60],
-  won: [30, 30, 30, 30, 90]
+  roundWon: [30, 30, 30, 30, 90]
 } as const
+
+const isOutcome = (
+  view: SumoControllerView
+): view is keyof typeof OUTCOME_BUZZ => view in OUTCOME_BUZZ
 
 const useOutcomeBuzz = (view: SumoControllerView): void => {
   useEffect(() => {
-    if (view === 'out' || view === 'won') {
+    if (isOutcome(view)) {
       vibrate(OUTCOME_BUZZ[view])
     }
   }, [view])
@@ -125,11 +130,11 @@ export const SumoController: React.FC<GameControllerProps> = ({
     send({ type: 'sumo.dash' })
   }
 
-  const isRoundOver = view === 'out' || view === 'won'
+  const isRoundOver = isOutcome(view)
+  const ownTop = state?.tops.find((top) => top.seatId === room.youId)
+  const score = ownTop?.roundsWon ?? 0
   const pushedBy = room.seats.find(
-    (seat) =>
-      seat.seatId ===
-      state?.tops.find((top) => top.seatId === room.youId)?.outBy
+    (seat) => seat.seatId === ownTop?.outBy
   )?.slot
 
   return (
@@ -169,9 +174,16 @@ export const SumoController: React.FC<GameControllerProps> = ({
       </section>
       <div className='round-outcome' role='status'>
         {view === 'out' && (
-          <SumoBand outcome='out' pushedBy={pushedBy} slot={ownSeat.slot} />
+          <SumoBand
+            outcome='out'
+            pushedBy={pushedBy}
+            score={score}
+            slot={ownSeat.slot}
+          />
         )}
-        {view === 'won' && <SumoBand outcome='won' slot={ownSeat.slot} />}
+        {(view === 'roundWon' || view === 'matchWon') && (
+          <SumoBand outcome={view} score={score} slot={ownSeat.slot} />
+        )}
       </div>
     </div>
   )

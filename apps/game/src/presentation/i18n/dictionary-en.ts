@@ -75,6 +75,9 @@ export const EN_DICTIONARY = defineDictionary({
     retry: 'Try again',
     room: 'Room'
   },
+  score: defineTranslation('{score:plural} won of {goal:number}', {
+    plural: { score: { one: '{?} round', other: '{?} rounds' } }
+  }),
   screen: {
     cue: {
       knockOut: 'Knock them into the gutter',
@@ -92,10 +95,7 @@ export const EN_DICTIONARY = defineDictionary({
     roomCode: 'Room code',
     seat: {
       absent: 'away',
-      free: 'Free',
-      score: defineTranslation('{score:plural} won of {goal:number}', {
-        plural: { score: { one: '{?} round', other: '{?} rounds' } }
-      })
+      free: 'Free'
     },
     takeBack: 'Take back'
   },
@@ -137,7 +137,8 @@ export const EN_DICTIONARY = defineDictionary({
     },
     turnToLandscape: 'Turn to landscape',
     won: {
-      title: 'Won'
+      match: 'Match won',
+      round: 'Round won'
     }
   }
 })

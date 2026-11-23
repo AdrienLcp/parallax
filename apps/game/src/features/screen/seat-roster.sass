@@ -81,17 +81,10 @@
       font-size: calc(var(--cu) * 1.7)
 
     .score-pips
-      display: flex
-      gap: calc(var(--cu) * 0.6)
-
-    .score-pip
-      block-size: calc(var(--cu) * 1.6)
-      border: calc(var(--cu) * 0.25) solid var(--brass)
-      border-radius: 50%
-      inline-size: calc(var(--cu) * 1.6)
-
-      &[data-won]
-        background: var(--brass)
+      --pip-color: var(--brass)
+      --pip-gap: calc(var(--cu) * 0.6)
+      --pip-size: calc(var(--cu) * 1.6)
+      --pip-stroke: calc(var(--cu) * 0.25)
 
     .seat-cue
       @include typography.label

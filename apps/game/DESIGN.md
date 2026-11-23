@@ -286,7 +286,7 @@ Its base is the arena plan in filets drawn in the cap colour at 50 % (95 % while
 
 ### Bands
 
-Slate, full-width, brass top and bottom borders, wiped in from the left by `clip-path` on the slow transition. The phone's outcome band shows a top (ringed in chalk) and a display title, with a label detail; the won variant turns brass with ink borders and lettering and spins its top. The display's counterpart is the Announcement Band above.
+Slate, full-width, brass top and bottom borders, wiped in from the left by `clip-path` on the slow transition. The phone's outcome band shows a top (ringed in chalk) and a display title ("À la rigole", "Manche gagnée" or "Partie gagnée"), with a label detail, and closes on the seat's tally: the roster's pips at 1.25rem, brass on slate. It is the only place the phone shows the score; in play the display's roster carries it. The won variants turn brass with ink borders, lettering and pips, and spin their top. The display's counterpart is the Announcement Band above.
 
 ### Status chips
 

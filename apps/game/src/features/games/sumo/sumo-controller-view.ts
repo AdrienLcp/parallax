@@ -1,14 +1,22 @@
 import type { SeatId } from '@parallax/protocol/identifiers'
 import type { SumoState } from '@parallax/protocol/sumo'
 
+import { SUMO_TUNING } from './sumo-tuning'
+
 /**
  * What a phone shows of the sumo:
  * - `lobby` — no round on the arena for this seat yet: waiting, the stick free
  * - `playing` — its top spins in a round
  * - `out` — its top went to the gutter this round
- * - `won` — the round is decided and its top is the last one spinning
+ * - `roundWon` — the round is decided and its top is the last one spinning
+ * - `matchWon` — that round was the one that won the match
  */
-export type SumoControllerView = 'lobby' | 'out' | 'playing' | 'won'
+export type SumoControllerView =
+  | 'lobby'
+  | 'matchWon'
+  | 'out'
+  | 'playing'
+  | 'roundWon'
 
 /** The view for `seatId`, from the last state the screen sent (`null` before the first). */
 export const sumoControllerView = ({
@@ -32,5 +40,9 @@ export const sumoControllerView = ({
     return 'out'
   }
 
-  return state.phase === 'decided' ? 'won' : 'playing'
+  if (state.phase !== 'decided') {
+    return 'playing'
+  }
+
+  return ownTop.roundsWon >= SUMO_TUNING.roundsToWin ? 'matchWon' : 'roundWon'
 }

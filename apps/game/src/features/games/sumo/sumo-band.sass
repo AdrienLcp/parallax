@@ -45,6 +45,14 @@
       gap: var(--space-xs)
       margin-block-start: var(--space-xs)
 
+    .band-score
+      --pip-color: var(--brass)
+      --pip-gap: var(--space-xs)
+      --pip-size: 1.25rem
+      --pip-stroke: var(--stroke-bold)
+
+      margin-block-start: var(--space-s)
+
     .pusher
       align-items: center
       display: inline-flex
@@ -54,13 +62,16 @@
       block-size: 1.75rem
       inline-size: 1.75rem
 
-    &[data-outcome='won']
+    &:is([data-outcome='roundWon'], [data-outcome='matchWon'])
       background: var(--brass)
       border-color: var(--lacquer-ink)
       color: var(--lacquer-ink)
 
       .band-detail
         color: var(--lacquer-ink)
+
+      .band-score
+        --pip-color: var(--lacquer-ink)
 
       .band-top
         @include motion.spin(calc(var(--transition-slow) * 6))
@@ -71,5 +82,6 @@
       justify-items: center
       text-align: center
 
-      .band-detail
+      .band-detail,
+      .band-score
         justify-content: center

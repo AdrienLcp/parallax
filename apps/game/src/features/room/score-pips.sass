@@ -1,0 +1,13 @@
+@layer components
+  .score-pips
+    display: flex
+    gap: var(--pip-gap)
+
+  .score-pip
+    block-size: var(--pip-size)
+    border: var(--pip-stroke) solid var(--pip-color)
+    border-radius: 50%
+    inline-size: var(--pip-size)
+
+    &[data-won]
+      background: var(--pip-color)
