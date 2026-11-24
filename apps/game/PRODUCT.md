@@ -15,7 +15,7 @@ Both stand in front of the same display, and each player holds their own phone.
 
 ## Product Purpose
 
-A party-game host for the office's Looking Glass display. The display shows the game; phones are the controllers and join by scanning a QR code. The app hosts several games. The first is a sumo: 2 to 6 phones each drive a spinning top in an arena, and the last one on the board wins. A home screen to pick the game and a claw machine come later.
+A party-game host for the office's Looking Glass display. The display shows the game; phones are the controllers and join by scanning a QR code. The app hosts several games. The first is a sumo: 2 to 6 phones each drive a spinning top in an arena, and the last one on the board wins. A claw machine is being built. Planned next, all upright in the alcove: a tower to stack as high as possible without it falling, a shooting gallery with targets at several depths, and a ring toss onto pegs set at different depths.
 
 Success: a group walks up, scans, and is playing within a minute, without reading instructions. **Depth is the point of every game:** each one is designed to read as objects inside the display's alcove, seen by players standing centred at about 1.5 m, so the player count follows what that viewing spot allows.
 
