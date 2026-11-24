@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { DisplaySoundProvider } from '@/features/sound/display-sound'
 import { Main } from '@/presentation/components/main'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
@@ -15,21 +16,23 @@ export const ScreenPage: React.FC = () => {
   const { openAnother, state } = useScreenRoom()
 
   return (
-    <Main className='screen-page'>
-      {state.kind === 'failed' && (
-        <ScreenNotice
-          action={translate('screen.retry')}
-          message={translate('screen.openFailed')}
-          onAction={openAnother}
-        />
-      )}
-      {state.kind === 'open' && (
-        <ScreenRoom
-          key={state.room.code}
-          onRoomLost={openAnother}
-          room={state.room}
-        />
-      )}
-    </Main>
+    <DisplaySoundProvider>
+      <Main className='screen-page'>
+        {state.kind === 'failed' && (
+          <ScreenNotice
+            action={translate('screen.retry')}
+            message={translate('screen.openFailed')}
+            onAction={openAnother}
+          />
+        )}
+        {state.kind === 'open' && (
+          <ScreenRoom
+            key={state.room.code}
+            onRoomLost={openAnother}
+            room={state.room}
+          />
+        )}
+      </Main>
+    </DisplaySoundProvider>
   )
 }

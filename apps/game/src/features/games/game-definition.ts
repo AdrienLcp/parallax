@@ -10,6 +10,7 @@ import type {
 } from '@parallax/protocol/server-message'
 
 import type { EventSubscription } from '@/helpers/event-channel'
+import type { SoundTarget } from '@/helpers/synth'
 import type { RoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import type { PlainTranslationKey } from '@/presentation/i18n/translation'
 
@@ -54,12 +55,25 @@ export type SceneStandings = {
   readonly title: string
 }
 
+/** A cue a game synthesises, given where it sounds. */
+export type SoundCue = (target: SoundTarget) => void
+
+/**
+ * The display's sound, owned by the room: the room keeps the music, the volume
+ * and the mute; a game only plays its cues, without minding any of them.
+ */
+export type SceneSound = {
+  /** Plays a cue now through the room's effects; does nothing until the display has been touched once. */
+  play: (cue: SoundCue) => void
+}
+
 export type GameSceneProps = {
   events: EventSubscription<ScreenGameEvent>
   /** Called when the standings change; `null` while the game waits for players. */
   onStandings: (standings: SceneStandings | null) => void
   room: ScreenRoomMessage
   send: RoomSocket['send']
+  sound: SceneSound
 }
 
 export type GameControllerProps = {

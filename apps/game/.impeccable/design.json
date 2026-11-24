@@ -567,6 +567,14 @@
       "css": ".ds-back { display: inline-flex; align-items: center; gap: 7px; padding: 3px 6px; border: 0; border-radius: 6px; background: none; color: oklch(79.2% 0.015 124.6); font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 22px; line-height: 1.4; cursor: pointer; } .ds-back-ring { width: 34px; height: 34px; } .ds-back-track, .ds-back-fill, .ds-back-chevron { fill: none; } .ds-back-track { stroke: oklch(42.7% 0.011 160.9); stroke-width: 3; } .ds-back-fill { stroke: oklch(73.1% 0.115 85.2); stroke-width: 3.5; stroke-dasharray: 0 101; rotate: -90deg; transform-origin: 50% 50%; transform-box: view-box; } .ds-back-chevron { stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; } .ds-back:active { color: oklch(93.1% 0.015 90.2); } .ds-back:active .ds-back-fill { stroke-dasharray: 101 101; transition: stroke-dasharray 1200ms linear; } .ds-back:focus-visible { outline: 3px solid oklch(73.1% 0.115 85.2); outline-offset: 3px; }"
     },
     {
+      "name": "Sound Switch",
+      "kind": "button",
+      "refersTo": "sound-switch",
+      "description": "Icon-only toggle beside 'Games' in the roster's footer: a soft-chalk speaker with two waves while the display plays sound, a cross once muted.",
+      "html": "<button class=\"ds-sound\" aria-pressed=\"true\" aria-label=\"Sound\"><svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><path d=\"M8 19 H15 L25 11 V37 L15 29 H8 Z\"/><path d=\"M31 18 Q35 24 31 30\"/><path d=\"M36 13 Q43 24 36 35\"/></svg></button>",
+      "css": ".ds-sound { display: inline-flex; padding: 3px; border: 0; border-radius: 6px; background: none; color: oklch(79.2% 0.015 124.6); cursor: pointer; } .ds-sound svg { width: 34px; height: 34px; } .ds-sound path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; } .ds-sound:active { color: oklch(93.1% 0.015 90.2); } .ds-sound:focus-visible { outline: 3px solid oklch(73.1% 0.115 85.2); outline-offset: 3px; }"
+    },
+    {
       "name": "Seat Roster",
       "kind": "card",
       "refersTo": "seat-roster",

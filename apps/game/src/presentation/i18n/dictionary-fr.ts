@@ -103,6 +103,7 @@ export default defineDictionary({
       absent: 'absent',
       free: 'Libre'
     },
+    sound: 'Son',
     takeBack: 'Reprendre',
     tapToPlay: 'Touchez pour jouer'
   },

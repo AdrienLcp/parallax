@@ -97,6 +97,8 @@ components:
     textColor: "{colors.chalk-soft}"
   back-to-games:
     textColor: "{colors.chalk-soft}"
+  sound-switch:
+    textColor: "{colors.chalk-soft}"
   dash-button:
     rounded: "{rounded.pill}"
   lobby-ready:
@@ -291,6 +293,7 @@ A name tag over each top on the arena, so a player finds their own top from acro
 
 - **Brass button** ("Open the room" on the game choice, display notice action, phone retry): brass fill, lacquer-ink display lettering, small radius, raised. Hover mixes 22 % ivory into the brass; pressed scales to 0.96 to 0.97. On the display it is the `brass` mixin of `presentation/styles/_brass-button.sass` (inset brass-deep filet, raised shadow); the caller sizes it.
 - **Games** (display, back to the game choice): a quiet control, no fill, a soft-chalk label beside a 3.4cu ring (slate-line track, chevron in the text colour). It answers only a hold: pressed, the label turns chalk and a brass arc fills the ring linearly over 1.2 s (`HOLD_TO_LEAVE_MS`), then the display goes home; released early, the ring empties. A passing touch never ends a game.
+- **Sound** (display, the room's mute): an icon-only toggle just before "Games" in the roster's foot, in the same quiet voice: a 3.4cu soft-chalk speaker in 3-unit strokes, two waves while the display plays sound, a cross once muted; chalk while pressed. No label on screen (its accessible name is "Sound"). The choice is kept in the browser (`parallax:sound-muted`).
 - **Dash button** (phone): a disc in the seat's cap colour with the lacquer as text, a display-voice "Foncer" under an arrow, ringed by a brass cooldown gauge (dasharray 101, one unit past the circumference so a full gauge closes). Pressed scales to 0.94; while cooling it drops to 50 % opacity and the ring refills linearly. Focus ring offset clears the gauge.
 - **Focus:** a thick ring in `--focus`: brass on felt, the seat's cap colour on a seat ground, brass-deep / brass on the host pages.
 
@@ -317,6 +320,16 @@ Slate, full-width, brass top and bottom borders, wiped in from the left by `clip
 ### Status chips
 
 Slate, label voice, with a brass (display) or current-colour (phone) spinning ring. Pill on the display, 6px bubble on the phone.
+
+## Sound
+
+The display alone plays sound; phones stay silent. Everything is synthesised with the Web Audio API, so no audio file ships and the code loads only once the audio starts: on the display's first touch or key press, or at once when the visitor pressed something on the way to the room (browsers block audio before that).
+
+- **Music, "Café du plateau":** a slow swung jazz-café loop in F at 92 BPM, an eight-bar turnaround (F major 7, Dm7, Gm7, C7, Am7, D7, Gm7, C7) played twice: a triangle upright bass in two (walking home on the last bar), a warm FM electric piano comping a Charleston, brushes on two and four and a soft ride; a vibraphone tune on the first pass only, so the loop never wears on the room. It follows the room: silent while nobody holds a seat (an idle display in the office stays quiet), present while players gather, ducked under the cues while a game runs.
+- **Cues, brought by the game:** the host owns the audio, the mute and the music; a game only plays its cues through `GameSceneProps.sound`. The sumo reads them from the match, frame to frame, so its rules never know about sound: a wood block on each second of the countdown and a two-note bell when the fight starts; a dry lacquered clack when two tops meet, louder the harder they meet; a short rising whoosh for a dash; a slide over the rim and a soft thud into the gutter for a fall; a three-note vibraphone chime for a round won, a longer arpeggio for the match, two falling notes for a draw.
+- **Mix:** cues sit well above the music; one master, closed by the mute, feeds a compressor so a pile of clacks never clips.
+
+**The Quiet Room Rule.** Sound never explains: no voice, no announcement jingle. It answers what the room just saw (a clack, a fall, a win) and stays under the conversation.
 
 ## Do's and Don'ts
 

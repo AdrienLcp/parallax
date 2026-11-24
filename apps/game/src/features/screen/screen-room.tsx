@@ -13,6 +13,7 @@ import type {
   ScreenGameEvent
 } from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
+import { type MusicMood, useDisplaySound } from '@/features/sound/display-sound'
 import { createEventChannel } from '@/helpers/event-channel'
 import { reloadPage } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
@@ -46,6 +47,19 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
   const [gameEvents] = useState(createEventChannel<ScreenGameEvent>)
   const [standings, setStandings] = useState<SceneStandings | null>(null)
   const game = games[CURRENT_GAME]
+  const { sound } = useDisplaySound()
+  const mood: MusicMood =
+    standings !== null
+      ? 'playing'
+      : roomView?.seats.some((seat) => seat.isConnected)
+        ? 'gathering'
+        : 'resting'
+
+  useEffect(() => {
+    sound.setMood(mood)
+  }, [mood, sound])
+
+  useEffect(() => () => sound.setMood('resting'), [sound])
 
   const socket = useRoomSocket({
     credentials: { role: 'screen', screenToken: room.screenToken },
@@ -108,6 +122,7 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
               onStandings={setStandings}
               room={roomView}
               send={socket.send}
+              sound={sound}
             />
           </Suspense>
         )}

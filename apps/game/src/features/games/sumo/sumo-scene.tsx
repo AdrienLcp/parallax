@@ -7,8 +7,10 @@ import type { GameSceneProps } from '../game-definition'
 import { arenaFrameOf } from './arena-frame'
 import type { ArenaRenderer } from './arena-renderer'
 import { createFlatPortraitRenderer } from './flat-portrait-renderer'
-import { countdownShown } from './sumo-match'
+import { countdownShown, GATHERING, type SumoMatch } from './sumo-match'
 import { sceneStandingsOf } from './sumo-scene-standings'
+import { soundCuesBetween } from './sumo-sound-cues'
+import { voiceOf } from './sumo-voices'
 import { TopTags, type TopTagsHandle } from './top-tags'
 import { useSumoSimulation } from './use-sumo-simulation'
 
@@ -19,9 +21,11 @@ export const SumoScene: React.FC<GameSceneProps> = ({
   events,
   onStandings,
   room,
-  send
+  send,
+  sound
 }) => {
   const translate = useTranslate()
+  const heard = useRef<SumoMatch>(GATHERING)
   const host = useRef<HTMLDivElement>(null)
   const renderer = useRef<ArenaRenderer | null>(null)
   const tags = useRef<TopTagsHandle>(null)
@@ -48,6 +52,13 @@ export const SumoScene: React.FC<GameSceneProps> = ({
       const anchors = renderer.current?.draw(frame, seconds) ?? []
       tags.current?.place(frame, anchors)
       setCountdown(countdownShown(match))
+      for (const cue of soundCuesBetween({
+        next: match,
+        previous: heard.current
+      })) {
+        sound.play(voiceOf(cue))
+      }
+      heard.current = match
     },
     room,
     send

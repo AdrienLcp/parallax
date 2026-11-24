@@ -1,0 +1,29 @@
+@layer components
+  .sound-switch
+    align-items: center
+    background: none
+    border: 0
+    border-radius: calc(var(--cu) * 0.6)
+    color: var(--chalk-soft)
+    cursor: pointer
+    display: flex
+    padding: calc(var(--cu) * 0.3)
+    touch-action: manipulation
+    user-select: none
+
+    &[data-pressed]
+      color: var(--chalk)
+
+    .sound-icon
+      block-size: calc(var(--cu) * 3.4)
+      inline-size: calc(var(--cu) * 3.4)
+
+    .sound-speaker, .sound-wave, .sound-cross
+      fill: none
+      stroke: currentColor
+      stroke-linecap: round
+      stroke-linejoin: round
+      stroke-width: 3
+
+    .sound-cross
+      stroke-width: 3.5

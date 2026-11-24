@@ -105,6 +105,7 @@ export const EN_DICTIONARY = defineDictionary({
       absent: 'away',
       free: 'Free'
     },
+    sound: 'Sound',
     takeBack: 'Take back',
     tapToPlay: 'Touch to play'
   },

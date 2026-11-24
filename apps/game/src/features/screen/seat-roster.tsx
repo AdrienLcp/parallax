@@ -11,6 +11,7 @@ import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { BackToGames } from './back-to-games'
+import { SoundSwitch } from './sound-switch'
 
 import './seat-roster.sass'
 
@@ -117,6 +118,7 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({ seats, standings }) => {
       </ul>
       <div className='seat-foot'>
         <p className='seat-cue'>{standings?.cue ?? waitingCue}</p>
+        <SoundSwitch />
         <BackToGames />
       </div>
     </div>
