@@ -1,3 +1,5 @@
+import { DISPLAY_ASPECT } from '@/features/alcove/display-aspect'
+
 import { ARENA_DRUM, DITCH_REST_RADIUS } from './arena-drum'
 import {
   type ArenaShape,
@@ -31,7 +33,6 @@ export const SHIPPED_LENS: ArenaLens = {
   verticalCentre: 0.5
 }
 
-const DISPLAY_ASPECT = 9 / 16
 /** Where the shipped camera looks: the felt's centre. */
 export const CAMERA_TARGET_HEIGHT = SHIPPED_HEIGHTS.surfaceHeight
 export const FRAME_FILL = SHIPPED_LENS.frameFill

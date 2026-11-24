@@ -73,3 +73,5 @@ In % of the portrait screen (x from the left, y from the top):
 - **Vanishing points:** floor edges meet at (45 %, 62 %), roof edges at (46.5 %, 38.6 %). For a true box seen from one eye they would coincide, so the eye sits near the middle of the screen and the traces carry a few percent of error.
 
 What it implies: the viewer looks at the alcove almost level, so its floor shows only as a thin strip. Content stands on that strip and rises in front of the back wall. A horizontal arena seen from this eye is almost edge-on. Games read best when their action happens upright, in the plane of the back wall and just in front of it.
+
+Solved as a box seen by one eye (`apps/game/src/features/alcove/`): the opening is 1 unit wide, the box 1.90 tall and 0.96 deep, the eye about 5 units in front of the opening at mid-height, looking straight ahead at (44.7 %, 50.3 %) of the screen. The fit misses the traced corners by under 3 % of the screen height. The eye's distance assumes players 1.5 m away from a 27" screen.

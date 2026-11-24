@@ -15,6 +15,12 @@ phones. Game rules and physics live in the game's feature
 (`features/screen/`) stay game-agnostic: a game hands them `SceneStandings`
 already translated.
 
+Every game stands its scene in the measured alcove through `features/alcove/`:
+`SHIPPED_ALCOVE` (the calibration solved as a box and an eye),
+`aimAlcoveCamera` (the camera at the players' eye) and `buildAlcoveStage`
+(invisible floor and back wall that only catch shadows). A new calibration
+replaces `measured-alcove.ts` and moves every game at once.
+
 ## Running it
 
 - `corepack pnpm dev`: wrangler on `:8798` (about 30 s on first start, with an empty assets folder so a `vite build` does not reload it and drop the rooms; `:8798/` answers 404) and Vite on
