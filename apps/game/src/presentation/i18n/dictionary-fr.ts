@@ -132,7 +132,6 @@ export default defineDictionary({
       pushedBy: 'par <seat>{name}</seat>',
       title: 'À la rigole'
     },
-    playInLandscape: 'Jouez en paysage',
     standings: {
       ejected: '{seats:list} à la rigole',
       firstTo: defineTranslation('Premier à {rounds:plural}', {
@@ -146,7 +145,6 @@ export default defineDictionary({
       roundDrawn: 'Manche nulle',
       roundWon: '{seat} gagne la manche'
     },
-    turnToLandscape: 'Passez en paysage',
     won: {
       match: 'Partie gagnée',
       round: 'Manche gagnée'

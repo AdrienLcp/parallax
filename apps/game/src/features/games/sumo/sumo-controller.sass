@@ -4,7 +4,7 @@
   .sumo-controller
     --pad-unit: min(1dvh, 0.5dvw, 0.3rem)
     --text-seat-name: 2rem
-    --text-rotate-cue: 2.875rem
+    --thumb-line: 54%
     --sumo-ground: var(--seat)
     --seat-top-ring: var(--seat-cap)
 
@@ -42,8 +42,13 @@
         z-index: 1
 
     .dash-side
+      align-items: end
       display: grid
-      place-items: center end
+      grid-template-rows: var(--thumb-line)
+      justify-items: end
+
+      .dash-button
+        translate: 0 50%
 
     .seat-badge
       align-items: center
@@ -59,71 +64,15 @@
 
       font-size: var(--text-seat-name)
 
-    .rotate-sheet
-      align-items: center
-      display: none
-      flex-direction: column
-      inset: 0
-      padding: var(--page-padding-block-start) var(--gutter-right) var(--page-padding-block-end) var(--gutter-left)
-      position: absolute
-      text-align: center
-
-    .lobby-cue
-      @include typography.label
-
-      align-items: center
-      display: flex
-      font-size: var(--text-l)
-      gap: var(--space-s)
-
-    .landscape-pictogram
-      block-size: 2.75rem
-      inline-size: 2.75rem
-
-    .rotate-sheet
-      gap: var(--space-l)
-      justify-content: center
-
-      .seat-badge
-        inset-block-start: var(--page-padding-block-start)
-        inset-inline-start: 50%
-        position: absolute
-        translate: -50% 0
-
-    .turn-pictogram
-      block-size: 8.25rem
-      inline-size: 8.25rem
-
-    .turning-body
-      animation: sumo-turn calc(var(--transition-slow) * 6) cubic-bezier(0.65, 0, 0.35, 1) infinite
-      transform-box: view-box
-      transform-origin: 50% 50%
-
-    .rotate-cue
-      @include typography.display
-
-      font-size: var(--text-rotate-cue)
-      max-inline-size: 5em
-
     .round-outcome
       inset: 0
       pointer-events: none
       position: absolute
 
     @media (orientation: portrait)
-      .rotate-sheet
-        display: flex
+      --pad-unit: min(0.5dvh, 0.9dvw, 0.3rem)
+      --thumb-line: 70%
 
       .pad
-        display: none
-
-    @media (orientation: landscape)
-      .lobby-cue
-        display: none
-
-  @keyframes sumo-turn
-    0%, 25%
-      rotate: 0deg
-
-    55%, 100%
-      rotate: -90deg
+        column-gap: var(--space-m)
+        grid-template-columns: 1fr auto

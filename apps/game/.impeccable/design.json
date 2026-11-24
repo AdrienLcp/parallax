@@ -466,17 +466,12 @@
       {
         "name": "transition-slow",
         "value": "var(--transition-slow)",
-        "purpose": "Band wipe (clip-path), seat ground change; multiples drive spins (x2 status ring, x6 won top and rotate cue, x15 lobby top)."
+        "purpose": "Band wipe (clip-path), seat ground change; multiples drive spins (x2 status ring, x6 won top, x15 lobby top)."
       },
       {
         "name": "ease-out",
         "value": "var(--ease-out)",
         "purpose": "Default easing for wipes and presses."
-      },
-      {
-        "name": "sumo-turn",
-        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
-        "purpose": "Rotate-the-phone pictogram, holding then turning -90deg."
       },
       {
         "name": "dash-refill",
@@ -511,7 +506,8 @@
       },
       {
         "name": "portrait",
-        "value": "(orientation: portrait)"
+        "value": "(orientation: portrait)",
+        "purpose": "The phone pad's portrait sizing and thumb line; the outcome band stacks. Never a prompt to turn."
       }
     ]
   },

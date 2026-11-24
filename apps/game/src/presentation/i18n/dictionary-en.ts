@@ -134,7 +134,6 @@ export const EN_DICTIONARY = defineDictionary({
       pushedBy: 'by <seat>{name}</seat>',
       title: 'In the gutter'
     },
-    playInLandscape: 'Play in landscape',
     standings: {
       ejected: '{seats:list} in the gutter',
       firstTo: defineTranslation('First to {rounds:plural}', {
@@ -148,7 +147,6 @@ export const EN_DICTIONARY = defineDictionary({
       roundDrawn: 'Round drawn',
       roundWon: '{seat} wins the round'
     },
-    turnToLandscape: 'Turn to landscape',
     won: {
       match: 'Match won',
       round: 'Round won'
