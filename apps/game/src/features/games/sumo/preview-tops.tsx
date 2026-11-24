@@ -6,21 +6,27 @@ import { SEAT_GLYPHS } from '@/features/room/seat-top'
 
 import {
   type ArenaFraming,
+  type CanvasPoint,
   projectOnCanvas,
   type TablePoint,
   TOP_HEIGHT
 } from './arena-camera'
+import { ARENA_DRUM } from './arena-drum'
 import { roundMarksOf } from './round-marks'
 import { SHOWCASE_SLOTS } from './showcase-slots'
 import { SUMO_TUNING } from './sumo-tuning'
+import { TOP_PROFILE } from './top-profile'
 
 const TOP_RADIUS = SUMO_TUNING.topRadius
 
-/** The heights and radii the scene's top model is built from, in arena units. */
+const FELT = ARENA_DRUM.surfaceHeight
+
+/** The heights above the alcove's floor and the radii the scene's top model is built from, in arena units. */
 const TOP_MODEL = {
-  capHeight: TOP_HEIGHT,
   capRadius: (30 / 46) * TOP_RADIUS,
-  ringHeight: 0.8 * TOP_HEIGHT,
+  crownHeight: FELT + TOP_HEIGHT,
+  crownRadius: (TOP_PROFILE.at(-1)?.[0] ?? 0) * TOP_RADIUS,
+  ringHeight: FELT + 0.8 * TOP_HEIGHT,
   ringWidth: 0.04 * TOP_RADIUS
 } as const
 
@@ -71,6 +77,45 @@ const discOnCanvas = (
   return { cx, cy, rx: right.x - cx, ry: (near.y - far.y) / 2 }
 }
 
+const pathThrough = (points: readonly CanvasPoint[]) =>
+  points
+    .map(
+      ({ x, y }, index) =>
+        `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`
+    )
+    .join('')
+
+/** The turned body seen from the room: its profile on both sides of its axis. */
+const bodyPath = (framing: ArenaFraming, mark: TablePoint) => {
+  const side = (sign: number) =>
+    TOP_PROFILE.map(([across, up]) =>
+      projectOnCanvas(
+        framing,
+        { ...mark, x: mark.x + sign * across * TOP_RADIUS },
+        FELT + up * TOP_HEIGHT
+      )
+    )
+  return `${pathThrough([...side(-1), ...side(1).reverse()])}Z`
+}
+
+const RING_STEPS = 24
+
+/** The near half of the brass ring around the body's shoulder. */
+const ringPath = (framing: ArenaFraming, mark: TablePoint) =>
+  pathThrough(
+    Array.from({ length: RING_STEPS + 1 }, (_, step) => {
+      const angle = (step * Math.PI) / RING_STEPS
+      return projectOnCanvas(
+        framing,
+        {
+          x: mark.x + Math.cos(angle) * TOP_RADIUS,
+          z: mark.z + Math.sin(angle) * TOP_RADIUS
+        },
+        TOP_MODEL.ringHeight
+      )
+    })
+  )
+
 const PreviewTop: React.FC<{
   framing: ArenaFraming
   mark: TablePoint
@@ -81,34 +126,34 @@ const PreviewTop: React.FC<{
       x: mark.x + SHADOW.perHeight.x * SHADOW.castHeight,
       z: mark.z + SHADOW.perHeight.z * SHADOW.castHeight
     },
-    height: 0,
+    height: FELT,
     radius: SHADOW.radius
   })
-  const body = discOnCanvas(framing, {
+  const crown = discOnCanvas(framing, {
     centre: mark,
-    height: TOP_MODEL.ringHeight,
-    radius: TOP_RADIUS
-  })
-  const ring = discOnCanvas(framing, {
-    centre: mark,
-    height: TOP_MODEL.ringHeight,
-    radius: TOP_RADIUS - TOP_MODEL.ringWidth / 2
+    height: TOP_MODEL.crownHeight,
+    radius: TOP_MODEL.crownRadius
   })
   const cap = discOnCanvas(framing, {
     centre: mark,
-    height: TOP_MODEL.capHeight,
+    height: TOP_MODEL.crownHeight,
     radius: TOP_MODEL.capRadius
   })
+  const ringWidth =
+    (TOP_MODEL.ringWidth / TOP_RADIUS) *
+    (projectOnCanvas(framing, { ...mark, x: mark.x + TOP_RADIUS }).x -
+      projectOnCanvas(framing, mark).x)
 
   return (
     <g data-seat-slot={slot}>
       <ellipse className='top-shadow' {...shadow} />
-      <ellipse className='lacquer' {...body} />
-      <ellipse
+      <path className='lacquer' d={bodyPath(framing, mark)} />
+      <path
         className='ring'
-        {...ring}
-        strokeWidth={(TOP_MODEL.ringWidth / TOP_RADIUS) * body.rx}
+        d={ringPath(framing, mark)}
+        strokeWidth={ringWidth}
       />
+      <ellipse className='lacquer' {...crown} />
       <g
         transform={`translate(${cap.cx} ${cap.cy}) scale(${cap.rx / 30} ${cap.ry / 30}) translate(-50 -50)`}
       >
@@ -123,7 +168,7 @@ const PreviewTop: React.FC<{
 
 /**
  * The showcase's demo tops standing on their marks, drawn flat through the
- * scene's camera: what the game choice shows until the showcase takes over,
+ * scene's camera from the same turned profile as the scene's model: what the game choice shows until the showcase takes over,
  * which starts its first round from these very marks.
  */
 export const PreviewTops: React.FC<{ framing: ArenaFraming }> = ({

@@ -1,7 +1,7 @@
 import type { SeatId } from '@parallax/protocol/identifiers'
 import type { SeatSlot } from '@parallax/protocol/room'
 
-import { type ArenaFrame, drawnTopsOf } from './arena-frame'
+import { type ArenaFrame, drawnTopOf } from './arena-frame'
 import { botInputsOf } from './showcase-bots'
 import { SHOWCASE_SLOTS } from './showcase-slots'
 import { advanceRound, type SumoRound, startRound } from './sumo-round'
@@ -74,8 +74,8 @@ export const advanceShowcase = (
 
 /** What the arena draws of the showcase: its tops, never absent, in their demo lacquers. */
 export const showcaseFrameOf = ({ round }: ShowcasePlay): ArenaFrame => ({
-  tops: round.tops.flatMap((top) =>
-    drawnTopsOf({
+  tops: round.tops.map((top) =>
+    drawnTopOf({
       isAbsent: false,
       slot: SLOT_BY_SEAT.get(top.seat) ?? 0,
       top

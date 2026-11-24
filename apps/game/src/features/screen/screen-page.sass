@@ -5,6 +5,10 @@
     background: var(--felt)
     scrollbar-gutter: auto
 
+  // The alcove's backdrop: solid and unlit wherever the arena stands.
+  :root:has(.screen-room)
+    background: var(--lacquer-ink)
+
   .screen-page
     @include display.units
 
@@ -16,3 +20,6 @@
     overflow: clip
     place-items: center
     user-select: none
+
+    &:has(.screen-room)
+      background: var(--lacquer-ink)

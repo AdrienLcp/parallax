@@ -12,7 +12,7 @@ import {
   subtracted
 } from '@/helpers/planar-vector'
 
-import { ARENA_PLAN } from './arena-camera'
+import { ARENA_PLAN } from './arena-plan'
 import { KNOB_TRAVEL_SHARE, stickAnchor, stickReading } from './stick-geometry'
 import { useKnobSpin } from './use-knob-spin'
 

@@ -8,7 +8,7 @@ import { SUMO_TUNING } from './sumo-tuning'
 
 /** One top as the arena draws it, in arena units. */
 export type DrawnTop = {
-  /** 0 while it stands on the platform, rising to 1 as it reaches the bottom of the gutter. */
+  /** 0 while it stands on the platform, rising to 1 as it comes to lie in the ditch, and 1 once out. */
   readonly fall: number
   /** Its phone went silent: the top stays on the board with nobody driving it. */
   readonly isAbsent: boolean
@@ -19,15 +19,17 @@ export type DrawnTop = {
   readonly velocity: PlanarVector
 }
 
-/** What the arena shows at one instant: the tops still on the board or on their way down. */
+/** What the arena shows at one instant: the tops on the felt, on their way down, or lying in the ditch. */
 export type ArenaFrame = {
   readonly tops: readonly DrawnTop[]
 }
 
 const EMPTY_ARENA: ArenaFrame = { tops: [] }
 
-/** How the arena draws one top of a round: nothing once it is out of the board. */
-export const drawnTopsOf = ({
+const STILL = { x: 0, y: 0 }
+
+/** How the arena draws one top of a round: once out, it lies in the ditch until the next round. */
+export const drawnTopOf = ({
   isAbsent,
   slot,
   top
@@ -35,22 +37,27 @@ export const drawnTopsOf = ({
   isAbsent: boolean
   slot: SeatSlot
   top: Top
-}): DrawnTop[] =>
+}): DrawnTop =>
   top.status === 'out'
-    ? []
-    : [
-        {
-          fall:
-            top.status === 'falling'
-              ? top.fallElapsed / SUMO_TUNING.fallSeconds
-              : 0,
-          isAbsent,
-          isDashRecharging: top.status === 'spinning' && top.dashCooldown > 0,
-          position: top.position,
-          slot,
-          velocity: top.velocity
-        }
-      ]
+    ? {
+        fall: 1,
+        isAbsent,
+        isDashRecharging: false,
+        position: top.position,
+        slot,
+        velocity: STILL
+      }
+    : {
+        fall:
+          top.status === 'falling'
+            ? top.fallElapsed / SUMO_TUNING.fallSeconds
+            : 0,
+        isAbsent,
+        isDashRecharging: top.status === 'spinning' && top.dashCooldown > 0,
+        position: top.position,
+        slot,
+        velocity: top.velocity
+      }
 
 export const arenaFrameOf = ({
   match,
@@ -70,7 +77,7 @@ export const arenaFrameOf = ({
       const seat = seatById.get(top.seat)
       return seat === undefined
         ? []
-        : drawnTopsOf({ isAbsent: !seat.isConnected, slot: seat.slot, top })
+        : [drawnTopOf({ isAbsent: !seat.isConnected, slot: seat.slot, top })]
     })
   }
 }

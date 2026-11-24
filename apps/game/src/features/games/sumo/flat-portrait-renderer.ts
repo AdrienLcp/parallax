@@ -6,18 +6,13 @@ import {
   Group,
   LatheGeometry,
   Mesh,
-  MeshBasicMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
   NoToneMapping,
-  type Object3D,
   PCFShadowMap,
   PerspectiveCamera,
-  PlaneGeometry,
   PMREMGenerator,
-  RingGeometry,
   Scene,
-  ShadowMaterial,
   Shape,
   ShapeGeometry,
   SRGBColorSpace,
@@ -32,25 +27,26 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 
 import { prefersReducedMotion } from '@/infrastructure/browser'
 
+import { aimArenaCamera } from './aim-arena-camera'
 import {
-  ARENA_PLAN,
-  cameraPositionOf,
   FIELD_OF_VIEW_DEGREES,
-  FILET_WIDTHS,
   frameTheTable,
   TOP_HEIGHT
 } from './arena-camera'
+import { ARENA_DRUM } from './arena-drum'
 import type { ArenaFrame, DrawnTop } from './arena-frame'
 import type { CreateArenaRenderer, TagAnchor } from './arena-renderer'
+import { buildDrum } from './drum-model'
+import { laidFlat } from './laid-flat'
 import { SUMO_TUNING } from './sumo-tuning'
+import { topPoseOf } from './top-pose'
+import { TOP_PROFILE } from './top-profile'
 
 const TOP_RADIUS = SUMO_TUNING.topRadius
 /** About a turn every two seconds: alive, and the carved glyph stays readable. */
 const SPIN_RADIANS_PER_SECOND = 3
-const LEAN_PER_SPEED = 0.35
-const MOST_LEAN_RADIANS = 0.3
-const FALL_DEPTH = 0.35
-const FALL_TIP_RADIANS = 1.2
+/** Half the side of the key light's shadow box, around the drum. */
+const SHADOW_REACH = 1.7
 
 /** The flat seat top's box (100 × 100): its lacquer and cap radii, and the glyph's scale in the cap. */
 const FLAT_TOP = {
@@ -162,15 +158,6 @@ const createColorReader = (host: HTMLElement) => {
   return { dispose: () => probe.remove(), read, readSeat }
 }
 
-const laidFlat = <TObject extends Object3D>(
-  object: TObject,
-  height: number
-): TObject => {
-  object.rotation.x = -Math.PI / 2
-  object.position.y = height
-  return object
-}
-
 /** A spinning top standing on its point: lacquered body, brass ring, cap and carved glyph. */
 const buildTop = ({
   colors,
@@ -181,16 +168,9 @@ const buildTop = ({
   ring: Color
   slot: SeatSlot
 }): Group => {
-  const profile = [
-    [0, 0],
-    [0.12, 0.06],
-    [0.55, 0.42],
-    [0.93, 0.7],
-    [1, 0.8],
-    [0.97, 0.9],
-    [0.8, 0.98],
-    [0.66, 1]
-  ].map(([x = 0, y = 0]) => new Vector2(x * TOP_RADIUS, y * TOP_HEIGHT))
+  const profile = TOP_PROFILE.map(
+    ([x, y]) => new Vector2(x * TOP_RADIUS, y * TOP_HEIGHT)
+  )
 
   const body = new Mesh(
     new LatheGeometry(profile, 64),
@@ -209,6 +189,7 @@ const buildTop = ({
   )
   brassRing.rotation.x = Math.PI / 2
   brassRing.position.y = 0.8 * TOP_HEIGHT
+  brassRing.castShadow = true
 
   const unit = TOP_RADIUS / FLAT_TOP.lacquerRadius
   const cap = laidFlat(
@@ -235,114 +216,6 @@ const buildTop = ({
   return top
 }
 
-const filet = ({
-  color,
-  opacity,
-  radius,
-  width
-}: {
-  color: Color
-  opacity: number
-  radius: number
-  width: number
-}): Mesh =>
-  laidFlat(
-    new Mesh(
-      new RingGeometry(radius - width / 2, radius + width / 2, 160),
-      new MeshBasicMaterial({
-        color,
-        depthWrite: false,
-        opacity,
-        transparent: true
-      })
-    ),
-    0.0004
-  )
-
-/** The arena from above in unlit felt and brass filets: a plan, not a modelled object. */
-const buildPlan = (read: (cssColor: string) => Color): Group => {
-  const brass = read('var(--brass)')
-
-  const occluder = laidFlat(
-    new Mesh(
-      new PlaneGeometry(40, 40),
-      new MeshBasicMaterial({ colorWrite: false })
-    ),
-    0
-  )
-  occluder.renderOrder = -1
-  const gutter = laidFlat(
-    new Mesh(
-      new CircleGeometry(ARENA_PLAN.gutter, 160),
-      new MeshBasicMaterial({ color: read('var(--felt-deep)') })
-    ),
-    0.0001
-  )
-  const platform = laidFlat(
-    new Mesh(
-      new CircleGeometry(SUMO_TUNING.arenaRadius, 160),
-      new MeshBasicMaterial({
-        color: read('color-mix(in oklab, var(--felt) 94%, var(--chalk))')
-      })
-    ),
-    0.0002
-  )
-
-  const plan = new Group()
-  plan.add(
-    occluder,
-    gutter,
-    platform,
-    filet({
-      color: brass,
-      opacity: 1,
-      radius: ARENA_PLAN.rim,
-      width: FILET_WIDTHS.rim
-    }),
-    filet({
-      color: brass,
-      opacity: 0.55,
-      radius: ARENA_PLAN.gutterEdge,
-      width: FILET_WIDTHS.gutterEdge
-    }),
-    filet({
-      color: brass,
-      opacity: 0.4,
-      radius: ARENA_PLAN.centreRing,
-      width: FILET_WIDTHS.centreRing
-    }),
-    filet({
-      color: brass,
-      opacity: 1,
-      radius: ARENA_PLAN.centreSpot,
-      width: FILET_WIDTHS.centreSpot
-    })
-  )
-
-  const tickMaterial = new MeshBasicMaterial({
-    color: brass,
-    depthWrite: false,
-    opacity: 0.7,
-    transparent: true
-  })
-  for (let tick = 0; tick < ARENA_PLAN.ticks; tick++) {
-    const angle = (tick * 2 * Math.PI) / ARENA_PLAN.ticks
-    const square = laidFlat(
-      new Mesh(
-        new PlaneGeometry(ARENA_PLAN.tickSize, ARENA_PLAN.tickSize),
-        tickMaterial
-      ),
-      0.0004
-    )
-    square.position.x = Math.cos(angle) * ARENA_PLAN.tickRadius
-    square.position.z = Math.sin(angle) * ARENA_PLAN.tickRadius
-    square.rotation.z = -angle
-    plan.add(square)
-  }
-
-  return plan
-}
-
 const placeTop = ({
   drawn,
   spinAngle,
@@ -352,23 +225,14 @@ const placeTop = ({
   spinAngle: number
   top: Group
 }): void => {
-  const speed = Math.hypot(drawn.velocity.x, drawn.velocity.y)
-  const lean =
-    Math.min(speed * LEAN_PER_SPEED, MOST_LEAN_RADIANS) +
-    drawn.fall * FALL_TIP_RADIANS
-  const heading = Math.atan2(drawn.velocity.y, drawn.velocity.x)
-
+  const pose = topPoseOf(drawn)
   top.visible = true
-  top.position.set(
-    drawn.position.x,
-    -drawn.fall * drawn.fall * FALL_DEPTH,
-    drawn.position.y
-  )
-  top.rotation.set(0, -heading, 0)
+  top.position.set(pose.x, pose.y, pose.z)
+  top.rotation.set(0, -pose.heading, 0)
   const spinning = top.children[0]
   if (spinning !== undefined) {
-    spinning.rotation.set(0, 0, -lean)
-    spinning.rotateY(spinAngle + heading)
+    spinning.rotation.set(0, 0, -pose.lean)
+    spinning.rotateY(spinAngle + pose.heading)
   }
 }
 
@@ -408,29 +272,37 @@ const disposeTree = (root: Scene): void => {
   })
 }
 
+/** The key light, high and to the left of the room, aimed at the drum's middle so its shadows fall soft and grounded. */
 const buildKeyLight = (color: Color): DirectionalLight => {
   const key = new DirectionalLight(color, 2.4)
-  key.position.set(-0.7, 3, 1.1)
+  key.target.position.set(0, ARENA_DRUM.surfaceHeight / 2, 0)
+  key.position
+    .set(-0.7, 3, 1.1)
+    .normalize()
+    .multiplyScalar(5)
+    .add(key.target.position)
   key.castShadow = true
   key.shadow.mapSize.set(2048, 2048)
   key.shadow.radius = 5
   key.shadow.blurSamples = 16
+  key.shadow.bias = -0.0004
   Object.assign(key.shadow.camera, {
-    bottom: -ARENA_PLAN.gutter,
-    far: 6,
-    left: -ARENA_PLAN.gutter,
+    bottom: -SHADOW_REACH,
+    far: 12,
+    left: -SHADOW_REACH,
     near: 0.5,
-    right: ARENA_PLAN.gutter,
-    top: ARENA_PLAN.gutter
+    right: SHADOW_REACH,
+    top: SHADOW_REACH
   })
   return key
 }
 
 /**
  * The default renderer: one flat portrait frame, for the HLD and any ordinary
- * screen. One perspective camera almost straight above the table, unlit felt
- * and brass for the plan, lacquered tops lit softly over grounded ink shadows.
- * The canvas stays transparent around the gutter: the page's felt is the backdrop.
+ * screen. The arena is a walnut drum standing on the alcove's floor, seen from
+ * the front by one perspective camera a little above it; lacquered tops spin
+ * on its felt and fall into its ditch, over soft grounded shadows. The canvas
+ * stays transparent around the drum: the page's solid lacquer ink is the backdrop.
  */
 export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
   const colors = createColorReader(host)
@@ -448,38 +320,22 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
   scene.environment = reflections.texture
   scene.environmentIntensity = 0.55
 
-  const shadowCatcher = laidFlat(
-    new Mesh(
-      new PlaneGeometry(
-        2 * ARENA_PLAN.gutter + 0.4,
-        2 * ARENA_PLAN.gutter + 0.4
-      ),
-      new ShadowMaterial({
-        color: colors.read('var(--lacquer-ink)'),
-        depthWrite: false,
-        opacity: 0.38
-      })
-    ),
-    0.0006
-  )
-  shadowCatcher.receiveShadow = true
-
   const ivory = colors.read('var(--ivory)')
   const ring = colors.read('var(--seat-top-ring)')
   const tops = Array.from({ length: ROOM_SEAT_LIMIT }, (_, slot) =>
     buildTop({ colors: colors.readSeat(slot), ring, slot })
   )
+  const keyLight = buildKeyLight(ivory)
 
   scene.add(
-    buildPlan(colors.read),
-    shadowCatcher,
+    buildDrum(colors.read),
     new AmbientLight(ivory, 0.6),
-    buildKeyLight(ivory),
+    keyLight,
+    keyLight.target,
     ...tops
   )
 
-  const camera = new PerspectiveCamera(FIELD_OF_VIEW_DEGREES, 1, 0.1, 30)
-  camera.up.set(0, 0, -1)
+  const camera = new PerspectiveCamera(FIELD_OF_VIEW_DEGREES, 1, 0.1, 60)
 
   const canvas = { height: 0, width: 0 }
 
@@ -489,18 +345,14 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
     canvas.height = height
     canvas.width = width
     renderer.setSize(width, height, false)
-    camera.aspect = width / height
-    const { x, y, z } = cameraPositionOf(frameTheTable({ height, width }))
-    camera.position.set(x, y, z)
-    camera.lookAt(0, 0, 0)
-    camera.updateProjectionMatrix()
+    aimArenaCamera(camera, frameTheTable({ height, width }))
   }
   const resizing = new ResizeObserver(fitToHost)
   resizing.observe(host)
   fitToHost()
 
   const spinRate = prefersReducedMotion() ? 0 : SPIN_RADIANS_PER_SECOND
-  let spinAngle = 0
+  const spinAngles = tops.map(() => 0)
 
   return {
     dispose: () => {
@@ -513,12 +365,15 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
       colors.dispose()
     },
     draw: (arena: ArenaFrame, seconds: number) => {
-      spinAngle += spinRate * seconds
       for (const top of tops) top.visible = false
       const anchors: TagAnchor[] = []
       for (const drawn of arena.tops) {
         const top = tops[drawn.slot]
         if (top === undefined) continue
+        const spinAngle =
+          (spinAngles[drawn.slot] ?? 0) +
+          spinRate * topPoseOf(drawn).spinShare * seconds
+        spinAngles[drawn.slot] = spinAngle
         placeTop({ drawn, spinAngle, top })
         anchors.push(tagAnchorOf({ camera, canvas, slot: drawn.slot, top }))
       }

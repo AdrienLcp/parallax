@@ -3,10 +3,10 @@
 @use '../../presentation/styles/typography'
 
 @layer components
-  // The game choice stands on the felt, footer included: the host's neutral
-  // tokens take the bistrot's values while it is shown.
+  // The game choice stands on the alcove's lacquer-ink backdrop, footer
+  // included: the host's neutral tokens take the bistrot's values while it is shown.
   :root:has(.home-page)
-    --ground: var(--felt)
+    --ground: var(--lacquer-ink)
     --ink: var(--chalk)
     --ink-muted: var(--chalk-soft)
     --rule: color-mix(in oklab, var(--brass) 40%, transparent)

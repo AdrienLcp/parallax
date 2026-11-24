@@ -7,6 +7,7 @@
     position: absolute
 
   .top-tag
+    --lift-px: 0px
     --seat-top-ring: var(--chalk)
 
     align-items: center
@@ -40,7 +41,7 @@
 
   .top-tag-stem
     background: var(--chalk)
-    block-size: calc(var(--cu) * 1.2)
+    block-size: calc(var(--cu) * 1.2 + var(--lift-px))
     inline-size: calc(var(--cu) * 0.2)
     opacity: 0.8
 

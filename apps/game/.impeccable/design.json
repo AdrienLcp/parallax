@@ -388,7 +388,7 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Cues, statuses, seat states, band detail, the play header subtitle and tap cue, the roster cue and its ready mark, the back-to-games control, the player count on the game choice and the phone lobby's ready count."
+        "purpose": "Cues, statuses, seat states, band detail, the play header subtitle, the roster cue and its ready mark, the back-to-games control, the player count on the game choice and the phone lobby's ready count."
       },
       "small": {
         "displayName": "Small",
@@ -495,18 +495,8 @@
       },
       {
         "name": "top-spin",
-        "value": "3 rad/s; lean 0.35 per unit speed up to 0.3 rad; fall tip up to 1.2 rad",
+        "value": "3 rad/s; lean 0.35 per unit speed up to 0.3 rad; a fall slides to the middle of the ditch, drops to its floor in 0.55 s and lies down along it, its spin dying",
         "purpose": "Modelled tops in the 3D arena; reduced motion stops the spin."
-      },
-      {
-        "name": "qr-reveal",
-        "value": "unfold var(--transition-slow) var(--ease-out) from opacity 0 and scale 0.35; drain linear 20s (QR_REVEAL_SECONDS) from scale 1 to 0 1",
-        "purpose": "The play header QR unfolding from its corner on a touch outside the display's controls, and the brass bar draining along the header rule until it closes; reduced motion keeps the bar full."
-      },
-      {
-        "name": "tap-ripple",
-        "value": "calc(var(--transition-slow) * 6) var(--ease-out) infinite, scale 0.6 to 1.05, fading in then out",
-        "purpose": "The dashed ripple around the play header tap pictogram."
       },
       {
         "name": "hold-to-leave",
@@ -594,7 +584,7 @@
       "name": "Top Tag",
       "kind": "custom",
       "refersTo": "top-tag",
-      "description": "The name tag hung over each top on the 3D arena: slate pill with the flat top and the seat's name over a chalk stem; brass while the dash recharges, dashed outline when the player is absent.",
+      "description": "The name tag hung over each top on the 3D arena: slate pill with the flat top and the seat's name over a chalk stem, a farther top's tag climbing over a nearer one's on a longer stem; brass while the dash recharges, dashed outline when the player is absent.",
       "html": "<div class=\"ds-tag\"><span class=\"ds-tag-plate\"><span class=\"ds-tag-top\"></span>Rouge</span><span class=\"ds-tag-stem\"></span></div>",
       "css": ".ds-tag { display: inline-flex; flex-direction: column; align-items: center; } .ds-tag-plate { display: flex; align-items: center; gap: 6px; padding: 4px 11px 4px 4px; border-radius: 20px; background: oklch(28.3% 0.008 169.8); color: oklch(93.1% 0.015 90.2); box-shadow: 0 3px 8px color-mix(in oklab, oklch(20.8% 0.009 59.2) 35%, transparent); font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.9; font-size: 22px; white-space: nowrap; transition: background-color 150ms ease-out, color 150ms ease-out; } .ds-tag:hover .ds-tag-plate { background: oklch(73.1% 0.115 85.2); color: oklch(20.8% 0.009 59.2); } .ds-tag-top { width: 26px; height: 26px; border-radius: 50%; background: oklch(93.1% 0.015 90.2); box-shadow: inset 0 0 0 3px oklch(56.6% 0.175 31.9); } .ds-tag-stem { width: 2px; height: 12px; background: oklch(93.1% 0.015 90.2); opacity: 0.8; }"
     },
@@ -625,11 +615,11 @@
   ],
   "narrative": {
     "northStar": "Plateau de bistrot",
-    "overview": "A table game seen from directly above. The display is a billiard-green felt tabletop; every structure on it (arena rim, gutter edge, ticks, rules between zones, tally pips, cooldown gauge) is a brass filet drawn on that felt, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.\n\nIn play, the display's arena is a real-time 3D scene seen through one perspective camera that leans 14° from straight above toward the people standing in front. The table itself stays a plan: unlit felt and brass filets. Before the scene loads, an SVG preview draws the same filets through the same camera (field of view, tilt, framing margin), so the scene lands on it without a jump. Only the tops are modelled: lacquered, clearcoated, ringed in brass, spinning on their point and casting soft ink shadows; a top that loses tips over and sinks into the gutter. The shell around the arena stays neutral: the game hands it a title, a subtitle, a cue, each seat's standing and the announcement of the moment, and the shell draws them in the bistrot vocabulary. For the game choice it hands three more pieces (`GameDefinition`'s `Preview`, `Showcase` and `Cues`): the arena with the demo tops drawn flat on their marks before its scene loads, the game playing by itself, and its pictogram cues.\n\nThe display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so in play it carries only the player's top and name, a stick and one button; before a match it carries the name the room will call the player and one ready toggle. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond pictogram cues (the game's two on the join block and the game choice, one tap cue in play).\n\nThe bistrot look is fixed whatever the system theme. The home is the game choice and stands on the display like a room: same `--cu` column, same felt. While it is shown, `:root:has(.home-page)` maps the neutral tokens onto the bistrot ones (`ground` felt, `ink` chalk, `ink-muted` soft chalk, `rule` brass at 40 %, `rule-strong` brass-deep, focus brass), so the site footer below the column sits on felt too. Only the legal page and its footer follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.",
+    "overview": "A table game on a walnut drum. On the display the arena is a low turned drum standing on the floor of the Looking Glass alcove, seen from the front over a solid lacquer-ink backdrop: a billiard-green felt platform raised inside a ditch, ringed by a walnut lip with a brass filet and a brass band. Every structure on the felt and in the shell (arena rim, ticks, centre ring, rules between zones, tally pips, cooldown gauge) is a brass filet, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.",
     "keyCharacteristics": [
-      "Felt ground, brass filets for every line and ring, no gradients, no glass.",
+      "A walnut drum standing in the alcove over a solid lacquer-ink backdrop; felt and brass filets for every line and ring, no gradients, no glass.",
       "Six lacquered tops, each with a carved glyph, so seats differ by shape as well as colour; flat SVG on every 2D surface, modelled only inside the 3D arena.",
-      "The 3D arena is a flat plan with modelled tops on it, framed by a near-vertical camera; every colour it draws comes from the CSS tokens.",
+      "The 3D arena is a walnut drum seen from the front, 20° above level, framed to 90 % of its row and centred in it; every colour it draws comes from the CSS tokens.",
       "Big Shoulders Display Black, uppercase, for everything named; Barlow Semi Condensed for everything read.",
       "Depth from soft ink-tinted shadows and inset double filets, never from blur or glow.",
       "Display sized in `--cu` units inside a 3 % safe area, the game choice included; controller sized in rem and `--pad-unit`."
@@ -667,12 +657,12 @@
       },
       {
         "name": "The Ink Shadow Rule",
-        "body": "Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %, the 3D scene's shadows included. No hard offsets, no glow, no coloured shadows.",
+        "body": "Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %; the 3D scene's grounded shadows go to 50 %. No hard offsets, no glow, no coloured shadows.",
         "section": "elevation"
       },
       {
-        "name": "The Plan Under Objects Rule",
-        "body": "In 3D the table stays a plan and only what sits on it is modelled. The rim, gutter, ticks and centre ring are unlit filets at their 2D radii and opacities; depth comes from the tops, their light and their shadows.",
+        "name": "The Drum In The Alcove Rule",
+        "body": "The arena is an object standing on the alcove's floor, seen from the front over a solid, unlit backdrop; the scene never draws the alcove's floor or walls. On the felt, the rim, ticks and centre ring stay unlit filets at their 2D radii and opacities; depth comes from the drum's walnut and brass, the tops, their light and their grounded shadows.",
         "section": "elevation"
       }
     ],
@@ -682,16 +672,17 @@
       "**Do** set names, codes, titles and button labels in Big Shoulders Display 900 uppercase, and everything else in Barlow Semi Condensed 500 / 700.",
       "**Do** size display surfaces in `--cu` and keep them inside the 3 % safe area.",
       "**Do** tint every shadow with lacquer ink at 30 to 40 %.",
-      "**Do** keep the bistrot look fixed regardless of system theme; the game choice stands on the felt too, and only the legal page and its footer follow light / dark.",
+      "**Do** keep the bistrot look fixed regardless of system theme; the game choice stands on the lacquer-ink backdrop too, and only the legal page and its footer follow light / dark.",
       "**Do** let a game speak to the room only through its standings: title, subtitle, cue, pips, fallen and winner marks, and the one announcement band across the header.",
       "**Do** read every 3D colour from the CSS tokens through the probe."
     ],
     "donts": [
-      "**Don't** paint gradients, glass, blur or glow onto any surface; the table is flat felt, and the only shading is light falling on the modelled lacquer.",
+      "**Don't** paint gradients, glass, blur or glow onto any surface; the felt is flat, and the only shading is light falling on the modelled walnut, brass and lacquer.",
       "**Don't** use a seat lacquer for anything that is not a player.",
       "**Don't** wrap content in generic UI cards; a panel is a table object (slate in walnut, enamel plaque, ivory QR card).",
       "**Don't** add a third weight to the body face or a second weight to the display face.",
-      "**Don't** model the arena itself: in the 3D scene the platform, gutter, rim, ticks and centre ring stay unlit felt and brass filets; only the tops are modelled and lit.",
+      "**Don't** light the felt or its markings: in the 3D scene the platform, ditch floor, rim, ticks and centre ring stay unlit felt and brass filets; the drum's wood and brass and the tops are modelled and lit.",
+      "**Don't** draw the alcove: no floor, wall or horizon in the scene, only the solid lacquer-ink backdrop.",
       "**Don't** put shell UI over the arena; news goes in the header band, standings on the roster.",
       "**Don't** hard-code a colour in the renderer."
     ]

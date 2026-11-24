@@ -12,7 +12,19 @@
       max-inline-size: none
       position: absolute
 
-    .gutter
+    .drum-side
+      fill: color-mix(in oklab, var(--walnut) 84%, var(--chalk))
+
+    .drum-band
+      fill: var(--brass-deep)
+
+    .drum-lip
+      fill: color-mix(in oklab, var(--walnut) 80%, var(--chalk))
+
+    .ditch-wall
+      fill: color-mix(in oklab, var(--walnut) 70%, var(--slate-line))
+
+    .ditch
       fill: var(--felt-deep)
 
     .platform
@@ -21,9 +33,6 @@
     .filet
       fill: var(--brass)
       fill-rule: evenodd
-
-    .gutter-edge
-      fill-opacity: 0.55
 
     .centre-ring
       fill-opacity: 0.4
@@ -43,6 +52,7 @@
     .ring
       fill: none
       stroke: var(--seat-top-ring)
+      stroke-linecap: round
 
     .cap
       fill: var(--seat-cap)

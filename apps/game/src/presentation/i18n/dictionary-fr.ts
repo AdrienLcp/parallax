@@ -104,8 +104,7 @@ export default defineDictionary({
       free: 'Libre'
     },
     sound: 'Son',
-    takeBack: 'Reprendre',
-    tapToPlay: 'Touchez pour jouer'
+    takeBack: 'Reprendre'
   },
   seat: {
     black: 'Noir',

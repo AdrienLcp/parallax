@@ -1,6 +1,6 @@
 ---
 name: Parallax
-description: A bistrot table game seen from above, played on a portrait display with phones as controllers.
+description: A bistrot table game on a walnut drum, played on a portrait display with phones as controllers.
 colors:
   felt: "oklch(31.7% 0.051 162.2)"
   felt-deep: "oklch(26.3% 0.041 163.2)"
@@ -140,18 +140,18 @@ components:
 
 **Creative North Star: "Plateau de bistrot"**
 
-A table game seen from directly above. The display is a billiard-green felt tabletop; every structure on it (arena rim, gutter edge, ticks, rules between zones, tally pips, cooldown gauge) is a brass filet drawn on that felt, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.
+A table game on a walnut drum. On the display the arena is a low turned drum standing on the floor of the Looking Glass alcove, seen from the front over a solid lacquer-ink backdrop: a billiard-green felt platform raised inside a ditch, ringed by a walnut lip with a brass filet and a brass band. Every structure on the felt and in the shell (arena rim, ticks, centre ring, rules between zones, tally pips, cooldown gauge) is a brass filet, never a modelled object. The objects that sit on the table are the furniture of a café: lacquered spinning tops in six seat colours, an enamel-blue plaque for the room code, an ivory QR card, a slate scoreboard framed in walnut. The phone is the same table seen through one seat: its whole ground turns that seat's lacquer and carries the player's own top.
 
-In play, the display's arena is a real-time 3D scene seen through one perspective camera that leans 14° from straight above toward the people standing in front. The table itself stays a plan: unlit felt and brass filets. Before the scene loads, an SVG preview draws the same filets through the same camera (field of view, tilt, framing margin), so the scene lands on it without a jump. Only the tops are modelled: lacquered, clearcoated, ringed in brass, spinning on their point and casting soft ink shadows; a top that loses tips over and sinks into the gutter. The shell around the arena stays neutral: the game hands it a title, a subtitle, a cue, each seat's standing and the announcement of the moment, and the shell draws them in the bistrot vocabulary. For the game choice it hands three more pieces (`GameDefinition`'s `Preview`, `Showcase` and `Cues`): the arena before its scene loads, the game playing by itself, and its pictogram cues.
+In play, the display's arena is a real-time 3D scene seen through one perspective camera that stands in front of the drum and looks down on it at 20° above level, so the drum reads as an object on the alcove's floor, which is where the display's optics give it depth. The felt and its markings stay unlit, at their token values; the walnut and brass take the light. Before the scene loads, an SVG preview draws the same drum through the same camera, so the scene lands on it without a jump. The tops are lacquered, clearcoated, ringed in brass, spinning on their point and casting soft ink shadows; a top that loses slides into the ditch and lies there along it until the next round. The shell around the arena stays neutral: the game hands it a title, a subtitle, a cue, each seat's standing and the announcement of the moment, and the shell draws them in the bistrot vocabulary. For the game choice it hands three more pieces (`GameDefinition`'s `Preview`, `Showcase` and `Cues`): the arena before its scene loads, the game playing by itself, and its pictogram cues.
 
-The display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so in play it carries only the player's top and name, a stick and one button; before a match it carries the name the room will call the player and one ready toggle. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond pictogram cues (the game's two on the join block and the game choice, one tap cue in play).
+The display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so in play it carries only the player's top and name, a stick and one button; before a match it carries the name the room will call the player and one ready toggle. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond pictogram cues (the game's two on the join block and the game choice).
 
-The bistrot look is fixed whatever the system theme. The home is the game choice and stands on the display like a room: same `--cu` column, same felt. While it is shown, `:root:has(.home-page)` maps the neutral tokens onto the bistrot ones (`ground` felt, `ink` chalk, `ink-muted` soft chalk, `rule` brass at 40 %, `rule-strong` brass-deep, focus brass), so the site footer below the column sits on felt too. Only the legal page and its footer follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.
+The bistrot look is fixed whatever the system theme. The home is the game choice and stands on the display like a room: same `--cu` column, same lacquer-ink backdrop. While it is shown, `:root:has(.home-page)` maps the neutral tokens onto the bistrot ones (`ground` lacquer ink, `ink` chalk, `ink-muted` soft chalk, `rule` brass at 40 %, `rule-strong` brass-deep, focus brass), so the site footer below the column sits on felt too. Only the legal page and its footer follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.
 
 **Key Characteristics:**
-- Felt ground, brass filets for every line and ring, no gradients, no glass.
+- A walnut drum standing in the alcove over a solid lacquer-ink backdrop; felt and brass filets for every line and ring, no gradients, no glass.
 - Six lacquered tops, each with a carved glyph, so seats differ by shape as well as colour; flat SVG on every 2D surface, modelled only inside the 3D arena.
-- The 3D arena is a flat plan with modelled tops on it, framed by a near-vertical camera; every colour it draws comes from the CSS tokens.
+- The 3D arena is a walnut drum seen from the front, 20° above level, framed to 90 % of its row and centred in it; every colour it draws comes from the CSS tokens.
 - Big Shoulders Display Black, uppercase, for everything named; Barlow Semi Condensed for everything read.
 - Depth from soft ink-tinted shadows and inset double filets, never from blur or glow.
 - Display sized in `--cu` units inside a 3 % safe area, the game choice included; controller sized in rem and `--pad-unit`.
@@ -162,12 +162,12 @@ A dark felt-and-brass table with café objects in enamel, walnut, slate and ivor
 
 ### Primary
 
-- **Billiard Felt** (felt): the ground of the display page and of every phone screen that is not inside a seat (notices, connecting). The arena's platform is felt lifted 6 % toward chalk.
-- **Deep Felt** (felt-deep): the gutter ring around the arena, the place a top falls into.
+- **Billiard Felt** (felt): the ground of the display's notices and of every phone screen that is not inside a seat (notices, connecting). The arena's platform is felt lifted 6 % toward chalk.
+- **Deep Felt** (felt-deep): the ditch around the platform, the place a top falls into.
 
 ### Secondary
 
-- **Brass** (brass): every filet (arena rim at full strength, gutter edge at 55 %, centre ring at 40 %, ticks at 70 %), the rule under the join block, the rule under the game name on the game choice, the roster's empty-seat sockets, the dash cooldown ring, the rule under the play header (25 % while the QR is open, with a full-strength bar draining along it), the play header's tap pictogram, the ring that fills while "Games" is held, the bands' top and bottom borders, the tally pips, the line through a fallen seat's name, the ring around the match winner's place, the primary action fill ("Open the room", the notice action), and the focus ring on bistrot surfaces. Also the ring around each top on the display (`--seat-top-ring`), flat or modelled.
+- **Brass** (brass): every filet (arena rim at full strength, centre ring at 40 %, ticks at 70 %, the filet along the drum's lip), the drum's band, the rule under the join block, the rule under the game name on the game choice, the roster's empty-seat sockets, the dash cooldown ring, the rule under the play header, the ring that fills while "Games" is held, the bands' top and bottom borders, the tally pips, the line through a fallen seat's name, the ring around the match winner's place, the primary action fill ("Open the room", the notice action), and the focus ring on bistrot surfaces. Also the ring around each top on the display (`--seat-top-ring`), flat or modelled.
 - **Deep Brass** (brass-deep): the inner filet inset in a brass button, and the focus colour on the neutral light theme.
 
 ### Tertiary
@@ -182,8 +182,8 @@ A dark felt-and-brass table with café objects in enamel, walnut, slate and ivor
 - **Chalk** (chalk): all text written on felt or slate.
 - **Soft Chalk** (chalk-soft): secondary text (free seat, absent player, band detail, the play header's subtitle, the player count on the game choice, an unchosen game's plaque, the resting "Games" control).
 - **Ivory** (ivory): the QR card's quiet zone, the plaque lettering and filet (45 % for an unchosen game's outline), the cap of dark tops.
-- **Lacquer Ink** (lacquer-ink): QR modules, text on brass, the cap of light tops, and the tint of every shadow, including the 3D scene's shadow catcher.
-- **Host neutrals** (ground, ink, ink-muted, rule, rule-strong, selection): the legal page and the footer, following the system theme; remapped onto felt, chalk and brass while the game choice is shown.
+- **Lacquer Ink** (lacquer-ink): the display's backdrop wherever the arena stands (the room and the game choice: solid and unlit, as the alcove asks), QR modules, text on brass, the cap of light tops, and the tint of every shadow, including the 3D scene's shadow catchers.
+- **Host neutrals** (ground, ink, ink-muted, rule, rule-strong, selection): the legal page and the footer, following the system theme; remapped onto lacquer ink, chalk and brass while the game choice is shown.
 
 ### Seat lacquers
 
@@ -210,7 +210,7 @@ Six seats, by slot 0 to 5: **Red** (seat-red), **Ivory** (seat-ivory), **Black**
 
 - **Display** (900, uppercase, 0.9 line-height, 0.02em tracking, balanced): every name, title, room code and button label. Sized by the caller: on the phone the lobby name field (4.875rem, shrinking to fit a long name), the band title (4rem), the plaque (3.625rem), the notice headline, rotate cue and ready button (2.875rem), the seat badge (2rem), the dash label (1.375rem). On the display, in `--cu`: countdown (16), game name on the game choice (15), play title (8), plaque (6.4, compact 2.6), announcement (5.5), join heading, notice and "Open the room" (5.4), game plaque (3.4), roster name (3.2, shrinking to fit its column for a long name), top tag (2.2).
 - **Plaque** (display voice, 0.14em tracking): the four-letter room code only, its trailing tracking removed from the end padding.
-- **Label** (700, 1.4 line-height): cues, statuses, the free / absent seat text, band detail. 1.25rem on the phone; 1.7 to 2.6 `--cu` on the display (absence 1.7, cues and the roster's ready mark 1.9, subtitle, roster cue, tap cue and "Games" 2.2, free seat 2.4, player count 2.6).
+- **Label** (700, 1.4 line-height): cues, statuses, the free / absent seat text, band detail. 1.25rem on the phone; 1.7 to 2.6 `--cu` on the display (absence 1.7, cues and the roster's ready mark 1.9, subtitle, roster cue and "Games" 2.2, free seat 2.4, player count 2.6).
 - **Body** (500, 1rem, 1.6 line-height, `text-wrap: pretty`): running text on the host's secondary pages.
 - **Small** (500, 0.875rem, 1.5 line-height): footer and notes on the host pages.
 
@@ -222,7 +222,7 @@ Six seats, by slot 0 to 5: **Red** (seat-red), **Ivory** (seat-ivory), **Black**
 
 ## Layout
 
-The display is a fixed portrait column, `56.25cu × 100cu` (9:16), centred on felt, with a block safe area of 1.7cu and an inline one of 1.6875cu. Both come from `presentation/styles/_display.sass`: `units` sets `--cu`, the safe area and the raised shadow on the page, `column` sizes the column; the room and the game choice include them. Three rows: the header on top, the arena filling the middle, the roster at a fixed 22cu at the bottom. The header is one grid cell holding two layers. The first is the join block while the room waits (ivory QR at 23cu wide beside the heading and plaque, two pictogram cues under a brass rule) and the play header while a game runs (title and subtitle on the left; on the right the compact plaque over a tap cue, or the QR card once the display is touched; a 0.2cu brass rule beneath; its height never changes). The second is the announcement band, which covers the header and bleeds through the inline safe area to the panel's edges; it never covers the arena. The arena row holds the 3D canvas (transparent around the gutter, so the page's felt is the backdrop) with the countdown centred over it. The roster is a 3 × 2 grid of seats, each a top beside its name over a slate-line rule, closed by a footer row: the cue on the left, "Games" on the right.
+The display is a fixed portrait column, `56.25cu × 100cu` (9:16), centred on the lacquer-ink backdrop, with a block safe area of 1.7cu and an inline one of 1.6875cu. Both come from `presentation/styles/_display.sass`: `units` sets `--cu`, the safe area and the raised shadow on the page, `column` sizes the column; the room and the game choice include them. Three rows: the header on top, the arena filling the middle, the roster at a fixed 22cu at the bottom. The header is one grid cell holding two layers. The first is the join block while the room waits (ivory QR at 23cu wide beside the heading and plaque, two pictogram cues under a brass rule) and the play header while a game runs (title and subtitle on the left; on the right the compact plaque beside the QR card, always shown; a 0.2cu brass rule beneath). The second is the announcement band, which covers the header and bleeds through the inline safe area to the panel's edges; it never covers the arena. The arena row holds the 3D canvas (transparent around the drum, so the page's solid lacquer ink is the alcove's backdrop) with the countdown centred over it. The roster is a 3 × 2 grid of seats, each a top beside its name over a slate-line rule, closed by a footer row: the cue on the left, "Games" on the right.
 
 The game choice uses the same column in three rows: the head (game plaques, once there is more than one game, over the game name in 15cu with its player count bottom-aligned beside it, on a 0.2cu brass rule), the game playing by itself filling the middle (a touch on it opens the room), and the foot (the game's two pictogram cues over a 10cu-tall brass "Open the room" button spanning the column). The site footer follows below the column, outside the display: a drag on the column never pans to it (`touch-action: pinch-zoom`), so the display stays on its title.
 
@@ -247,17 +247,17 @@ Flat surfaces lifted by soft ambient shadows tinted with lacquer ink (never blac
 
 ### The 3D arena
 
-The tops are lit; the plan is not. Felt, gutter and filets use unlit materials, so they render exactly at their token values. The tops take an ivory ambient light (0.6) and an ivory key light (2.4) from above, slightly left and toward the viewer, with dim room reflections (0.55) for the lacquer's sheen. Bodies are clearcoated lacquer (clearcoat 1, clearcoat roughness 0.12, roughness 0.38); the ring is brass metal (metalness 0.85, roughness 0.3); cap and glyph are matte. Shadows fall on a catcher tinted lacquer ink at 38 % with a soft filtered edge. A top leans with its speed (at most 0.3 rad), and a falling top tips up to 1.2 rad more as it sinks into the gutter. Reduced motion stops the spin, not the play.
+The arena is a walnut drum (`arena-drum.ts`, `drum-model.ts`, in arena units where the platform's radius is 1): its side turned from a 1.285 foot to a 1.25 lip, the felt platform raised 0.16 above the alcove's floor inside a ditch 0.07 deep, a walnut lip standing 0.03 above the felt out from the ditch's outer edge (1.14), a 0.012 brass filet along the lip's inner edge and a brass band round its outer edge. The felt, the ditch's floor and the markings use unlit materials, so they render exactly at their token values; the walnut (`--walnut`, the ditch's outer wall mixed 70 % with lacquer ink) is matte (roughness 0.62) and the band is brass metal. An ivory ambient light (0.6) and an ivory key light (2.4), high, slightly left and toward the viewer, light the drum and the tops, with dim room reflections (0.55) for the lacquer's sheen. Bodies are clearcoated lacquer (clearcoat 1, clearcoat roughness 0.12, roughness 0.38); the ring is brass metal (metalness 0.85, roughness 0.3); cap and glyph are matte. The tops stand twice their physics' height (2.4 times their radius) so they read from across the room. Shadows are grounded: catchers tinted lacquer ink at 50 % on the felt, in the ditch and on the alcove's floor, with a soft filtered edge; nothing falls on a wall. A top leans with its speed (at most 0.3 rad). A falling top slides to the middle of the ditch, drops to its floor in 0.55 s and lies down along it, its spin dying; it stays there until the next round. Reduced motion stops the spin, not the play.
 
 ### Named Rules
 
-**The Ink Shadow Rule.** Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %, the 3D scene's shadows included. No hard offsets, no glow, no coloured shadows.
+**The Ink Shadow Rule.** Every shadow is soft, offset downward, and tinted with lacquer ink between 30 and 40 %; the 3D scene's grounded shadows go to 50 %. No hard offsets, no glow, no coloured shadows.
 
-**The Plan Under Objects Rule.** In 3D the table stays a plan and only what sits on it is modelled. The rim, gutter, ticks and centre ring are unlit filets at their 2D radii and opacities; depth comes from the tops, their light and their shadows.
+**The Drum In The Alcove Rule.** The arena is an object standing on the alcove's floor, seen from the front over a solid, unlit backdrop; the scene never draws the alcove's floor or walls. On the felt, the rim, ticks and centre ring stay unlit filets at their 2D radii and opacities; depth comes from the drum's walnut and brass, the tops, their light and their grounded shadows.
 
 ## Shapes
 
-Circles dominate: tops, arena rings, the dash disc, the stick base. Rectangles are café objects with small radii: the QR card (0.6cu), the brass button (0.5cu on the display, 4px on the phone), the roster (0.8cu), the plaque (1.2cu on the display, compact 0.6cu, 12px on the phone), the game plaques at the plaque's radius. Chips, spinners and tally pips are pills or circles. Dashed strokes mean an empty place or an invitation (the roster's free-seat socket, a dashed pictogram cue, the tap cue's ripple). Rings are gauges: the dash cooldown, the "Games" hold ring. Bands are full-bleed with brass top and bottom borders, wiped in from the left by `clip-path`; the display's band wipes out to the right. The modelled top is a lathe-turned body on a point, its shoulder carrying the brass ring and its flat crown carrying cap and glyph at the flat top's proportions.
+Circles dominate: tops, arena rings, the dash disc, the stick base. Rectangles are café objects with small radii: the QR card (0.6cu), the brass button (0.5cu on the display, 4px on the phone), the roster (0.8cu), the plaque (1.2cu on the display, compact 0.6cu, 12px on the phone), the game plaques at the plaque's radius. Chips, spinners and tally pips are pills or circles. Dashed strokes mean an empty place or an invitation (the roster's free-seat socket, a dashed pictogram cue). Rings are gauges: the dash cooldown, the "Games" hold ring. Bands are full-bleed with brass top and bottom borders, wiped in from the left by `clip-path`; the display's band wipes out to the right. The modelled top is a lathe-turned body on a point, its shoulder carrying the brass ring and its flat crown carrying cap and glyph at the flat top's proportions.
 
 ## Components
 
@@ -275,7 +275,7 @@ The game choice's tabs, shown only once the app hosts a second game: one plaque 
 
 ### Play Header
 
-The display's header while a game runs, drawn from the game's standings: a display-voice title (8cu, one line) over a soft-chalk label subtitle. At rest the right side holds the compact plaque over a tap cue: a 5cu brass pictogram (dot, ring, and a dashed ripple swelling out on a loop) beside "Touch to play" in chalk. Any touch on the display outside its controls (holding "Games" never opens it) swaps them for the ivory QR card (12cu wide, unfolding from the header's corner) for 20 s (`QR_REVEAL_SECONDS`); the 0.2cu brass rule closing the header drops to 25 % and a full brass bar drains along it over those 20 s. Each touch restarts the time and the bar. The QR overlaps the rule rather than growing the header, whose height never changes. Reduced motion keeps the bar full and still.
+The display's header while a game runs, drawn from the game's standings: a display-voice title (8cu, one line) over a soft-chalk label subtitle. The right side holds the compact plaque beside the ivory QR card (12.5cu wide), both bottom-aligned, so a visitor walking up mid-game can always scan in: the display has no touch panel, so nothing on it waits for a touch. A 0.2cu brass rule closes the header.
 
 ### Announcement Band
 
@@ -283,11 +283,11 @@ The one place the display speaks to the whole room: a slate band with 0.3cu bras
 
 ### Arena
 
-The 3D scene described under Elevation & Depth, filling its row. Before the scene loads, and while no room is known, the game's `Preview` stands in: an SVG of the felt, gutter, filets and ticks projected through the scene's own camera (`arena-camera.ts`: 28° field of view, 14° tilt, 1.06 framing margin), sized to its host, so the scene replaces it in place. It carries no home marks. The countdown sits over the centre in chalk display numerals (16cu), each number beating in from 125 % scale and transparent.
+The 3D scene described under Elevation & Depth, filling its row. The camera (`arena-camera.ts`) looks at the felt's centre from the room's side, 20° above level, through a lens of 48° vertical field over the display's 9:16 portrait (its horizontal field is kept in any canvas, so the drum keeps its size and perspective whatever height its row takes). It stands back until the drum's extent (its foot and lip, a top standing at the rim, a fallen top in the ditch) spans 90 % of the canvas's binding axis, then a view offset centres that extent on the row's height. Before the scene loads, and while no room is known, the game's `Preview` stands in: an SVG of the drum (walnut side and lip, brass band and lip filet, ditch, felt, filets and ticks) projected through that same camera, sized to its host, so the scene replaces it in place. It carries no home marks. The countdown sits over the centre in chalk display numerals (16cu), each number beating in from 125 % scale and transparent.
 
 ### Top Tag
 
-A name tag over each top on the arena, so a player finds their own top from across the room: a slate pill (2cu radius, raised by an ink shadow at 35 %) holding the flat seat top (2.6cu, ringed in chalk) and the seat's name in chalk display lettering (2.2cu), above a 0.2cu chalk stem at 80 % that ends on the top's far rim. The renderer projects that rim to the page; the tag follows it every frame. While the top's dash recharges, the pill turns brass with lacquer-ink lettering and an ink ring. An absent player's tag loses its fill for a dashed soft-chalk outline, its top at 50 %. A falling top's tag fades out by the time the top is halfway down the gutter. Decorative: the roster names the seats for assistive technology.
+A name tag over each top on the arena, so a player finds their own top from across the room: a slate pill (2cu radius, raised by an ink shadow at 35 %) holding the flat seat top (2.6cu, ringed in chalk) and the seat's name in chalk display lettering (2.2cu), above a 0.2cu chalk stem at 80 % that ends on the top's far rim. The renderer projects that rim to the page; the tag follows it every frame. Tags never overlap (`tag-placement.ts`): the nearest top, lowest on the canvas, keeps its tag low, and a farther top's tag climbs above any plate it would cover, its stem lengthening to stay on its top. While the top's dash recharges, the pill turns brass with lacquer-ink lettering and an ink ring. An absent player's tag loses its fill for a dashed soft-chalk outline, its top at 50 %. A falling top's tag fades out by the time the top is halfway into the ditch. Decorative: the roster names the seats for assistive technology.
 
 ### Buttons
 
@@ -303,7 +303,7 @@ Slate panel in a walnut frame, a 3 × 2 grid of seats; while a game runs it is t
 
 ### Game Showcase
 
-The middle of the game choice: the real arena and its lacquered tops, driven by bots round after round (four demo seats, a short beat on their marks, a beat on a decided round, a stalled round started over). No room and no names. While it loads, the game's `Preview` stands in with the demo tops drawn flat on their marks through the same camera (lacquer, brass edge, cap and glyph over a soft ink shadow), the marks its first round starts from, so the first screen is never an empty arena. Reduced motion leaves the tops still on their marks. A touch on it opens the room, like the brass button.
+The middle of the game choice: the real arena and its lacquered tops, driven by bots round after round (four demo seats, a short beat on their marks, a beat on a decided round, a stalled round started over). No room and no names. While it loads, the game's `Preview` stands in with the demo tops drawn flat on their marks through the same camera (the turned body's profile in lacquer, the near half of its brass ring, its crown with cap and glyph, over a soft ink shadow), the marks its first round starts from, so the first screen is never an empty arena. Reduced motion leaves the tops still on their marks. A touch on it opens the room, like the brass button.
 
 ### Lobby Sheet
 
@@ -340,16 +340,17 @@ The display alone plays sound; phones stay silent. Everything is synthesised wit
 - **Do** set names, codes, titles and button labels in Big Shoulders Display 900 uppercase, and everything else in Barlow Semi Condensed 500 / 700.
 - **Do** size display surfaces in `--cu` and keep them inside the 3 % safe area.
 - **Do** tint every shadow with lacquer ink at 30 to 40 %.
-- **Do** keep the bistrot look fixed regardless of system theme; the game choice stands on the felt too, and only the legal page and its footer follow light / dark.
+- **Do** keep the bistrot look fixed regardless of system theme; the game choice stands on the lacquer-ink backdrop too, and only the legal page and its footer follow light / dark.
 - **Do** let a game speak to the room only through its standings: title, subtitle, cue, pips, fallen and winner marks, and the one announcement band across the header.
 - **Do** read every 3D colour from the CSS tokens through the probe.
 
 ### Don't:
 
-- **Don't** paint gradients, glass, blur or glow onto any surface; the table is flat felt, and the only shading is light falling on the modelled lacquer.
+- **Don't** paint gradients, glass, blur or glow onto any surface; the felt is flat, and the only shading is light falling on the modelled walnut, brass and lacquer.
 - **Don't** use a seat lacquer for anything that is not a player.
 - **Don't** wrap content in generic UI cards; a panel is a table object (slate in walnut, enamel plaque, ivory QR card).
 - **Don't** add a third weight to the body face or a second weight to the display face.
-- **Don't** model the arena itself: in the 3D scene the platform, gutter, rim, ticks and centre ring stay unlit felt and brass filets; only the tops are modelled and lit.
+- **Don't** light the felt or its markings: in the 3D scene the platform, ditch floor, rim, ticks and centre ring stay unlit felt and brass filets; the drum's wood and brass and the tops are modelled and lit.
+- **Don't** draw the alcove: no floor, wall or horizon in the scene, only the solid lacquer-ink backdrop.
 - **Don't** put shell UI over the arena; news goes in the header band, standings on the roster.
 - **Don't** hard-code a colour in the renderer.
