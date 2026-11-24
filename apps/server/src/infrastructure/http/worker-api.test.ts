@@ -153,6 +153,30 @@ describe('worker API', () => {
     screen.close()
   })
 
+  it('tells every phone when the screen comes back, so a held stick reaches it again', async () => {
+    const { code, screenToken } = await openRoom()
+    const screen = await joinRoom(code, { role: 'screen', screenToken })
+    const phone = await joinRoom(code, {
+      role: 'player',
+      sessionId: 'session-of-the-return-test'
+    })
+
+    screen.close()
+
+    const roomAgain = phone.nextMatching(ofType('room.updated'))
+    const returned = await joinRoom(code, { role: 'screen', screenToken })
+
+    expect(await roomAgain).toMatchObject({ code, type: 'room.updated' })
+
+    const stick = returned.nextMatching(ofType('sumo.stick'))
+    phone.send({ type: 'sumo.stick', x: 0.4, y: 0 })
+
+    expect(await stick).toMatchObject({ type: 'sumo.stick', x: 0.4, y: 0 })
+
+    phone.close()
+    returned.close()
+  })
+
   it('refuses a phone in a room nobody opened', async () => {
     const phone = await joinRoom('WXY9', {
       role: 'player',

@@ -17,7 +17,9 @@ import {
  *
  * Each new `room` may answer a reconnection, and the screen forgets the stick
  * of a seat that went absent: the next tick sends the stick again, even under
- * a thumb that held still.
+ * a thumb that held still. The room drops what it cannot forward while the
+ * display is away, and the display's return sends every phone a new `room`:
+ * that stick comes back the same way.
  */
 export const usePacedStick = (
   send: (stick: PlanarVector) => boolean,
