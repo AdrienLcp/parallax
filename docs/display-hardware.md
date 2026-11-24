@@ -60,3 +60,16 @@ The web path for these displays would be `@lookingglass/webxr`. Its last release
 ## Rendering strategy
 
 One renderer, written for the HLD: a fullscreen 9:16 frame, one perspective camera framed on the alcove, the arena as an object on the alcove's floor, solid backdrop, grounded soft shadows, content in the safe area, plain pointer events. The camera's numbers are matched on the unit by eye until the template's values are known.
+
+## Measured alcove (first rough calibration, 2026-11-24)
+
+Traced by eye on the unit, white backdrop, from the players' spot (standing, centred, about 1.5 m), with the mock bench's calibration page. Raw points: `docs/display-calibration/2026-11-24.json`. Rough, to redo once the vendor's numbers or a demo video are in hand.
+
+In % of the portrait screen (x from the left, y from the top):
+
+- **Floor:** a thin strip at the very bottom. Front edge at y ≈ 97.5 % (x 5.4 → 96.8 %), back edge at y ≈ 90.4 % (x 13.5 → 86.4 %). Back over front width ≈ 0.80, so the box is shallow.
+- **Back wall:** x 13 → 86 %, y 9.6 → 90.4 %. It fills almost the whole screen.
+- **Roof front edge:** y ≈ 2.4 %.
+- **Vanishing points:** floor edges meet at (45 %, 62 %), roof edges at (46.5 %, 38.6 %). For a true box seen from one eye they would coincide, so the eye sits near the middle of the screen and the traces carry a few percent of error.
+
+What it implies: the viewer looks at the alcove almost level, so its floor shows only as a thin strip. Content stands on that strip and rises in front of the back wall. A horizontal arena seen from this eye is almost edge-on. Games read best when their action happens upright, in the plane of the back wall and just in front of it.

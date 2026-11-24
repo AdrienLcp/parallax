@@ -1,0 +1,205 @@
+{
+  "kind": "parallax-alcove-calibration",
+  "version": 1,
+  "savedAt": "2026-11-24T15:36:46.759Z",
+  "screen": {
+    "cssWidth": 1440,
+    "cssHeight": 2560,
+    "devicePixelRatio": 1.5,
+    "deviceWidth": 2160,
+    "deviceHeight": 3840,
+    "screenWidth": 1441,
+    "screenHeight": 2561,
+    "fullscreen": false
+  },
+  "backdrop": "white",
+  "wallBottomLinkedToFloor": true,
+  "points": {
+    "floorFL": {
+      "label": "Sol avant G",
+      "cssPx": {
+        "x": 77.87,
+        "y": 2497.87
+      },
+      "devicePx": {
+        "x": 116.8,
+        "y": 3746.8
+      },
+      "percent": {
+        "x": 5.407,
+        "y": 97.573
+      }
+    },
+    "floorFR": {
+      "label": "Sol avant D",
+      "cssPx": {
+        "x": 1394.13,
+        "y": 2495.2
+      },
+      "devicePx": {
+        "x": 2091.2,
+        "y": 3742.8
+      },
+      "percent": {
+        "x": 96.815,
+        "y": 97.469
+      }
+    },
+    "floorBL": {
+      "label": "Sol fond G",
+      "cssPx": {
+        "x": 194,
+        "y": 2314
+      },
+      "devicePx": {
+        "x": 291,
+        "y": 3471
+      },
+      "percent": {
+        "x": 13.472,
+        "y": 90.391
+      }
+    },
+    "floorBR": {
+      "label": "Sol fond D",
+      "cssPx": {
+        "x": 1244.67,
+        "y": 2314.67
+      },
+      "devicePx": {
+        "x": 1867,
+        "y": 3472
+      },
+      "percent": {
+        "x": 86.435,
+        "y": 90.417
+      }
+    },
+    "wallTL": {
+      "label": "Mur haut G",
+      "cssPx": {
+        "x": 186,
+        "y": 248.67
+      },
+      "devicePx": {
+        "x": 279,
+        "y": 373
+      },
+      "percent": {
+        "x": 12.917,
+        "y": 9.714
+      }
+    },
+    "wallTR": {
+      "label": "Mur haut D",
+      "cssPx": {
+        "x": 1236,
+        "y": 242.67
+      },
+      "devicePx": {
+        "x": 1854,
+        "y": 364
+      },
+      "percent": {
+        "x": 85.833,
+        "y": 9.479
+      }
+    },
+    "wallBL": {
+      "label": "Mur bas G",
+      "cssPx": {
+        "x": 194,
+        "y": 2314
+      },
+      "devicePx": {
+        "x": 291,
+        "y": 3471
+      },
+      "percent": {
+        "x": 13.472,
+        "y": 90.391
+      }
+    },
+    "wallBR": {
+      "label": "Mur bas D",
+      "cssPx": {
+        "x": 1244.67,
+        "y": 2314.67
+      },
+      "devicePx": {
+        "x": 1867,
+        "y": 3472
+      },
+      "percent": {
+        "x": 86.435,
+        "y": 90.417
+      }
+    },
+    "roofL": {
+      "label": "Plafond avant G",
+      "cssPx": {
+        "x": 65.87,
+        "y": 64.93
+      },
+      "devicePx": {
+        "x": 98.8,
+        "y": 97.4
+      },
+      "percent": {
+        "x": 4.574,
+        "y": 2.536
+      }
+    },
+    "roofR": {
+      "label": "Plafond avant D",
+      "cssPx": {
+        "x": 1377.47,
+        "y": 56.27
+      },
+      "devicePx": {
+        "x": 2066.2,
+        "y": 84.4
+      },
+      "percent": {
+        "x": 95.657,
+        "y": 2.198
+      }
+    }
+  },
+  "derived": {
+    "floorVanishingPoint": {
+      "cssPx": {
+        "x": 648.44,
+        "y": 1594.51
+      },
+      "devicePx": {
+        "x": 972.7,
+        "y": 2391.8
+      },
+      "percent": {
+        "x": 45.031,
+        "y": 62.286
+      }
+    },
+    "roofVanishingPoint": {
+      "cssPx": {
+        "x": 669.84,
+        "y": 988.66
+      },
+      "devicePx": {
+        "x": 1004.8,
+        "y": 1483
+      },
+      "percent": {
+        "x": 46.517,
+        "y": 38.619
+      }
+    },
+    "floorDepthRatio": 0.7982156452419512,
+    "backWallHeightOverWidth": 1.9657505790560443
+  },
+  "testObject": {
+    "depthOverWidth": 0.6,
+    "heightOverWidth": 1.4
+  }
+}
