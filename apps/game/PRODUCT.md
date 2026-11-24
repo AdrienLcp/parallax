@@ -25,7 +25,7 @@ The game lives inside a physical holographic alcove (the HLD), so depth comes fr
 
 ## Operating Context
 
-- **The display:** a portrait touchscreen on a rolling stand, most likely a Looking Glass HLD 86" (2160×3840, 10-point touch). The image blends with a fixed alcove built into the optics. Details and creative rules are in `docs/display-hardware.md`.
+- **The display:** a Looking Glass unit of about 27" on a rolling stand (EDID `LKG H02B0002`, 2025), portrait 2160×3840, **without touch**: it is driven as an extended monitor of a PC, and the phones are the only input. The image blends with a fixed alcove built into the optics. Details and creative rules are in `docs/display-hardware.md`.
 - **Viewing distance:** the display is read from a few metres away by a standing group, and is never scrolled.
 - **The phones:** held in one or both hands at about 40 cm, used by thumb while the eyes stay on the big display.
 - **The network:** a company Wi-Fi that often isolates devices from each other, hence a hosted room server rather than a local one.
@@ -37,11 +37,10 @@ The game lives inside a physical holographic alcove (the HLD), so depth comes fr
 - **Phone connection states:** connecting, open, reconnecting, refused.
 - **Sumo inputs:** a stick (sent at 20 Hz) and a dash.
 - **Rendering on the display:** one perspective camera, a solid unlit backdrop, soft grounded shadows, and content inside a ~3 % safe area that never touches the alcove's walls or roof.
-- **QR:** plain 2D on a flat backdrop, inside the safe area; its contrast must be checked on the device (inverted is the fallback).
+- **QR:** plain 2D on a flat backdrop, inside the safe area, always visible since the display cannot be touched to reveal it; its contrast must be checked on the device (inverted is the fallback).
 - **Languages:** French and English. A phone follows its own language.
 - **Undecided:**
   - how a seat is released (by the display, by the player, or after a delay);
-  - whether the QR stays visible permanently or appears on touch;
   - whether the sumo needs 4 players or starts at 2.
 
 ## Brand Commitments

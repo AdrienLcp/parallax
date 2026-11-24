@@ -1,6 +1,6 @@
 # Parallax
 
-Party games for the office's Looking Glass display (portrait touch screen):
+Party games for the office's Looking Glass display (portrait screen, no touch):
 phones join a room by QR code and act as controllers. `apps/game` is the web app
 (display and phone), `apps/server` the Cloudflare Worker that serves it and
 holds the rooms, `packages/protocol` the messages between them.

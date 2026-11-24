@@ -1,6 +1,6 @@
 # Display hardware
 
-The office display is a Looking Glass unit: a portrait touchscreen of about 27", on a stand. People on site believe it has no PC attached and runs "something like Android". This page records what each candidate means for a Three.js web app. Research dates from 2026-11-23, corrected on 2026-11-24 after the first test on the unit.
+The office display is a Looking Glass unit: a portrait screen of about 27", on a stand, **with no touch panel**. Its EDID names the maker `LKG`, product code `H02B0002`, built in 2025, and it runs at 2160×3840 in portrait. On 2026-11-24 it was plugged into a Windows PC as an extended monitor (screen 2), and a browser in fullscreen on it was enough: the depth comes from the optics, not from a special driver or SDK. This page records what that means for a Three.js web app. Research dates from 2026-11-23, corrected on 2026-11-24 after the first test on the unit.
 
 ## What the first test showed
 
@@ -12,12 +12,12 @@ On 2026-11-24 the app ran on the unit. The image was clean and sharp, but flat: 
 ## Likely model: Looking Glass HLD 27" (Hololuminescent Display)
 
 - Portrait 2160×3840, 500 nits, 60 Hz.
-- Optional capacitive 10-point touch panel.
+- Optional capacitive 10-point touch panel. The office unit has none: nothing on the display may wait for a touch, and the phones are the only input.
 - Inputs: HDMI 2.0 and DP 1.2. Its USB-A port is power only. It has a 3.5 mm jack, so check whether the unit has speakers before counting on sound.
-- No built-in computer. It ships with a Raspberry Pi 4 (2 GB) "Demo Media Player" that plays MP4 files from a USB stick. That small Linux box is probably what people take for "Android". A browser running Three.js at 4K will struggle on it, so the app needs a laptop, a mini PC or a BrightSign HTML5 player. Looking Glass recommends at least an RTX 3060 or an Apple M1.
+- No built-in computer. It ships with a Raspberry Pi 4 (2 GB) "Demo Media Player" that plays MP4 files from a USB stick. That small Linux box is probably what people take for "Android". A browser running Three.js at 4K will struggle on it, so the app needs a laptop, a mini PC or a BrightSign HTML5 player. Looking Glass recommends at least an RTX 3060 or an Apple M1. The first test ran from a desktop PC, so the GPU budget for a Pi-class player is still unknown.
 - The HLD line comes in 16", 27" and 86". There is no 32" HLD.
 
-**How the HLD makes depth.** It is an ordinary LCD with an optical stack in front that shows a recessed box, the "alcove". The video blends with that alcove, roughly like a multiply. Depth comes from content that sits *inside* the alcove: an object standing on its floor, seen from the front. A frame that fills the screen with its own floor or walls fights the optics and reads flat.
+**How the HLD makes depth.** It is an ordinary LCD with an optical stack in front that shows a recessed box, the "alcove". The video blends with that alcove, roughly like a multiply. Depth comes from content that sits _inside_ the alcove: an object standing on its floor, seen from the front. A frame that fills the screen with its own floor or walls fights the optics and reads flat.
 
 Official creative rules (from the HLD docs and the Unity and Unreal templates):
 
@@ -50,12 +50,12 @@ The web path for these displays would be `@lookingglass/webxr`. Its last release
 
 ## How to confirm on site
 
-| Check              | HLD                                                                       | Lenticular                                         |
-| ------------------ | ------------------------------------------------------------------------- | -------------------------------------------------- |
-| Back of the unit   | Raspberry Pi 4 on micro-HDMI; HDMI + DP + power-only USB-A + 3.5 mm jack | Two DisplayPort cables, or USB-C with a status LED |
-| Label              | "Hololuminescent Display (HLD)"                                           | "Spatial Display" / "Light Field", serial LKG-…    |
-| Walk sideways      | Only the alcove seems to shift                                            | The content itself shows parallax                  |
-| Desktop text       | Crisp                                                                     | Smeared                                            |
+| Check            | HLD                                                                      | Lenticular                                         |
+| ---------------- | ------------------------------------------------------------------------ | -------------------------------------------------- |
+| Back of the unit | Raspberry Pi 4 on micro-HDMI; HDMI + DP + power-only USB-A + 3.5 mm jack | Two DisplayPort cables, or USB-C with a status LED |
+| Label            | "Hololuminescent Display (HLD)"                                          | "Spatial Display" / "Light Field", serial LKG-…    |
+| Walk sideways    | Only the alcove seems to shift                                           | The content itself shows parallax                  |
+| Desktop text     | Crisp                                                                    | Smeared                                            |
 
 ## Rendering strategy
 
