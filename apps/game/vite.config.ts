@@ -1,3 +1,5 @@
+import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { metricTwins } from '@adrienlcp/styles/metric-twins'
@@ -25,6 +27,24 @@ const FALLBACK_FACES_WRITTEN_BY_HAND = new Set([
   'Big Shoulders Display fallback'
 ])
 
+/** The commit a build is made from: CI's, or the checkout's; empty when neither is known. */
+const buildCommit = (): string => {
+  if (process.env.GITHUB_SHA !== undefined) {
+    return process.env.GITHUB_SHA.slice(0, 7)
+  }
+  try {
+    return execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
+      encoding: 'utf8'
+    }).trim()
+  } catch {
+    return ''
+  }
+}
+
+const appVersion: string = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8')
+).version
+
 export default defineConfig({
   build: {
     rolldownOptions: {
@@ -48,6 +68,10 @@ export default defineConfig({
         metricTwins()
       ]
     }
+  },
+  define: {
+    'import.meta.env.VITE_APP_COMMIT': JSON.stringify(buildCommit()),
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(appVersion)
   },
   plugins: [
     react({ compiler: { reportDiagnostics: true } }),

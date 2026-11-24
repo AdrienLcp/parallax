@@ -1,7 +1,10 @@
+@use '../../presentation/styles/display'
 @use '../../presentation/styles/typography'
 
 @layer components
   .room-join
+    @include display.on-backdrop
+
     align-items: start
     display: grid
     gap: calc(var(--cu) * 2.4) calc(var(--cu) * 2.6)

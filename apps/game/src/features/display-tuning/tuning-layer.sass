@@ -1,0 +1,11 @@
+@layer components
+  // The HUD blocks the tuning hides keep their room, so the arena stays put
+  // and the bare drum can be compared with and without them.
+  :root[data-hud-hidden~='header'] :is(.screen-head, .home-head)
+    visibility: hidden
+
+  :root[data-hud-hidden~='roster'] :is(.seat-roster, .home-foot)
+    visibility: hidden
+
+  :root[data-hud-hidden~='qr'] .room-qr
+    visibility: hidden

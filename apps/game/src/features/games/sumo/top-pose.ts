@@ -1,6 +1,6 @@
-import { TOP_HEIGHT } from './arena-camera'
-import { ARENA_DRUM, DITCH_FLOOR, DITCH_REST_RADIUS } from './arena-drum'
+import { DITCH_REST_RADIUS } from './arena-drum'
 import type { DrawnTop } from './arena-frame'
+import { type ArenaHeights, SHIPPED_HEIGHTS } from './arena-shape'
 import { SUMO_TUNING } from './sumo-tuning'
 
 const LEAN_PER_SPEED = 0.35
@@ -9,11 +9,11 @@ const MOST_LEAN_RADIANS = 0.3
 const DROP_SHARE_OF_FALL = 0.55 / SUMO_TUNING.fallSeconds
 /** How fast a fallen top's spin dies, per second of its fall. */
 const SPIN_DECAY_PER_SECOND = 2.2
-/** The lean at which a top lies on its side, its point and its ring on the ditch's floor. */
-export const LYING_LEAN_RADIANS = Math.atan2(
-  0.8 * TOP_HEIGHT,
-  SUMO_TUNING.topRadius
-)
+/** The lean at which a top `topHeight` tall lies on its side, its point and its ring on the ditch's floor. */
+const lyingLeanOf = (topHeight: number) =>
+  Math.atan2(0.8 * topHeight, SUMO_TUNING.topRadius)
+
+export const LYING_LEAN_RADIANS = lyingLeanOf(SHIPPED_HEIGHTS.topHeight)
 
 /** How the scene stands one top: where, which way it leans, how far, and how fast it still spins. */
 export type TopPose = {
@@ -33,7 +33,10 @@ export type TopPose = {
  * it, its spin dying, whatever its course past the rim: the top is wider than
  * the ditch, so lying across it would sink it into the lip.
  */
-export const topPoseOf = ({ fall, position, velocity }: DrawnTop): TopPose => {
+export const topPoseOf = (
+  { fall, position, velocity }: DrawnTop,
+  { ditchFloor, surfaceHeight, topHeight }: ArenaHeights = SHIPPED_HEIGHTS
+): TopPose => {
   if (fall === 0) {
     return {
       heading: Math.atan2(velocity.y, velocity.x),
@@ -43,7 +46,7 @@ export const topPoseOf = ({ fall, position, velocity }: DrawnTop): TopPose => {
       ),
       spinShare: 1,
       x: position.x,
-      y: ARENA_DRUM.surfaceHeight,
+      y: surfaceHeight,
       z: position.y
     }
   }
@@ -56,14 +59,13 @@ export const topPoseOf = ({ fall, position, velocity }: DrawnTop): TopPose => {
   return {
     heading: outward + Math.PI / 2,
     lean:
-      startLean + (LYING_LEAN_RADIANS - startLean) * Math.min(1, drop * 1.15),
+      startLean +
+      (lyingLeanOf(topHeight) - startLean) * Math.min(1, drop * 1.15),
     spinShare: Math.exp(
       -SPIN_DECAY_PER_SECOND * fall * SUMO_TUNING.fallSeconds
     ),
     x: Math.cos(outward) * radius,
-    y:
-      ARENA_DRUM.surfaceHeight +
-      (DITCH_FLOOR - ARENA_DRUM.surfaceHeight) * drop ** 2,
+    y: surfaceHeight + (ditchFloor - surfaceHeight) * drop ** 2,
     z: Math.sin(outward) * radius
   }
 }

@@ -561,6 +561,14 @@
       "css": ".ds-sound { display: inline-flex; padding: 3px; border: 0; border-radius: 6px; background: none; color: oklch(79.2% 0.015 124.6); cursor: pointer; } .ds-sound svg { width: 34px; height: 34px; } .ds-sound path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; } .ds-sound:active { color: oklch(93.1% 0.015 90.2); } .ds-sound:focus-visible { outline: 3px solid oklch(73.1% 0.115 85.2); outline-offset: 3px; }"
     },
     {
+      "name": "Fullscreen Switch",
+      "kind": "button",
+      "refersTo": "fullscreen-switch",
+      "description": "Icon-only toggle after the sound switch in the roster's footer, and in the top-right corner of the game choice's head: four soft-chalk corners pointing out while windowed, in once the page fills the screen. Hidden where the browser offers no fullscreen.",
+      "html": "<button class=\"ds-fullscreen\" aria-pressed=\"false\" aria-label=\"Full screen\"><svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><title>Full screen</title><path d=\"M8 18 V8 H18 M30 8 H40 V18 M40 30 V40 H30 M18 40 H8 V30\"/></svg></button>",
+      "css": ".ds-fullscreen { display: inline-flex; padding: 3px; border: 0; border-radius: 6px; background: none; color: oklch(79.2% 0.015 124.6); cursor: pointer; } .ds-fullscreen svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; } .ds-fullscreen:active { color: oklch(93.1% 0.015 90.2); } .ds-fullscreen:focus-visible { outline: 3px solid oklch(73.1% 0.115 85.2); outline-offset: 3px; }"
+    },
+    {
       "name": "Seat Roster",
       "kind": "card",
       "refersTo": "seat-roster",

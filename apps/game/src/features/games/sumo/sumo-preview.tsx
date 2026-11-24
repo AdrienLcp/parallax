@@ -1,6 +1,7 @@
 import type React from 'react'
 import { useLayoutEffect, useRef, useState } from 'react'
 
+import { useDisplayTuning } from '@/features/display-tuning/display-tuning-store'
 import type { GamePreviewProps } from '@/features/games/game-definition'
 
 import {
@@ -204,6 +205,7 @@ export const SumoPreview: React.FC<GamePreviewProps> = ({
 }) => {
   const host = useRef<HTMLDivElement>(null)
   const [framing, setFraming] = useState<ArenaFraming | null>(null)
+  const { lens } = useDisplayTuning().arena
 
   useLayoutEffect(() => {
     const element = host.current
@@ -214,7 +216,9 @@ export const SumoPreview: React.FC<GamePreviewProps> = ({
     const fitToHost = () => {
       const { clientHeight: height, clientWidth: width } = element
       setFraming(
-        width === 0 || height === 0 ? null : frameTheTable({ height, width })
+        width === 0 || height === 0
+          ? null
+          : frameTheTable({ height, width }, lens)
       )
     }
     const resizing = new ResizeObserver(fitToHost)
@@ -222,7 +226,7 @@ export const SumoPreview: React.FC<GamePreviewProps> = ({
     fitToHost()
 
     return () => resizing.disconnect()
-  }, [])
+  }, [lens])
 
   return (
     <div className='sumo-preview' ref={host}>

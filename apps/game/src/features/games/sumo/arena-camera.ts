@@ -1,28 +1,41 @@
+import { ARENA_DRUM, DITCH_REST_RADIUS } from './arena-drum'
 import {
-  ARENA_DRUM,
-  DITCH_FLOOR,
-  DITCH_REST_RADIUS,
-  DRUM_LIP_TOP
-} from './arena-drum'
+  type ArenaShape,
+  heightsOf,
+  SHIPPED_HEIGHTS,
+  SHIPPED_SHAPE
+} from './arena-shape'
 import { SUMO_TUNING } from './sumo-tuning'
 
-/**
- * The vertical field of view over the display's whole 9:16 portrait. The lens
- * keeps the matching horizontal field in any canvas, so the drum keeps its
- * size and perspective whatever height its row takes.
- */
-export const FIELD_OF_VIEW_DEGREES = 48
-const DISPLAY_ASPECT = 9 / 16
-/** How far the camera looks down from level: a visitor standing in front of the drum. */
-export const CAMERA_PITCH_RADIANS = (20 * Math.PI) / 180
-/** Where the camera looks: the felt's centre. */
-export const CAMERA_TARGET_HEIGHT = ARENA_DRUM.surfaceHeight
-/** The share of the canvas's binding axis the drum spans, tops and fallen tops included. */
-export const FRAME_FILL = 0.9
+/** How the camera sees the drum: tuned on the unit, shipped at `SHIPPED_LENS`. */
+export type ArenaLens = {
+  /** The vertical field of view over the display's whole 9:16 portrait. */
+  readonly fieldOfViewDegrees: number
+  /** The share of the canvas's binding axis the drum spans, tops and fallen tops included. */
+  readonly frameFill: number
+  /** How far the camera looks down from level: a visitor standing in front of the drum. */
+  readonly pitchDegrees: number
+  /** Where the drum's extent is centred, as a share of the canvas's height from its top. */
+  readonly verticalCentre: number
+}
 
-/** How much taller than the physics' disc the modelled top stands, so it reads from across the room. */
-const TOP_SCALE = 2
-export const TOP_HEIGHT = SUMO_TUNING.topRadius * 1.2 * TOP_SCALE
+/**
+ * The lens keeps the horizontal field matching its vertical one over the
+ * display's 9:16 portrait in any canvas, so the drum keeps its size and
+ * perspective whatever height its row takes.
+ */
+export const SHIPPED_LENS: ArenaLens = {
+  fieldOfViewDegrees: 48,
+  frameFill: 0.9,
+  pitchDegrees: 20,
+  verticalCentre: 0.5
+}
+
+const DISPLAY_ASPECT = 9 / 16
+/** Where the shipped camera looks: the felt's centre. */
+export const CAMERA_TARGET_HEIGHT = SHIPPED_HEIGHTS.surfaceHeight
+export const FRAME_FILL = SHIPPED_LENS.frameFill
+export const TOP_HEIGHT = SHIPPED_HEIGHTS.topHeight
 
 /** A point on the table's plane, in arena units: `z` grows toward the room. */
 export type TablePoint = { readonly x: number; readonly z: number }
@@ -37,7 +50,11 @@ export type ArenaFraming = {
   readonly halfHorizontal: number
   readonly halfVertical: number
   readonly height: number
-  /** How far the view slides down the canvas, in CSS pixels, to centre the drum: Three's view offset. */
+  /** How far the camera looks down from level, in radians. */
+  readonly pitch: number
+  /** The height of the felt's centre, where the camera looks. */
+  readonly targetHeight: number
+  /** How far the view slides down the canvas, in CSS pixels, to place the drum: Three's view offset. */
   readonly viewOffsetY: number
   readonly width: number
 }
@@ -45,35 +62,50 @@ export type ArenaFraming = {
 type ExtentRing = { readonly radius: number; readonly y: number }
 
 /** The outlines the frame holds: the drum's foot and lip, a top's crown standing at the rim, a fallen top lying along the ditch. */
-export const FRAMED_RINGS: readonly ExtentRing[] = [
-  { radius: ARENA_DRUM.baseRadius, y: 0 },
-  { radius: ARENA_DRUM.lipOuterRadius, y: DRUM_LIP_TOP },
-  {
-    radius: SUMO_TUNING.arenaRadius + SUMO_TUNING.topRadius,
-    y: ARENA_DRUM.surfaceHeight + TOP_HEIGHT
-  },
-  {
-    radius: Math.hypot(DITCH_REST_RADIUS, TOP_HEIGHT),
-    y: DITCH_FLOOR + 2 * SUMO_TUNING.topRadius
-  }
-]
+export const framedRingsOf = (shape: ArenaShape): readonly ExtentRing[] => {
+  const { ditchFloor, lipTop, surfaceHeight, topHeight } = heightsOf(shape)
+  return [
+    { radius: ARENA_DRUM.baseRadius, y: 0 },
+    { radius: ARENA_DRUM.lipOuterRadius, y: lipTop },
+    {
+      radius: SUMO_TUNING.arenaRadius + SUMO_TUNING.topRadius,
+      y: surfaceHeight + topHeight
+    },
+    {
+      radius: Math.hypot(DITCH_REST_RADIUS, topHeight),
+      y: ditchFloor + 2 * SUMO_TUNING.topRadius
+    }
+  ]
+}
+
+export const FRAMED_RINGS = framedRingsOf(SHIPPED_SHAPE)
 
 const EXTENT_STEPS = 96
 
-const EXTENT_POINTS = FRAMED_RINGS.flatMap(({ radius, y }) =>
-  Array.from({ length: EXTENT_STEPS }, (_, step) => {
-    const angle = (step * 2 * Math.PI) / EXTENT_STEPS
-    return { x: Math.cos(angle) * radius, y, z: Math.sin(angle) * radius }
-  })
-)
-
 type ScenePoint = { readonly x: number; readonly y: number; readonly z: number }
 
-/** A scene point in the camera's axes: across to the right, up the screen, and its depth ahead. */
-const seenFrom = (distance: number, { x, y, z }: ScenePoint) => {
-  const raised = y - CAMERA_TARGET_HEIGHT
-  const sin = Math.sin(CAMERA_PITCH_RADIANS)
-  const cos = Math.cos(CAMERA_PITCH_RADIANS)
+const extentPointsOf = (shape: ArenaShape): readonly ScenePoint[] =>
+  framedRingsOf(shape).flatMap(({ radius, y }) =>
+    Array.from({ length: EXTENT_STEPS }, (_, step) => {
+      const angle = (step * 2 * Math.PI) / EXTENT_STEPS
+      return { x: Math.cos(angle) * radius, y, z: Math.sin(angle) * radius }
+    })
+  )
+
+type Viewpoint = {
+  readonly distance: number
+  readonly pitch: number
+  readonly targetHeight: number
+}
+
+/** A scene point in the camera's axes, seen from the room's side: across to the right, up the screen, and its depth ahead. */
+const seenFrom = (
+  { distance, pitch, targetHeight }: Viewpoint,
+  { x, y, z }: ScenePoint
+) => {
+  const raised = y - targetHeight
+  const sin = Math.sin(pitch)
+  const cos = Math.cos(pitch)
   return {
     across: x,
     depth: distance - raised * sin - z * cos,
@@ -84,12 +116,16 @@ const seenFrom = (distance: number, { x, y, z }: ScenePoint) => {
 type Lens = { readonly tanHorizontal: number; readonly tanVertical: number }
 
 /** The extent's reach on the unshifted view, in normalised device units (−1 to 1), or `null` once part of it is behind the camera. */
-const extentAt = (distance: number, { tanHorizontal, tanVertical }: Lens) => {
+const extentAt = (
+  viewpoint: Viewpoint,
+  points: readonly ScenePoint[],
+  { tanHorizontal, tanVertical }: Lens
+) => {
   let across = 0
   let lowest = Number.POSITIVE_INFINITY
   let highest = Number.NEGATIVE_INFINITY
-  for (const point of EXTENT_POINTS) {
-    const seen = seenFrom(distance, point)
+  for (const point of points) {
+    const seen = seenFrom(viewpoint, point)
     if (seen.depth <= 0) return null
     across = Math.max(
       across,
@@ -108,32 +144,36 @@ const FRAMING_STEPS = 48
 
 /**
  * Backs the camera off until the drum's extent (its foot and lip, a top
- * standing at the rim, a fallen one in the ditch) spans `FRAME_FILL` of the
- * canvas's binding axis, then slides the view so that extent sits centred
- * on the canvas's height. The camera looks at the felt's centre from the
- * room's side, `CAMERA_PITCH_RADIANS` above level.
+ * standing at the rim, a fallen one in the ditch) spans the lens's fill of
+ * the canvas's binding axis, then slides the view so that extent is centred
+ * at the lens's vertical centre. The camera looks at the felt's centre from
+ * the room's side, the lens's pitch above level. The drum is round, so the
+ * framing holds whatever the camera's azimuth.
  */
-export const frameTheTable = ({
-  height,
-  width
-}: {
-  height: number
-  width: number
-}): ArenaFraming => {
+export const frameTheTable = (
+  { height, width }: { height: number; width: number },
+  lens: ArenaLens = SHIPPED_LENS,
+  shape: ArenaShape = SHIPPED_SHAPE
+): ArenaFraming => {
   const halfHorizontal = Math.atan(
-    Math.tan((FIELD_OF_VIEW_DEGREES * Math.PI) / 360) * DISPLAY_ASPECT
+    Math.tan((lens.fieldOfViewDegrees * Math.PI) / 360) * DISPLAY_ASPECT
   )
   const halfVertical = Math.atan(Math.tan(halfHorizontal) / (width / height))
-  const lens = {
+  const tans = {
     tanHorizontal: Math.tan(halfHorizontal),
     tanVertical: Math.tan(halfVertical)
   }
+  const pitch = (lens.pitchDegrees * Math.PI) / 180
+  const targetHeight = heightsOf(shape).surfaceHeight
+  const points = extentPointsOf(shape)
+  const extentFrom = (distance: number) =>
+    extentAt({ distance, pitch, targetHeight }, points, tans)
   const fits = (distance: number) => {
-    const extent = extentAt(distance, lens)
+    const extent = extentFrom(distance)
     return (
       extent !== null &&
-      extent.across <= FRAME_FILL &&
-      (extent.highest - extent.lowest) / 2 <= FRAME_FILL
+      extent.across <= lens.frameFill &&
+      (extent.highest - extent.lowest) / 2 <= lens.frameFill
     )
   }
   let near = NEAREST_DISTANCE
@@ -143,35 +183,49 @@ export const frameTheTable = ({
     if (fits(middle)) far = middle
     else near = middle
   }
-  const extent = extentAt(far, lens)
+  const extent = extentFrom(far)
   const middle = extent === null ? 0 : (extent.highest + extent.lowest) / 2
+  const wantedMiddle = 1 - 2 * lens.verticalCentre
   return {
     distance: far,
     halfHorizontal,
     halfVertical,
     height,
-    viewOffsetY: (-height / 2) * middle,
+    pitch,
+    targetHeight,
+    viewOffsetY: (-height / 2) * (middle - wantedMiddle),
     width
   }
 }
 
-/** Where the camera stands, in the scene's axes (y up from the alcove's floor, z toward the room). */
-export const cameraPositionOf = ({ distance }: ArenaFraming) => ({
-  x: 0,
-  y: CAMERA_TARGET_HEIGHT + Math.sin(CAMERA_PITCH_RADIANS) * distance,
-  z: Math.cos(CAMERA_PITCH_RADIANS) * distance
-})
+/**
+ * Where the camera stands, in the scene's axes (y up from the alcove's floor,
+ * z toward the room), once it has orbited `azimuth` radians around the drum's
+ * axis from the room's side, toward the room's right.
+ */
+export const cameraPositionOf = (
+  { distance, pitch, targetHeight }: ArenaFraming,
+  azimuth = 0
+) => {
+  const level = Math.cos(pitch) * distance
+  return {
+    x: Math.sin(azimuth) * level,
+    y: targetHeight + Math.sin(pitch) * distance,
+    z: Math.cos(azimuth) * level
+  }
+}
 
 /**
  * Where a point of the scene lands on the canvas, seen through the scene's
- * camera: a point of the table's plane `height` above the alcove's floor.
+ * camera from the room's side: a point of the table's plane `height` above
+ * the alcove's floor.
  */
 export const projectOnCanvas = (
   framing: ArenaFraming,
   point: TablePoint,
   height = 0
 ): CanvasPoint => {
-  const seen = seenFrom(framing.distance, { ...point, y: height })
+  const seen = seenFrom(framing, { ...point, y: height })
   return {
     x:
       (framing.width / 2) *

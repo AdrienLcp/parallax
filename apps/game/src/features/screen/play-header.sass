@@ -1,7 +1,10 @@
+@use '../../presentation/styles/display'
 @use '../../presentation/styles/typography'
 
 @layer components
   .play-header
+    @include display.on-backdrop
+
     align-items: end
     border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
     display: grid

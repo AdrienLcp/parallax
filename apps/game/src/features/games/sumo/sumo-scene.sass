@@ -1,3 +1,4 @@
+@use '../../../presentation/styles/display'
 @use '../../../presentation/styles/typography'
 
 @layer components
@@ -22,10 +23,10 @@
 
     .countdown
       @include typography.display
+      @include display.on-backdrop
 
       align-self: center
       animation: countdown-beat var(--transition-slow) cubic-bezier(0.16, 1, 0.3, 1)
-      color: var(--chalk)
       font-size: calc(var(--cu) * 16)
       justify-self: center
       pointer-events: none

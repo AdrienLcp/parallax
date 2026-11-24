@@ -3,6 +3,7 @@ import { Suspense, useState } from 'react'
 import { Link } from 'react-aria-components'
 import { useNavigate } from 'react-router'
 
+import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
 import { CURRENT_GAME, GAME_IDS, games } from '@/features/games/games'
 import { paths } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
@@ -34,6 +35,7 @@ export const HomePage: React.FC = () => {
           )}
           <div className='game-head'>
             <h1 className='game-name'>{translate(game.name)}</h1>
+            <FullscreenSwitch />
             <p className='game-players'>
               {translate('screen.players', {
                 fewest: game.players.fewest,

@@ -1,6 +1,7 @@
 import type React from 'react'
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 
+import { useDisplayTuning } from '@/features/display-tuning/display-tuning-store'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import type { GameSceneProps } from '../game-definition'
@@ -30,13 +31,18 @@ export const SumoScene: React.FC<GameSceneProps> = ({
   const renderer = useRef<ArenaRenderer | null>(null)
   const tags = useRef<TopTagsHandle>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
+  const { arena } = useDisplayTuning()
+  const startingArena = useRef(arena)
 
   useEffect(() => {
     if (host.current === null) {
       return
     }
 
-    const created = createFlatPortraitRenderer(host.current)
+    const created = createFlatPortraitRenderer(
+      host.current,
+      startingArena.current
+    )
     renderer.current = created
 
     return () => {
@@ -45,11 +51,16 @@ export const SumoScene: React.FC<GameSceneProps> = ({
     }
   }, [])
 
+  useEffect(() => {
+    renderer.current?.tune(arena)
+  }, [arena])
+
   const standings = useSumoSimulation({
     events,
-    onFrame: (match, seconds) => {
+    motion: arena.motion,
+    onFrame: (match, seconds, azimuth) => {
       const frame = arenaFrameOf({ match, seats: room.seats })
-      const anchors = renderer.current?.draw(frame, seconds) ?? []
+      const anchors = renderer.current?.draw(frame, seconds, azimuth) ?? []
       tags.current?.place(frame, anchors)
       setCountdown(countdownShown(match))
       for (const cue of soundCuesBetween({

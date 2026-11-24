@@ -39,19 +39,28 @@
   .game-head
     align-items: end
     border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
-    display: flex
-    gap: calc(var(--cu) * 2)
-    justify-content: space-between
+    column-gap: calc(var(--cu) * 2)
+    display: grid
+    grid-template-areas: "name switch" "name players"
+    grid-template-columns: minmax(0, 1fr) auto
     padding-block: calc(var(--cu) * 1.5) calc(var(--cu) * 1.6)
+
+    .fullscreen-switch
+      align-self: start
+      grid-area: switch
+      justify-self: end
 
   .game-name
     @include typography.display
 
     font-size: calc(var(--cu) * 15)
+    grid-area: name
 
   .game-players
     @include typography.label
 
+    grid-area: players
+    justify-self: end
     color: var(--chalk-soft)
     font-size: calc(var(--cu) * 2.6)
     padding-block-end: calc(var(--cu) * 0.6)

@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { TuningLayer } from '@/features/display-tuning/tuning-layer'
 import { DisplaySoundProvider } from '@/features/sound/display-sound'
 import { Main } from '@/presentation/components/main'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
@@ -32,6 +33,7 @@ export const ScreenPage: React.FC = () => {
             room={state.room}
           />
         )}
+        <TuningLayer />
       </Main>
     </DisplaySoundProvider>
   )

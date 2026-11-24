@@ -7,7 +7,7 @@
 
   // The alcove's backdrop: solid and unlit wherever the arena stands.
   :root:has(.screen-room)
-    background: var(--lacquer-ink)
+    background: var(--backdrop, var(--lacquer-ink))
 
   .screen-page
     @include display.units
@@ -22,4 +22,4 @@
     user-select: none
 
     &:has(.screen-room)
-      background: var(--lacquer-ink)
+      background: var(--backdrop, var(--lacquer-ink))

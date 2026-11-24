@@ -18,11 +18,10 @@ import {
 
 import { ARENA_DRUM, DITCH_FLOOR, DRUM_LIP_TOP } from './arena-drum'
 import { ARENA_PLAN, FILET_WIDTHS } from './arena-plan'
+import { SHIPPED_LIGHTING } from './arena-tuning'
 import { laidFlat } from './laid-flat'
 import { SUMO_TUNING } from './sumo-tuning'
 
-/** How dark a grounded shadow falls, in lacquer ink. */
-const SHADOW_OPACITY = 0.5
 const ROUND_SEGMENTS = 200
 /** A filet's lift over the surface it is drawn on, enough to win the depth test. */
 const FILET_LIFT = 0.0004
@@ -67,7 +66,7 @@ const shadowCatcher = (
       new ShadowMaterial({
         color: ink,
         depthWrite: false,
-        opacity: SHADOW_OPACITY
+        opacity: SHIPPED_LIGHTING.shadowOpacity
       })
     ),
     y + CATCHER_LIFT

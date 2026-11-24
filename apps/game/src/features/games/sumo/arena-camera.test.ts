@@ -7,8 +7,10 @@ import {
   CAMERA_TARGET_HEIGHT,
   FRAME_FILL,
   FRAMED_RINGS,
+  framedRingsOf,
   frameTheTable,
-  projectOnCanvas
+  projectOnCanvas,
+  SHIPPED_LENS
 } from './arena-camera'
 import { ARENA_DRUM, DITCH_FLOOR, DRUM_LIP_TOP } from './arena-drum'
 
@@ -127,5 +129,29 @@ describe('frameTheTable', () => {
     const drum = extentOf(drumOutlineOf(frameTheTable(TALL_ROW)))
     expect((drum.right - drum.left) / TALL_ROW.width).toBeCloseTo(FRAME_FILL, 2)
     expect((drum.bottom - drum.top) / TALL_ROW.height).toBeLessThan(FRAME_FILL)
+  })
+
+  it('places the drum at the lens’s vertical centre', () => {
+    const lens = { ...SHIPPED_LENS, verticalCentre: 0.35 }
+    const drum = extentOf(drumOutlineOf(frameTheTable(TALL_ROW, lens)))
+    expect((drum.top + drum.bottom) / 2 / TALL_ROW.height).toBeCloseTo(0.35, 2)
+  })
+
+  it('fills the binding axis to the lens’s fill', () => {
+    const lens = { ...SHIPPED_LENS, frameFill: 0.6 }
+    const drum = extentOf(drumOutlineOf(frameTheTable(TALL_ROW, lens)))
+    expect((drum.right - drum.left) / TALL_ROW.width).toBeCloseTo(0.6, 2)
+  })
+
+  it('frames a taller drum and taller tops whole, at the same fill', () => {
+    const shape = { drumHeightScale: 3, topHeightScale: 2 }
+    const framing = frameTheTable(TALL_ROW, SHIPPED_LENS, shape)
+    const drum = extentOf(
+      framedRingsOf(shape).flatMap((ring) => ringOf(framing, ring))
+    )
+    const acrossShare = (drum.right - drum.left) / TALL_ROW.width
+    const downShare = (drum.bottom - drum.top) / TALL_ROW.height
+    expect(Math.max(acrossShare, downShare)).toBeCloseTo(FRAME_FILL, 2)
+    expect(drum.top).toBeGreaterThan(0)
   })
 })

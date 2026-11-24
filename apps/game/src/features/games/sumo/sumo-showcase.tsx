@@ -1,8 +1,15 @@
 import type React from 'react'
 import { useEffect, useRef } from 'react'
 
+import { useDisplayTuning } from '@/features/display-tuning/display-tuning-store'
 import { prefersReducedMotion } from '@/infrastructure/browser'
 
+import {
+  type ArenaMotion,
+  type ArenaOrbit,
+  advanceOrbit,
+  STILL_ORBIT
+} from './arena-orbit'
 import type { ArenaRenderer } from './arena-renderer'
 import { createFlatPortraitRenderer } from './flat-portrait-renderer'
 import {
@@ -18,16 +25,20 @@ import './sumo-showcase.sass'
 /** Draws the demo tops on their marks, again whenever the host is resized. */
 const standStill = (host: HTMLElement, renderer: ArenaRenderer) => {
   const still = showcaseFrameOf(startShowcase())
-  const draw = () => renderer.draw(still, 0)
+  const draw = () => renderer.draw(still, 0, 0)
   const resizing = new ResizeObserver(draw)
   resizing.observe(host)
   draw()
   return () => resizing.disconnect()
 }
 
-/** Steps the showcase at the sumo's fixed rate and draws it on every display frame. */
-const playOn = (renderer: ArenaRenderer) => {
+/**
+ * Steps the showcase at the sumo's fixed rate and draws it on every display
+ * frame, the camera moving as it does while a room waits: the demo is no match.
+ */
+const playOn = (renderer: ArenaRenderer, motionNow: () => ArenaMotion) => {
   let play: ShowcasePlay = startShowcase()
+  let orbit: ArenaOrbit = STILL_ORBIT
   let pendingSeconds = 0
   let previousTime: number | null = null
   let frame = requestAnimationFrame(function step(time) {
@@ -44,7 +55,12 @@ const playOn = (renderer: ArenaRenderer) => {
         seconds: SUMO_STEP_SECONDS
       })
     }
-    renderer.draw(showcaseFrameOf(play), seconds)
+    orbit = advanceOrbit(orbit, {
+      motion: motionNow(),
+      seconds,
+      stage: 'waiting'
+    })
+    renderer.draw(showcaseFrameOf(play), seconds, orbit.azimuth)
     frame = requestAnimationFrame(step)
   })
   return () => cancelAnimationFrame(frame)
@@ -57,6 +73,9 @@ const playOn = (renderer: ArenaRenderer) => {
  */
 export const SumoShowcase: React.FC = () => {
   const host = useRef<HTMLDivElement>(null)
+  const { arena } = useDisplayTuning()
+  const currentArena = useRef(arena)
+  const renderer = useRef<ArenaRenderer | null>(null)
 
   useEffect(() => {
     const element = host.current
@@ -64,16 +83,23 @@ export const SumoShowcase: React.FC = () => {
       return
     }
 
-    const renderer = createFlatPortraitRenderer(element)
+    const created = createFlatPortraitRenderer(element, currentArena.current)
+    renderer.current = created
     const stop = prefersReducedMotion()
-      ? standStill(element, renderer)
-      : playOn(renderer)
+      ? standStill(element, created)
+      : playOn(created, () => currentArena.current.motion)
 
     return () => {
       stop()
-      renderer.dispose()
+      created.dispose()
+      renderer.current = null
     }
   }, [])
+
+  useEffect(() => {
+    currentArena.current = arena
+    renderer.current?.tune(arena)
+  }, [arena])
 
   return <div className='sumo-showcase' ref={host} />
 }

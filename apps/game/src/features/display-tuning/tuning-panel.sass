@@ -1,0 +1,294 @@
+@use '../../presentation/styles/brass-button'
+@use '../../presentation/styles/typography'
+
+@layer components
+  .tuning-panel
+    --tuning-row: calc(var(--cu) * 3)
+    --tuning-rule: calc(var(--cu) * 0.15)
+
+    background: var(--slate)
+    border-radius: calc(var(--cu) * 0.8)
+    box-shadow: inset 0 0 0 var(--tuning-rule) var(--slate-line), var(--screen-shadow-raised)
+    color: var(--chalk)
+    display: grid
+    gap: calc(var(--cu) * 1.4)
+    inline-size: calc(var(--cu) * 27)
+    inset-block-start: calc((100dvh - var(--cu) * 100) / 2 + var(--screen-safe-block))
+    inset-inline-end: calc((100cqi - var(--cu) * 56.25) / 2 + var(--screen-safe-inline))
+    max-block-size: calc(var(--cu) * 100 - 2 * var(--screen-safe-block))
+    overflow-y: auto
+    overscroll-behavior: contain
+    padding: calc(var(--cu) * 1.4) calc(var(--cu) * 1.8) calc(var(--cu) * 1.8)
+    position: fixed
+    scrollbar-color: var(--slate-line) transparent
+    scrollbar-width: thin
+    user-select: none
+    z-index: 10
+
+  .tuning-head
+    align-items: center
+    border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
+    display: grid
+    grid-template-columns: minmax(0, 1fr) auto
+    padding-block-end: calc(var(--cu) * 0.8)
+
+  .tuning-title
+    @include typography.display
+
+    font-size: calc(var(--cu) * 2.8)
+
+  .tuning-close
+    background: none
+    block-size: var(--tuning-row)
+    border: 0
+    border-radius: calc(var(--cu) * 0.5)
+    color: var(--chalk-soft)
+    cursor: pointer
+    display: grid
+    inline-size: var(--tuning-row)
+    padding: calc(var(--cu) * 0.5)
+    place-items: center
+
+    svg
+      block-size: 100%
+      fill: none
+      inline-size: 100%
+      stroke: currentColor
+      stroke-linecap: round
+      stroke-width: 2.5
+
+    &[data-hovered]
+      color: var(--chalk)
+
+  // Sliders share their group's columns, so the tracks of one group line up.
+  .tuning-group
+    column-gap: calc(var(--cu) * 1.2)
+    display: grid
+    grid-template-columns: minmax(calc(var(--cu) * 8.6), max-content) minmax(0, 1fr) max-content
+    row-gap: calc(var(--cu) * 0.5)
+
+    & > *
+      grid-column: 1 / -1
+
+  .tuning-group-title
+    @include typography.display
+
+    color: var(--chalk-soft)
+    font-size: calc(var(--cu) * 1.8)
+    margin-block-end: calc(var(--cu) * 0.3)
+
+  .tuning-slider
+    align-items: center
+    display: grid
+    grid-template-columns: subgrid
+    min-block-size: var(--tuning-row)
+
+  .tuning-slider-label
+    @include typography.label
+
+    font-size: calc(var(--cu) * 1.6)
+
+  .tuning-slider-value
+    @include typography.display
+
+    color: var(--brass)
+    font-size: calc(var(--cu) * 2)
+    font-variant-numeric: tabular-nums
+    min-inline-size: calc(var(--cu) * 4.8)
+    text-align: end
+    text-transform: none
+    white-space: nowrap
+
+  .tuning-slider-track
+    block-size: var(--tuning-row)
+    cursor: pointer
+    position: relative
+
+    &::before
+      background: var(--slate-line)
+      block-size: calc(var(--cu) * 0.3)
+      border-radius: var(--radius-pill)
+      content: ''
+      inset-block-start: calc(50% - var(--cu) * 0.15)
+      inset-inline: 0
+      position: absolute
+
+  .tuning-slider-fill
+    background: var(--brass)
+    block-size: calc(var(--cu) * 0.3)
+    border-radius: var(--radius-pill)
+    inline-size: calc(var(--fill) * 100%)
+    inset-block-start: calc(50% - var(--cu) * 0.15)
+    inset-inline-start: 0
+    position: absolute
+
+  .tuning-slider-thumb
+    background: var(--brass)
+    block-size: calc(var(--cu) * 1.9)
+    border-radius: 50%
+    box-shadow: inset 0 0 0 calc(var(--cu) * 0.35) var(--brass-deep), 0 calc(var(--cu) * 0.2) calc(var(--cu) * 0.5) var(--screen-shadow-ink)
+    inline-size: calc(var(--cu) * 1.9)
+    inset-block-start: 50%
+    transition: scale var(--transition-fast) var(--ease-out)
+
+    &[data-hovered],
+    &[data-dragging]
+      scale: 1.15
+
+    &[data-focus-visible]
+      outline: calc(var(--cu) * 0.25) solid var(--chalk)
+      outline-offset: calc(var(--cu) * 0.25)
+
+  .backdrop-picker
+    display: grid
+    gap: calc(var(--cu) * 0.9)
+    grid-template-columns: repeat(7, minmax(0, 1fr))
+    padding-block: calc(var(--cu) * 0.4)
+
+  .backdrop-presets
+    display: contents
+
+  .backdrop-swatch
+    aspect-ratio: 1
+    border-radius: 50%
+    cursor: pointer
+    display: grid
+    outline: calc(var(--cu) * 0.25) solid transparent
+    outline-offset: calc(var(--cu) * 0.25)
+    transition: outline-color var(--transition-fast) var(--ease-out)
+
+    .swatch-chip
+      background: var(--swatch)
+      block-size: 100%
+      border-radius: 50%
+      box-shadow: inset 0 0 0 var(--tuning-rule) color-mix(in oklab, var(--chalk) 35%, transparent)
+      inline-size: 100%
+
+    &[data-hovered]
+      outline-color: var(--slate-line)
+
+    &[data-selected]
+      outline-color: var(--brass)
+
+    &[data-focus-visible]
+      outline-color: var(--chalk)
+
+  .backdrop-custom
+    &:hover
+      outline-color: var(--slate-line)
+
+    &:has(:focus-visible)
+      outline-color: var(--chalk)
+
+    &[data-selected]
+      outline-color: var(--brass)
+
+    input
+      appearance: none
+      background: none
+      border: var(--tuning-rule) dashed var(--chalk-soft)
+      cursor: pointer
+      padding: calc(var(--cu) * 0.3)
+
+      &::-webkit-color-swatch-wrapper
+        padding: 0
+
+      &::-webkit-color-swatch
+        border: 0
+        border-radius: 50%
+
+      &::-moz-color-swatch
+        border: 0
+        border-radius: 50%
+
+  .tuning-segments
+    display: grid
+    gap: calc(var(--cu) * 0.6)
+    grid-auto-columns: minmax(0, 1fr)
+    grid-auto-flow: column
+    margin-block: calc(var(--cu) * 0.2) calc(var(--cu) * 0.4)
+
+  .tuning-segment
+    @include typography.label
+
+    align-items: center
+    background: none
+    block-size: var(--tuning-row)
+    border: 0
+    border-radius: calc(var(--cu) * 0.5)
+    box-shadow: inset 0 0 0 var(--tuning-rule) var(--slate-line)
+    color: var(--chalk-soft)
+    cursor: pointer
+    display: grid
+    font-size: calc(var(--cu) * 1.6)
+    justify-items: center
+    transition: background-color var(--transition-fast) var(--ease-out), color var(--transition-fast) var(--ease-out)
+
+    &[data-hovered]
+      color: var(--chalk)
+
+    &[data-selected]
+      background: var(--brass)
+      box-shadow: none
+      color: var(--lacquer-ink)
+
+    &[data-focus-visible]
+      outline: calc(var(--cu) * 0.25) solid var(--chalk)
+      outline-offset: calc(var(--cu) * 0.2)
+
+  .tuning-foot
+    border-block-start: var(--tuning-rule) solid var(--slate-line)
+    display: grid
+    gap: calc(var(--cu) * 1)
+    grid-template-columns: minmax(0, 1fr) auto
+    padding-block-start: calc(var(--cu) * 1.4)
+
+  .tuning-download
+    @include brass-button.brass
+
+    align-items: center
+    block-size: calc(var(--cu) * 4.4)
+    display: flex
+    font-size: calc(var(--cu) * 2.2)
+    gap: calc(var(--cu) * 0.8)
+    justify-content: center
+
+    svg
+      block-size: calc(var(--cu) * 2.2)
+      fill: none
+      inline-size: calc(var(--cu) * 2.2)
+      stroke: currentColor
+      stroke-linecap: round
+      stroke-linejoin: round
+      stroke-width: 2.6
+
+  .tuning-reset
+    background: none
+    block-size: calc(var(--cu) * 4.4)
+    border: 0
+    border-radius: calc(var(--cu) * 0.5)
+    box-shadow: inset 0 0 0 var(--tuning-rule) var(--slate-line)
+    color: var(--chalk-soft)
+    cursor: pointer
+    display: grid
+    inline-size: calc(var(--cu) * 4.4)
+    place-items: center
+
+    svg
+      block-size: calc(var(--cu) * 2.4)
+      fill: none
+      inline-size: calc(var(--cu) * 2.4)
+      stroke: currentColor
+      stroke-linecap: round
+      stroke-linejoin: round
+      stroke-width: 2.4
+
+    &[data-hovered]
+      color: var(--chalk)
+
+    &[data-pressed]
+      scale: 0.97
+
+  :is(.tuning-close, .tuning-download, .tuning-reset)[data-focus-visible]
+    outline: calc(var(--cu) * 0.25) solid var(--chalk)
+    outline-offset: calc(var(--cu) * 0.25)

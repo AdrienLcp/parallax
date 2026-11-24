@@ -46,6 +46,7 @@
     "noindex",
     "nointeraction",
     "nowrap",
+    "nums",
     "oklab",
     "oklch",
     "overscroll",
@@ -53,6 +54,8 @@
     "PMREM",
     "ratelimits",
     "RGPD",
+    "rrggbb",
+    "subgrid",
     "subp",
     "webxr",
     "workerd"

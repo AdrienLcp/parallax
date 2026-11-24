@@ -13,6 +13,7 @@ import {
   PerspectiveCamera,
   PMREMGenerator,
   Scene,
+  ShadowMaterial,
   Shape,
   ShapeGeometry,
   SRGBColorSpace,
@@ -28,14 +29,11 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 import { prefersReducedMotion } from '@/infrastructure/browser'
 
 import { aimArenaCamera } from './aim-arena-camera'
-import {
-  FIELD_OF_VIEW_DEGREES,
-  frameTheTable,
-  TOP_HEIGHT
-} from './arena-camera'
+import { type ArenaFraming, frameTheTable, TOP_HEIGHT } from './arena-camera'
 import { ARENA_DRUM } from './arena-drum'
 import type { ArenaFrame, DrawnTop } from './arena-frame'
 import type { CreateArenaRenderer, TagAnchor } from './arena-renderer'
+import { type ArenaHeights, heightsOf } from './arena-shape'
 import { buildDrum } from './drum-model'
 import { laidFlat } from './laid-flat'
 import { SUMO_TUNING } from './sumo-tuning'
@@ -158,7 +156,7 @@ const createColorReader = (host: HTMLElement) => {
   return { dispose: () => probe.remove(), read, readSeat }
 }
 
-/** A spinning top standing on its point: lacquered body, brass ring, cap and carved glyph. */
+/** A spinning top standing on its point, at the shipped height: lacquered body, brass ring, cap and carved glyph. */
 const buildTop = ({
   colors,
   ring,
@@ -216,42 +214,50 @@ const buildTop = ({
   return top
 }
 
+/** Stands a top where its pose puts it, stretched along its axis to the tuned height. */
 const placeTop = ({
   drawn,
+  heights,
   spinAngle,
   top
 }: {
   drawn: DrawnTop
+  heights: ArenaHeights
   spinAngle: number
   top: Group
 }): void => {
-  const pose = topPoseOf(drawn)
+  const pose = topPoseOf(drawn, heights)
   top.visible = true
   top.position.set(pose.x, pose.y, pose.z)
   top.rotation.set(0, -pose.heading, 0)
   const spinning = top.children[0]
   if (spinning !== undefined) {
+    spinning.scale.set(1, heights.topHeight / TOP_HEIGHT, 1)
     spinning.rotation.set(0, 0, -pose.lean)
     spinning.rotateY(spinAngle + pose.heading)
   }
 }
 
-/** Projects the far edge of a top's crown (the top of it, as the room sees it) onto the canvas, in CSS pixels. */
+/** Projects the far edge of a top's crown (the top of it, as the camera at `azimuth` sees it) onto the canvas, in CSS pixels. */
 const tagAnchorOf = ({
+  azimuth,
   camera,
   canvas,
   slot,
-  top
+  top,
+  topHeight
 }: {
+  azimuth: number
   camera: PerspectiveCamera
   canvas: { height: number; width: number }
   slot: SeatSlot
   top: Group
+  topHeight: number
 }): TagAnchor => {
   const crown = new Vector3(
-    top.position.x,
-    top.position.y + TOP_HEIGHT,
-    top.position.z - TOP_RADIUS
+    top.position.x - Math.sin(azimuth) * TOP_RADIUS,
+    top.position.y + topHeight,
+    top.position.z - Math.cos(azimuth) * TOP_RADIUS
   ).project(camera)
   return {
     slot,
@@ -274,7 +280,7 @@ const disposeTree = (root: Scene): void => {
 
 /** The key light, high and to the left of the room, aimed at the drum's middle so its shadows fall soft and grounded. */
 const buildKeyLight = (color: Color): DirectionalLight => {
-  const key = new DirectionalLight(color, 2.4)
+  const key = new DirectionalLight(color)
   key.target.position.set(0, ARENA_DRUM.surfaceHeight / 2, 0)
   key.position
     .set(-0.7, 3, 1.1)
@@ -300,11 +306,15 @@ const buildKeyLight = (color: Color): DirectionalLight => {
 /**
  * The default renderer: one flat portrait frame, for the HLD and any ordinary
  * screen. The arena is a walnut drum standing on the alcove's floor, seen from
- * the front by one perspective camera a little above it; lacquered tops spin
- * on its felt and fall into its ditch, over soft grounded shadows. The canvas
- * stays transparent around the drum: the page's solid lacquer ink is the backdrop.
+ * the front by one perspective camera a little above it, which may orbit it;
+ * lacquered tops spin on its felt and fall into its ditch, over soft grounded
+ * shadows. The canvas stays transparent around the drum: the page's solid
+ * backdrop is the alcove's.
  */
-export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
+export const createFlatPortraitRenderer: CreateArenaRenderer = (
+  host,
+  initialTuning
+) => {
   const colors = createColorReader(host)
   const renderer = new WebGLRenderer({ alpha: true, antialias: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -326,18 +336,34 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
     buildTop({ colors: colors.readSeat(slot), ring, slot })
   )
   const keyLight = buildKeyLight(ivory)
+  const drum = buildDrum(colors.read)
+  const shadows: ShadowMaterial[] = []
+  drum.traverse((node) => {
+    if (node instanceof Mesh && node.material instanceof ShadowMaterial) {
+      shadows.push(node.material)
+    }
+  })
 
   scene.add(
-    buildDrum(colors.read),
+    drum,
     new AmbientLight(ivory, 0.6),
     keyLight,
     keyLight.target,
     ...tops
   )
 
-  const camera = new PerspectiveCamera(FIELD_OF_VIEW_DEGREES, 1, 0.1, 60)
+  const camera = new PerspectiveCamera(45, 1, 0.1, 60)
 
   const canvas = { height: 0, width: 0 }
+  let tuning = initialTuning
+  let heights = heightsOf(tuning.shape)
+  let framing: ArenaFraming | null = null
+
+  const frame = () => {
+    if (canvas.width === 0 || canvas.height === 0) return
+    framing = frameTheTable(canvas, tuning.lens, tuning.shape)
+    aimArenaCamera(camera, framing)
+  }
 
   const fitToHost = () => {
     const { clientHeight: height, clientWidth: width } = host
@@ -345,8 +371,19 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
     canvas.height = height
     canvas.width = width
     renderer.setSize(width, height, false)
-    aimArenaCamera(camera, frameTheTable({ height, width }))
+    frame()
   }
+
+  const applyTuning = () => {
+    heights = heightsOf(tuning.shape)
+    drum.scale.y = tuning.shape.drumHeightScale
+    keyLight.intensity = tuning.lighting.keyLightIntensity
+    for (const shadow of shadows) {
+      shadow.opacity = tuning.lighting.shadowOpacity
+    }
+    frame()
+  }
+  applyTuning()
   const resizing = new ResizeObserver(fitToHost)
   resizing.observe(host)
   fitToHost()
@@ -364,7 +401,8 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
       renderer.domElement.remove()
       colors.dispose()
     },
-    draw: (arena: ArenaFrame, seconds: number) => {
+    draw: (arena: ArenaFrame, seconds: number, azimuth: number) => {
+      if (framing !== null) aimArenaCamera(camera, framing, azimuth)
       for (const top of tops) top.visible = false
       const anchors: TagAnchor[] = []
       for (const drawn of arena.tops) {
@@ -374,11 +412,24 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (host) => {
           (spinAngles[drawn.slot] ?? 0) +
           spinRate * topPoseOf(drawn).spinShare * seconds
         spinAngles[drawn.slot] = spinAngle
-        placeTop({ drawn, spinAngle, top })
-        anchors.push(tagAnchorOf({ camera, canvas, slot: drawn.slot, top }))
+        placeTop({ drawn, heights, spinAngle, top })
+        anchors.push(
+          tagAnchorOf({
+            azimuth,
+            camera,
+            canvas,
+            slot: drawn.slot,
+            top,
+            topHeight: heights.topHeight
+          })
+        )
       }
       renderer.render(scene, camera)
       return anchors
+    },
+    tune: (next) => {
+      tuning = next
+      applyTuning()
     }
   }
 }

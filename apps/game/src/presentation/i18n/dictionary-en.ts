@@ -92,6 +92,7 @@ export const EN_DICTIONARY = defineDictionary({
       hold: 'Back to games (hold)',
       label: 'Games'
     },
+    fullscreen: 'Full screen',
     join: 'Scan to play',
     openFailed: 'The room did not open.',
     players: '{fewest:number} to {most:number} players',
@@ -151,5 +152,45 @@ export const EN_DICTIONARY = defineDictionary({
       match: 'Match won',
       round: 'Round won'
     }
+  },
+  tuning: {
+    backdrop: 'Backdrop',
+    backdrops: {
+      custom: 'Colour',
+      felt: 'Felt',
+      grey: 'Grey',
+      ivory: 'Ivory',
+      'lacquer-ink': 'Ink',
+      slate: 'Slate',
+      white: 'White'
+    },
+    camera: 'Camera',
+    close: 'Close',
+    download: 'Download',
+    drum: 'Drum',
+    fieldOfView: 'Field',
+    fill: 'Fill',
+    header: 'Header',
+    height: 'Height',
+    hud: 'Interface',
+    light: 'Light',
+    motion: 'Motion',
+    orbit: 'Orbit',
+    orbits: {
+      always: 'Always',
+      off: 'Off',
+      waiting: 'Waiting'
+    },
+    pitch: 'Pitch',
+    qr: 'QR',
+    reset: 'Reset',
+    roster: 'Roster',
+    scene: 'Scene',
+    shadow: 'Shadow',
+    size: 'Size',
+    speed: 'Speed',
+    sway: 'Sway',
+    title: 'Tuning',
+    tops: 'Tops'
   }
 })

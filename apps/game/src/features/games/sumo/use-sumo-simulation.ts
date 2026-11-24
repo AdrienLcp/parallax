@@ -8,6 +8,13 @@ import type { RoomSocket } from '@/infrastructure/messaging/use-room-socket'
 
 import type { ScreenGameEvent } from '../game-definition'
 import {
+  type ArenaMotion,
+  type ArenaOrbit,
+  advanceOrbit,
+  STILL_ORBIT,
+  stickOnArena
+} from './arena-orbit'
+import {
   advanceMatch,
   ejectedBetween,
   GATHERING,
@@ -31,21 +38,42 @@ import {
 
 type SumoSimulationInput = {
   events: EventSubscription<ScreenGameEvent>
-  /** Called on every display frame with the match as it stands and the wall time since the last one. */
-  onFrame: (match: SumoMatch, seconds: number) => void
+  /** How the camera moves around the drum: the sticks are read as the camera sees the arena. */
+  motion: ArenaMotion
+  /**
+   * Called on every display frame with the match as it stands, the wall time
+   * since the last one, and the camera's azimuth around the drum.
+   */
+  onFrame: (match: SumoMatch, seconds: number, azimuth: number) => void
   room: ScreenRoomMessage
   send: RoomSocket['send']
 }
+
+/** Each seat's stick turned from the screen's axes into the arena's, for a camera `azimuth` radians around the drum. */
+const controlsOnArena = (
+  controls: ReadonlyMap<SeatId, SumoControl>,
+  azimuth: number
+): ReadonlyMap<SeatId, SumoControl> =>
+  azimuth === 0
+    ? controls
+    : new Map(
+        [...controls].map(([seat, { stick }]) => [
+          seat,
+          { stick: stickOnArena(stick, azimuth) }
+        ])
+      )
 
 /**
  * Runs the sumo on the screen: hears the phones' sticks and dashes, starts a
  * match once every present player is ready and tells the room their marks are
  * spent, steps the match at a fixed rate whatever the display's refresh, tells
  * the phones when its state changes, and keeps the standings the room reads
- * around the arena.
+ * around the arena. It also moves the camera around the drum, and reads each
+ * stick as the room sees it from there.
  */
 export const useSumoSimulation = ({
   events,
+  motion,
   onFrame,
   room,
   send
@@ -57,6 +85,7 @@ export const useSumoSimulation = ({
   const ready = useRef<ReadonlySet<SeatId>>(new Set())
   const seated = useRef<ReadonlySet<SeatId>>(new Set())
   const lastReport = useRef<string | null>(null)
+  const currentMotion = useRef(motion)
   const drawFrame = useEffectEvent(onFrame)
   const report = useEffectEvent(send)
 
@@ -75,6 +104,10 @@ export const useSumoSimulation = ({
     }
     lastReport.current = null
   }, [room])
+
+  useEffect(() => {
+    currentMotion.current = motion
+  }, [motion])
 
   useEffect(
     () =>
@@ -98,6 +131,7 @@ export const useSumoSimulation = ({
     let ejection: ShownEjection | null = null
     let lastStandings: string | null = null
     let previousTime: number | null = null
+    let orbit: ArenaOrbit = STILL_ORBIT
     let frame = requestAnimationFrame(function step(time) {
       const seconds =
         previousTime === null
@@ -105,12 +139,17 @@ export const useSumoSimulation = ({
           : Math.min((time - previousTime) / 1000, LONGEST_FRAME_SECONDS)
       previousTime = time
       pendingSeconds += seconds
+      orbit = advanceOrbit(orbit, {
+        motion: currentMotion.current,
+        seconds,
+        stage: match.stage === 'gathering' ? 'waiting' : 'playing'
+      })
 
       while (pendingSeconds >= SUMO_STEP_SECONDS) {
         pendingSeconds -= SUMO_STEP_SECONDS
         const previous = match
         match = advanceMatch(match, {
-          controls: controls.current,
+          controls: controlsOnArena(controls.current, orbit.azimuth),
           dashes: dashes.current,
           present: present.current,
           ready: ready.current,
@@ -149,7 +188,7 @@ export const useSumoSimulation = ({
         }
       }
 
-      drawFrame(match, seconds)
+      drawFrame(match, seconds, orbit.azimuth)
       frame = requestAnimationFrame(step)
     })
 

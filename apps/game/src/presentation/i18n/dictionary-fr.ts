@@ -90,6 +90,7 @@ export default defineDictionary({
       hold: 'Retour aux jeux (maintenir)',
       label: 'Jeux'
     },
+    fullscreen: 'Plein écran',
     join: 'Scannez pour jouer',
     openFailed: 'La salle ne s’est pas ouverte.',
     players: '{fewest:number} à {most:number} joueurs',
@@ -149,5 +150,45 @@ export default defineDictionary({
       match: 'Partie gagnée',
       round: 'Manche gagnée'
     }
+  },
+  tuning: {
+    backdrop: 'Fond',
+    backdrops: {
+      custom: 'Couleur',
+      felt: 'Feutre',
+      grey: 'Gris',
+      ivory: 'Ivoire',
+      'lacquer-ink': 'Encre',
+      slate: 'Ardoise',
+      white: 'Blanc'
+    },
+    camera: 'Caméra',
+    close: 'Fermer',
+    download: 'Télécharger',
+    drum: 'Tambour',
+    fieldOfView: 'Champ',
+    fill: 'Cadrage',
+    header: 'En-tête',
+    height: 'Hauteur',
+    hud: 'Interface',
+    light: 'Lumière',
+    motion: 'Mouvement',
+    orbit: 'Orbite',
+    orbits: {
+      always: 'Toujours',
+      off: 'Non',
+      waiting: 'Attente'
+    },
+    pitch: 'Inclinaison',
+    qr: 'QR',
+    reset: 'Réinitialiser',
+    roster: 'Sièges',
+    scene: 'Scène',
+    shadow: 'Ombre',
+    size: 'Taille',
+    speed: 'Vitesse',
+    sway: 'Balancement',
+    title: 'Réglages',
+    tops: 'Toupies'
   }
 })

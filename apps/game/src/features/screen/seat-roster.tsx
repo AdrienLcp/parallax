@@ -2,6 +2,7 @@ import type React from 'react'
 
 import { ROOM_SEAT_LIMIT, type Seat } from '@parallax/protocol/room'
 
+import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
 import type { SceneStandings } from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
 import { CheckMark } from '@/features/room/check-mark'
@@ -119,6 +120,7 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({ seats, standings }) => {
       <div className='seat-foot'>
         <p className='seat-cue'>{standings?.cue ?? waitingCue}</p>
         <SoundSwitch />
+        <FullscreenSwitch />
         <BackToGames />
       </div>
     </div>
