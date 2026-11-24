@@ -7,6 +7,8 @@ export type MutedBrowserOptions = {
   colorScheme?: ColorScheme
   /** Opens the browser to Lighthouse, which attaches to it rather than launching its own. */
   debuggingPort?: number
+  /** Every tab, Lighthouse's own included, prefers reduced motion. */
+  reducedMotion?: boolean
 }
 
 export type CheckPageOptions = {
@@ -25,12 +27,14 @@ const BLINK_PREFERRED_COLOR_SCHEME: Record<ColorScheme, number> = {
  */
 export const launchMutedBrowser = ({
   colorScheme = 'light',
-  debuggingPort
+  debuggingPort,
+  reducedMotion = false
 }: MutedBrowserOptions = {}): Promise<Browser> =>
   chromium.launch({
     args: [
       '--mute-audio',
       `--blink-settings=preferredColorScheme=${BLINK_PREFERRED_COLOR_SCHEME[colorScheme]}`,
+      ...(reducedMotion ? ['--force-prefers-reduced-motion'] : []),
       ...(debuggingPort === undefined
         ? []
         : [`--remote-debugging-port=${debuggingPort}`])

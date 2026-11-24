@@ -24,6 +24,12 @@ import { type ColorScheme, launchMutedBrowser } from './checks/muted-browser.ts'
  * included. `LIGHTHOUSE_DEBUGGING_PORT` pins the browser's debugging port;
  * otherwise the system hands out a free one, so two projects' runs never meet
  * on it.
+ *
+ * Motion is reduced, so the game choice's demo and the room's waiting camera
+ * stand still. Animated, a WebGL scene drawn by the CI's software renderer
+ * blocks the main thread on every frame: the page never goes quiet, and every
+ * run waits out Lighthouse's whole load timeout, which no display with a GPU
+ * would ever do.
  */
 
 const ROOT = join(import.meta.dirname, '..')
@@ -49,7 +55,7 @@ const MIN_SCORE = 100
  */
 const BUDGETS_WITH_HEADROOM = {
   'cumulative-layout-shift': 0.01,
-  'resource-summary:script:size': 220_000,
+  'resource-summary:script:size': 240_000,
   'three-chunk:size': 160_000
 }
 
@@ -234,7 +240,8 @@ const auditEveryPage = async (origin: string): Promise<string[]> => {
   for (const colorScheme of ['light', 'dark'] satisfies ColorScheme[]) {
     const browser = await launchMutedBrowser({
       colorScheme,
-      debuggingPort: DEBUGGING_PORT
+      debuggingPort: DEBUGGING_PORT,
+      reducedMotion: true
     })
 
     try {

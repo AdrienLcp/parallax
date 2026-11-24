@@ -1,15 +1,19 @@
 import type React from 'react'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 
 import {
   setTuningPanelOpen,
   useDisplayTuning,
   useIsTuningPanelOpen
 } from './display-tuning-store'
-import { TuningPanel } from './tuning-panel'
 import { useTunedPage } from './use-tuned-page'
 
 import './tuning-layer.sass'
+
+/** Loads only once the panel opens: the room screen never needs it otherwise. */
+const TuningPanel = lazy(async () => ({
+  default: (await import('./tuning-panel')).TuningPanel
+}))
 
 const KEYS_WITHOUT_TEXT = new Set(['checkbox', 'color', 'radio', 'range'])
 
@@ -47,6 +51,8 @@ export const TuningLayer: React.FC = () => {
   }, [isPanelOpen])
 
   return isPanelOpen ? (
-    <TuningPanel backdropHex={backdropHex} tuning={tuning} />
+    <Suspense fallback={null}>
+      <TuningPanel backdropHex={backdropHex} tuning={tuning} />
+    </Suspense>
   ) : null
 }
