@@ -17,7 +17,7 @@ already translated.
 
 ## Running it
 
-- `corepack pnpm dev`: wrangler on `:8798` (about 30 s on first start) and Vite on
+- `corepack pnpm dev`: wrangler on `:8798` (about 30 s on first start, with an empty assets folder so a `vite build` does not reload it and drop the rooms; `:8798/` answers 404) and Vite on
   `:5560`, which proxies `/api` and `/ws` to it. Restart Vite after adding a
   dependency.
 - After any change to `apps/server/wrangler.jsonc`:

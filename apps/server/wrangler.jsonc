@@ -1,5 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  // `pnpm dev` swaps this folder for an empty one with `--assets`: Vite serves
+  // the app there, and wrangler reloads on any write here, so a `vite build`
+  // run during a match would drop every room socket.
   "assets": {
     "directory": "../game/dist",
     "not_found_handling": "single-page-application",

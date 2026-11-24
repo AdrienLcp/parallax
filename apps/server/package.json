@@ -17,7 +17,7 @@
     "build": "wrangler types --check && tsc --noEmit && wrangler deploy --dry-run --outdir dist",
     "cf-typegen": "wrangler types",
     "deploy": "wrangler deploy",
-    "dev": "node -e \"require('node:fs').mkdirSync('../game/dist', { recursive: true })\" && wrangler dev",
+    "dev": "node -e \"require('node:fs').mkdirSync('.wrangler/dev-assets', { recursive: true })\" && wrangler dev --assets .wrangler/dev-assets",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
