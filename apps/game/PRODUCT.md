@@ -37,15 +37,12 @@ The game lives inside a physical holographic alcove (the HLD), so depth comes fr
 ## Capabilities and Constraints
 
 - **Rooms:** a room has a 4-letter code and up to 6 seats. A seat's slot (0–5) gives the player's colour.
-- **Seats:** a phone that goes silent for 12 s shows as absent and keeps its seat until the room is cleared.
+- **Seats:** a phone that goes silent for 12 s shows as absent. Its seat is released 60 s after it left; a phone back before then takes its seat again.
 - **Phone connection states:** connecting, open, reconnecting, refused.
-- **Sumo inputs:** a stick (sent at 20 Hz) and a dash.
+- **Sumo:** starts at 2 players, takes up to 6. Inputs: a stick (sent at 20 Hz) and a dash.
 - **Rendering on the display:** one perspective camera, a solid unlit backdrop, soft grounded shadows, and content inside a ~3 % safe area that never touches the alcove's walls or roof.
 - **QR:** plain 2D on a flat backdrop, inside the safe area, always visible since the display cannot be touched to reveal it; its contrast must be checked on the device (inverted is the fallback).
 - **Languages:** French and English. A phone follows its own language.
-- **Undecided:**
-  - how a seat is released (by the display, by the player, or after a delay);
-  - whether the sumo needs 4 players or starts at 2.
 
 ## Brand Commitments
 

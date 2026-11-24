@@ -22,7 +22,7 @@ OWN-WORLD: Billiard-green felt ground; brass filets (rings, ticks, rules) for ev
 
 STORY: A passer-by sees the felt table and the plaque, scans, and their phone turns their seat colour with their own top on it. They push their top into the others, and watch someone go to the gutter.
 
-FIRST VIEWPORT: Display, empty room: top quarter holds the ivory QR (23 % of the height) beside "Scannez pour jouer" and the KLMB plaque, with two pictogram cues under a brass rule; the felt arena fills the middle; the walnut-framed slate roster of six seats closes the bottom. Display in play: the round title and players left on the left of the header, the compact plaque and "Touchez pour jouer" on the right; a touch outside the controls opens the ivory QR card (12 cu) in the header corner for 20 s while the header's brass rule drains, at a constant header height; a press-and-hold "Jeux" in the roster foot leaves for the game choice. Controller in play, held either way: seat-coloured ground, the player's top and name centred at the top, a floating stick on the left half whose base is the arena plan in filets and whose knob is the player's own spinning top, and the "Foncer" disc on the right in the seat's text colour with a brass cooldown ring.
+FIRST VIEWPORT: Display, empty room: top quarter holds the ivory QR (23 % of the height) beside "Scannez pour jouer" and the KLMB plaque, with two pictogram cues under a brass rule; the felt arena fills the middle; the walnut-framed slate roster of six seats closes the bottom. Display in play: the round title and players left on the left of the header, the compact plaque beside the ivory QR on the right, always shown since the display takes no touch; a press-and-hold "Jeux" in the roster foot, with the driving PC's mouse, leaves for the game choice. Controller in play, held either way: seat-coloured ground, the player's top and name centred at the top, a floating stick on the left half whose base is the arena plan in filets and whose knob is the player's own spinning top, and the "Foncer" disc on the right in the seat's text colour with a brass cooldown ring.
 
 FORM: Plateau de bistrot, direction 2 of 3 (impeccable's pick over the rolled Munich 72 and the Detector challenger), arena reworked by Adrien into brass outlines on felt; controller chosen in landscape with two thumbs. seed:fa9ed36c9c0b4bfd
 
@@ -34,15 +34,15 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 - Display: `apps/game/.impeccable/mocks/directions/bistrot.html` (chosen decision comp, outlined arena).
 - Controller: `apps/game/.impeccable/mocks/directions/manette-bistrot.html` (approved by Adrien on 2026-11-23).
-- QR in play: `apps/game/.impeccable/mocks/session-b/qr-carte.html` ("La carte s'ouvre", chosen by Adrien on 2026-11-23 over `qr-bloc.html`).
+- QR in play: `apps/game/.impeccable/mocks/session-b/qr-carte.html` ("La carte s'ouvre", chosen by Adrien on 2026-11-23 over `qr-bloc.html`), superseded once the display turned out to take no touch: the QR card now stays open in the header.
 - Waiting plan drawn through the scene's camera: `apps/game/.impeccable/mocks/session-b/plan.html`.
 
 ## Settled
 
-- A seat is released 60 s after its phone leaves; a returning phone keeps its seat until someone else takes the slot.
-- The QR shows only on touch during play, and stays large while the room waits.
+- A seat is released 60 s after its phone leaves; a phone back before then takes its seat again.
+- The QR stays in the header corner during play, and large while the room waits.
 - The sumo starts at 2 players.
 
 ## Unresolved
 
-- Whether the 12 cu QR card scans from 2–3 m on the real display.
+- Whether the in-play QR card scans from 2–3 m on the real display.
