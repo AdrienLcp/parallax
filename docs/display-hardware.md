@@ -1,72 +1,62 @@
 # Display hardware
 
-The office display is a Looking Glass unit: a portrait touchscreen on a rolling stand. People on site believe it has no PC attached and runs "something like Android". The exact model has not been identified yet. This page records what each candidate means for a Three.js web app. The research dates from 2026-11-23.
+The office display is a Looking Glass unit: a portrait touchscreen of about 27", on a stand. People on site believe it has no PC attached and runs "something like Android". This page records what each candidate means for a Three.js web app. Research dates from 2026-11-23, corrected on 2026-11-24 after the first test on the unit.
 
-## Likely model: Looking Glass HLD 86" (Hololuminescent Display)
+## What the first test showed
 
-It matches every observed trait:
+On 2026-11-24 the app ran on the unit. The image was clean and sharp, but flat: the arena read as seen from above, with no depth. Two facts follow:
 
-- portrait 2160×3840;
-- 10-point IR multi-touch;
-- floor stand;
-- no PC.
+- **The panel shows a plain 2D frame cleanly**, so it is not a lenticular light-field unit, which smears a plain frame into soft, rainbow-fringed slices.
+- **The camera was the wrong one for this display.** It leaned 14° from straight above, with a 28° field of view, and the table filled the frame. No depth can come out of that, whatever the display.
 
-It ships with a "Demo Media Player", a Raspberry Pi 4 box that plays MP4 files from a USB stick.
+## Likely model: Looking Glass HLD 27" (Hololuminescent Display)
 
-**The HLD needs no multi-view rendering.** It is a regular 2D panel placed in front of a fixed holographic "alcove" built into the optics. The video blends with that alcove, roughly like a multiply blend. A web app therefore renders one normal 9:16 frame in fullscreen Chromium.
+- Portrait 2160×3840, 500 nits, 60 Hz.
+- Optional capacitive 10-point touch panel.
+- Inputs: HDMI 2.0 and DP 1.2. Its USB-A port is power only. It has a 3.5 mm jack, so check whether the unit has speakers before counting on sound.
+- No built-in computer. It ships with a Raspberry Pi 4 (2 GB) "Demo Media Player" that plays MP4 files from a USB stick. That small Linux box is probably what people take for "Android". A browser running Three.js at 4K will struggle on it, so the app needs a laptop, a mini PC or a BrightSign HTML5 player. Looking Glass recommends at least an RTX 3060 or an Apple M1.
+- The HLD line comes in 16", 27" and 86". There is no 32" HLD.
 
-**A browser cannot run on the demo player**, which only plays MP4. To run the app, connect a machine to the display:
+**How the HLD makes depth.** It is an ordinary LCD with an optical stack in front that shows a recessed box, the "alcove". The video blends with that alcove, roughly like a multiply. Depth comes from content that sits *inside* the alcove: an object standing on its floor, seen from the front. A frame that fills the screen with its own floor or walls fights the optics and reads flat.
 
-- **Machines that work:** a laptop or mini PC, or a BrightSign HTML5 player.
-- **Connection:** USB-C with DP Alt Mode carries video and touch on one cable. HDMI or DP plus a USB cable also works.
-- **Touch:** it arrives as standard HID multitouch, so browser pointer events map 1:1.
+Official creative rules (from the HLD docs and the Unity and Unreal templates):
 
-Official creative rules (from the Unity and Unreal templates) that the scene must follow:
-
-- One standard perspective camera framed on the alcove.
-- A solid, unlit backdrop. Do not render the alcove itself.
-- Soft grounded shadows on the floor, none on the side walls. A subtle floor reflection is optional.
-- Keep the subject inside the safe area: about 3% margins, so 1944×3640 active at 4K. It must never overlap the alcove's roof or walls.
+- One standard perspective camera, framed to match the alcove. The templates ship that camera, an Alcove prefab and a Boundary Helper. **The camera's height, pitch and field of view are not published**: read them from the template project, or match them on the unit by eye.
+- A solid, unlit, opaque backdrop. Do not render the alcove, its floor or its walls.
+- Soft shadows grounded on the floor, none on the side walls, at most a soft one on the back wall. A subtle floor reflection is optional.
+- The subject is centred and stays inside the safe area: 100 px top and bottom, 108 px left and right at 4K, so 1944×3640 active. It never overlaps the alcove's roof or walls.
 - Slow orbits and rotations read best.
 
-The QR code is plain 2D pixels, so it should scan. Place it inside the safe area on flat backdrop. Check its contrast on the device because of the blend; an inverted QR (light on dark) is the fallback.
+The QR code is plain 2D pixels, so it should scan. Place it inside the safe area, on flat backdrop. Check its contrast on the unit because of the blend. An inverted QR (light on dark) is the fallback.
 
 Sources:
 
-- https://hlddocs.lookingglassfactory.com/getting-started/hld-86-setup-guide
+- https://hlddocs.lookingglassfactory.com/resources/hardware-specs.md
+- https://checkout.lookingglassfactory.com/cdn/shop/t/35/assets/HLD-27-specsheet-RAD5.pdf
 - https://hlddocs.lookingglassfactory.com/content-pipelines/creating-real-time-apps.md
+- https://hlddocs.lookingglassfactory.com/content-pipelines/creating-real-time-apps/unity.md
 - https://hlddocs.lookingglassfactory.com/creative-guidelines/products.md
 - https://hlddocs.lookingglassfactory.com/resources/media-specs-and-encoding.md
 
-## Other candidates: light-field displays (27" Light Field, 16"/32" Spatial)
+## Ruled out: lenticular light-field displays (27" Light Field, 16" and 32" Spatial)
 
-These render 45 to 100 views interlaced through a lenticular sheet.
+These render 45 to 100 views through a slanted lens sheet. A plain frame looks smeared on them, which the test did not show. None of them has built-in touch.
 
-The official web path is `@lookingglass/webxr`, latest version 0.6.0 from 2024-07. It needs Looking Glass Bridge on the host for calibration, and Bridge runs only on Windows, macOS and Ubuntu. "Enter Looking Glass" opens a popup on the display, and touch events land in that popup (`LookingGlassConfig.popup`).
+- **27" Light Field:** 2880×5120, needs a GPU PC with Looking Glass Bridge.
+- **32" Spatial Gen3:** 4320×7680 over two DisplayPort cables.
+- **16" Spatial:** no touch, no computer.
 
-**Without Bridge**, set `LookingGlassConfig.calibration` by hand from `LKG_calibration/visual.json`, which is on the display's USB drive. The other option is a custom quilt pass plus a lenticular shader:
+The web path for these displays would be `@lookingglass/webxr`. Its last release is 0.6.0, from 2024-07. It needs Looking Glass Bridge on the host and opens its output in a popup window.
 
-- `pitch' = pitch * screenW / DPI * cos(atan(1 / slope))`
-- `tilt = screenH / (screenW * slope)`, negated when `flipImageX` is set
-- `subp = 1 / (screenW * 3)`
-- view per subpixel: `v_c = 1 - fract((uv.x + subp * c + uv.y * tilt) * pitch' - center)`, with c = 0, 1, 2 for R, G, B. The colour is sampled from quilt tile `floor(v_c * numViews)`.
+## How to confirm on site
 
-Each view is only about 500 to 750 px wide, so keep the action near the zero-parallax plane and keep depth shallow. Draw the QR code as a flat overlay after the lenticular pass.
-
-Sources:
-
-- https://www.npmjs.com/package/@lookingglass/webxr
-- https://lfdocs.lookingglassfactory.com/software/looking-glass-bridge
-
-## How to identify the unit on site
-
-| Check                 | HLD                                                          | Light field                                  |
-| --------------------- | ------------------------------------------------------------ | -------------------------------------------- |
-| Box at the back       | Raspberry Pi with a USB stick and prev / loop / next buttons | Serial `LKG-xxxx`                            |
-| Plugged into a laptop | Plain monitor at 2160×3840 or 1080×1920                      | USB drive with `LKG_calibration/visual.json` |
-| Demo content          | Seems to sit inside a fixed 3D box behind the glass          | Parallax changes as you move sideways        |
+| Check              | HLD                                                                       | Lenticular                                         |
+| ------------------ | ------------------------------------------------------------------------- | -------------------------------------------------- |
+| Back of the unit   | Raspberry Pi 4 on micro-HDMI; HDMI + DP + power-only USB-A + 3.5 mm jack | Two DisplayPort cables, or USB-C with a status LED |
+| Label              | "Hololuminescent Display (HLD)"                                           | "Spatial Display" / "Light Field", serial LKG-…    |
+| Walk sideways      | Only the alcove seems to shift                                            | The content itself shows parallax                  |
+| Desktop text       | Crisp                                                                     | Smeared                                            |
 
 ## Rendering strategy
 
-1. **Default renderer, written first:** "flat portrait". A fullscreen 9:16 scene with one perspective camera, solid backdrop, grounded soft shadows, content in the safe area and plain pointer events. It covers the HLD and any regular screen.
-2. **Optional "lightfield" renderer, written later behind a flag:** `@lookingglass/webxr` when Bridge is present, otherwise a custom quilt pass with a lenticular shader fed by `visual.json`. Build it only if the unit turns out to be a light-field model.
+One renderer, written for the HLD: a fullscreen 9:16 frame, one perspective camera framed on the alcove, the arena as an object on the alcove's floor, solid backdrop, grounded soft shadows, content in the safe area, plain pointer events. The camera's numbers are matched on the unit by eye until the template's values are known.
