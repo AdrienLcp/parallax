@@ -1,4 +1,5 @@
 @use '@adrienlcp/styles/motion'
+@use '../../../presentation/styles/band'
 @use '../../../presentation/styles/typography'
 
 @layer components
@@ -6,10 +7,9 @@
     --seat-top-ring: var(--chalk)
     --text-band-title: 4rem
 
+    @include band.slate(var(--stroke-bold))
+
     align-items: center
-    background: var(--slate)
-    border-block: var(--stroke-bold) solid var(--brass)
-    clip-path: inset(0)
     color: var(--chalk)
     display: grid
     gap: var(--space-l)
@@ -20,11 +20,7 @@
     padding-block: var(--space-m)
     padding-inline: var(--gutter-left) var(--gutter-right)
     position: absolute
-    transition: clip-path var(--transition-slow) var(--ease-out)
     translate: 0 -50%
-
-    @starting-style
-      clip-path: inset(0 100% 0 0)
 
     .band-top
       block-size: 6rem

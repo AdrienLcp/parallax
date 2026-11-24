@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-23T22:47:59.000Z",
+  "generatedAt": "2026-11-23T23:58:27Z",
   "title": "Design System: Parallax",
   "extensions": {
     "colorMeta": {
@@ -92,21 +92,6 @@
           "oklch(65% 0.047 56.8)",
           "oklch(80% 0.032 56.8)",
           "oklch(95% 0.016 56.8)"
-        ]
-      },
-      "maple": {
-        "role": "tertiary",
-        "displayName": "Maple (defined, unused)",
-        "canonical": "oklch(82.6% 0.079 77.2)",
-        "tonalRamp": [
-          "oklch(15% 0.022 77.2)",
-          "oklch(25% 0.036 77.2)",
-          "oklch(35% 0.050 77.2)",
-          "oklch(45% 0.065 77.2)",
-          "oklch(55% 0.079 77.2)",
-          "oklch(65% 0.065 77.2)",
-          "oklch(80% 0.043 77.2)",
-          "oklch(95% 0.022 77.2)"
         ]
       },
       "slate": {
@@ -419,7 +404,7 @@
       {
         "name": "plaque-inlay",
         "value": "inset 0 0 0 4px var(--enamel), inset 0 0 0 7px var(--ivory), 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 40%, transparent)",
-        "purpose": "Enamel plaque with its ivory inner filet (phone values; the display uses the plaque.enamel mixin: an enamel inset at 56 % of --plaque-filet, then the ivory filet, then the raised shadow)."
+        "purpose": "Enamel plaque with its ivory inner filet (phone values, the same plaque.enamel mixin at a 7px filet raised by --shadow-phone-raised; the display uses the plaque.enamel mixin: an enamel inset at 56 % of --plaque-filet, then the ivory filet, then the raised shadow)."
       },
       {
         "name": "walnut-frame",
@@ -432,27 +417,27 @@
         "purpose": "Inner filet of the brass button on the display (brass-button.brass mixin)."
       },
       {
-        "name": "shadow-dash",
+        "name": "shadow-phone-dash",
         "value": "0 6px 14px color-mix(in oklab, var(--lacquer-ink) 32%, transparent)",
         "purpose": "Dash disc on the phone."
       },
       {
-        "name": "shadow-knob",
+        "name": "shadow-phone-knob",
         "value": "drop-shadow(0 5px 6px color-mix(in oklab, var(--lacquer-ink) 35%, transparent))",
         "purpose": "Stick knob (filter)."
       },
       {
-        "name": "shadow-lobby-top",
+        "name": "shadow-phone-lobby-top",
         "value": "drop-shadow(0 10px 14px color-mix(in oklab, var(--lacquer-ink) 30%, transparent))",
         "purpose": "Large spinning top in the phone lobby (filter)."
       },
       {
-        "name": "shadow-bubble",
+        "name": "shadow-phone-bubble",
         "value": "0 8px 20px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)",
         "purpose": "Reconnecting bubble on the phone."
       },
       {
-        "name": "shadow-control",
+        "name": "shadow-phone-control",
         "value": "0 4px 10px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)",
         "purpose": "Brass retry button on the phone."
       },

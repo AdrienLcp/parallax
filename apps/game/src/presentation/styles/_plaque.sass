@@ -1,21 +1,23 @@
 @use './typography'
 
 // Pure: the enamel plaque, as a mixin a component includes. Emits no CSS of
-// its own. Sized on the display's `--cu`.
+// its own. Sized on the display's `--cu`; the phone resizes it in rem and px.
 
 /// Enamel ground, ivory capitals and an ivory inner filet, raised off the felt.
-/// A caller resizes it through `font-size` and the `--plaque-*` properties.
+/// A caller resizes it through `font-size` and the `--plaque-*` properties,
+/// `--plaque-shadow` included.
 @mixin enamel
   --plaque-filet: calc(var(--cu) * 0.8)
   --plaque-pad-block: calc(var(--cu) * 0.8)
   --plaque-pad-inline: calc(var(--cu) * 2.2)
   --plaque-tracking: 0.14em
+  --plaque-shadow: var(--screen-shadow-raised)
 
   @include typography.display
 
   background: var(--enamel)
   border-radius: calc(var(--cu) * 1.2)
-  box-shadow: inset 0 0 0 calc(var(--plaque-filet) * 0.56) var(--enamel), inset 0 0 0 var(--plaque-filet) var(--ivory), var(--screen-shadow-raised)
+  box-shadow: inset 0 0 0 calc(var(--plaque-filet) * 0.56) var(--enamel), inset 0 0 0 var(--plaque-filet) var(--ivory), var(--plaque-shadow)
   color: var(--ivory)
   font-size: calc(var(--cu) * 6.4)
   letter-spacing: var(--plaque-tracking)

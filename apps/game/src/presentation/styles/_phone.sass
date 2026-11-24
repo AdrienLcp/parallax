@@ -1,0 +1,15 @@
+// The phone in a player's hand, as a mixin the play page includes. Held at
+// about 40 cm and read at a glance, so it is sized in rem and px, never in the
+// display's `--cu`.
+
+/// The radii and the ink shadows of the objects lying on the phone's ground.
+@mixin units
+  --radius-phone-control: 4px
+  --radius-phone-bubble: 6px
+  --radius-phone-plaque: 12px
+  --shadow-phone-raised: 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
+  --shadow-phone-control: 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)
+  --shadow-phone-dash: 0 6px 14px color-mix(in oklab, var(--lacquer-ink) 32%, transparent)
+  --shadow-phone-bubble: 0 8px 20px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)
+  --shadow-phone-knob: drop-shadow(0 5px 6px color-mix(in oklab, var(--lacquer-ink) 35%, transparent))
+  --shadow-phone-lobby-top: drop-shadow(0 10px 14px color-mix(in oklab, var(--lacquer-ink) 30%, transparent))

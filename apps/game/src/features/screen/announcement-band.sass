@@ -1,22 +1,18 @@
+@use '../../presentation/styles/band'
 @use '../../presentation/styles/typography'
 
 @layer components
   .announcement-band
+    @include band.slate(calc(var(--cu) * 0.3))
+
     align-items: center
     align-self: stretch
-    background: var(--slate)
-    border-block: calc(var(--cu) * 0.3) solid var(--brass)
-    clip-path: inset(0)
     column-gap: calc(var(--cu) * 2)
     display: flex
     margin-inline: calc(var(--screen-safe-inline) * -1)
     padding-inline: var(--screen-safe-inline)
     position: relative
-    transition: clip-path var(--transition-slow) var(--ease-out)
     z-index: 1
-
-    @starting-style
-      clip-path: inset(0 100% 0 0)
 
     &[data-exiting]
       clip-path: inset(0 0 0 100%)

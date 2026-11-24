@@ -1,15 +1,11 @@
 @use '@adrienlcp/styles/accessibility'
+@use '../../presentation/styles/plaque'
 @use '../../presentation/styles/typography'
 
 @layer components
   .room-notice
     --text-plaque: 3.625rem
     --text-notice: 2.875rem
-    --plaque-tracking: 0.14em
-    --radius-plaque: 12px
-    --radius-control: 4px
-    --shadow-plaque: inset 0 0 0 4px var(--enamel), inset 0 0 0 7px var(--ivory), 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
-    --shadow-control: 0 4px 10px color-mix(in oklab, var(--lacquer-ink) 35%, transparent)
 
     align-items: center
     background: var(--felt)
@@ -24,16 +20,15 @@
     text-align: center
 
     .room-plaque
-      @include typography.display
+      @include plaque.enamel
 
-      background: var(--enamel)
-      border-radius: var(--radius-plaque)
-      box-shadow: var(--shadow-plaque)
-      color: var(--ivory)
+      --plaque-filet: 0.4375rem
+      --plaque-pad-block: var(--space-xs)
+      --plaque-pad-inline: var(--space-l)
+      --plaque-shadow: var(--shadow-phone-raised)
+
+      border-radius: var(--radius-phone-plaque)
       font-size: var(--text-plaque)
-      letter-spacing: var(--plaque-tracking)
-      padding: var(--space-xs) var(--space-l)
-      padding-inline-end: calc(var(--space-l) - var(--plaque-tracking))
       user-select: text
 
     .plaque-label
@@ -57,8 +52,8 @@
 
       background: var(--brass)
       border: 0
-      border-radius: var(--radius-control)
-      box-shadow: var(--shadow-control)
+      border-radius: var(--radius-phone-control)
+      box-shadow: var(--shadow-phone-control)
       color: var(--lacquer-ink)
       font-size: var(--text-l)
       min-block-size: var(--control-height)

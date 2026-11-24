@@ -1,5 +1,13 @@
+@use '../../presentation/styles/phone'
+
 @layer components
+  // The phone's pad fills the viewport and never scrolls: no gutter to keep.
+  :root:has(.play-page)
+    scrollbar-gutter: auto
+
   .play-page
+    @include phone.units
+
     --focus: var(--brass)
 
     -webkit-touch-callout: none

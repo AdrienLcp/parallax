@@ -1,6 +1,6 @@
 import { SUMO_TUNING } from './sumo-tuning'
 
-/** The plan's radii, in arena units: the felt, its filets and its ticks, as the scene and its preview both draw them. */
+/** The plan's radii, in arena units: the felt, its filets and its ticks, as the scene, its preview and the phone's stick all draw them. */
 export const ARENA_PLAN = {
   centreRing: 0.503,
   centreSpot: 0.056,

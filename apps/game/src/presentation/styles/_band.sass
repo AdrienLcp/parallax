@@ -1,0 +1,13 @@
+// Pure: the slate band, as a mixin a component includes. Emits no CSS of its
+// own. The display's announcement and the phone's outcome share it.
+
+/// Slate across the full width, brass filets top and bottom, wiped in from the
+/// left. `$filet` is the filets' width, in the caller's unit.
+@mixin slate($filet)
+  background: var(--slate)
+  border-block: $filet solid var(--brass)
+  clip-path: inset(0)
+  transition: clip-path var(--transition-slow) var(--ease-out)
+
+  @starting-style
+    clip-path: inset(0 100% 0 0)

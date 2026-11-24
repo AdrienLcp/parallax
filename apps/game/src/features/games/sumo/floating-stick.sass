@@ -2,7 +2,6 @@
   .floating-stick
     --stick-base-size: calc(var(--pad-unit) * 45)
     --stick-knob-size: calc(var(--stick-base-size) * 0.42)
-    --shadow-knob: drop-shadow(0 5px 6px color-mix(in oklab, var(--lacquer-ink) 35%, transparent))
 
     position: relative
     touch-action: none
@@ -28,7 +27,7 @@
 
     .stick-knob
       block-size: var(--stick-knob-size)
-      filter: var(--shadow-knob)
+      filter: var(--shadow-phone-knob)
       inline-size: var(--stick-knob-size)
       inset-block-start: calc(50% - var(--stick-knob-size) / 2)
       inset-inline-start: calc(50% - var(--stick-knob-size) / 2)

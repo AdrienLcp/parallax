@@ -9,7 +9,6 @@
     --text-rotate-cue: 2.875rem
     --sumo-ground: var(--seat)
     --seat-top-ring: var(--seat-cap)
-    --shadow-lobby-top: drop-shadow(0 10px 14px color-mix(in oklab, var(--lacquer-ink) 30%, transparent))
 
     background: var(--sumo-ground)
     color: var(--seat-cap)
@@ -82,7 +81,7 @@
       @include motion.spin(calc(var(--transition-slow) * 15))
 
       block-size: 12.5rem
-      filter: var(--shadow-lobby-top)
+      filter: var(--shadow-phone-lobby-top)
       inline-size: 12.5rem
 
     .lobby-name

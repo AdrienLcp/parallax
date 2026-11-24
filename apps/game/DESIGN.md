@@ -8,7 +8,6 @@ colors:
   brass-deep: "oklch(54.3% 0.095 83.4)"
   enamel: "oklch(37.6% 0.105 261)"
   walnut: "oklch(38% 0.058 56.8)"
-  maple: "oklch(82.6% 0.079 77.2)"
   slate: "oklch(28.3% 0.008 169.8)"
   slate-line: "oklch(42.7% 0.011 160.9)"
   chalk: "oklch(93.1% 0.015 90.2)"
@@ -167,7 +166,6 @@ A dark felt-and-brass table with café objects in enamel, walnut, slate and ivor
 
 - **Enamel Blue** (enamel): the room-code plaque, with an ivory inner filet, and the chosen game's plaque on the game choice.
 - **Walnut** (walnut): the frame around the slate roster, doubled by a darker walnut/ink filet.
-- **Maple** (maple): defined with the table set, not yet used by any shipped surface.
 
 ### Neutral
 
@@ -235,7 +233,7 @@ Flat surfaces lifted by soft ambient shadows tinted with lacquer ink (never blac
 - **Walnut frame** (inset 0.5cu walnut, then 0.7cu walnut mixed 55 % with ink): the roster's frame.
 - **Brass button inlay** (inset 0.4cu brass-deep, then 0.7cu brass): the display's action button.
 - **Countdown** (the raised-object values as a `text-shadow`): the 16cu numerals over the arena.
-- **Dash** (`0 6px 14px` ink 32 %), **knob** (drop-shadow `0 5px 6px` ink 35 %), **lobby top** (drop-shadow `0 10px 14px` ink 30 %), **bubble** (`0 8px 20px` ink 35 %), **control** (`0 4px 10px` ink 35 %): objects sitting on the phone's ground.
+- **Dash** (`0 6px 14px` ink 32 %), **knob** (drop-shadow `0 5px 6px` ink 35 %), **lobby top** (drop-shadow `0 10px 14px` ink 30 %), **bubble** (`0 8px 20px` ink 35 %), **control** (`0 4px 10px` ink 35 %): objects sitting on the phone's ground. On the phone these, the raised plaque shadow and the radii (control 4px, bubble 6px, plaque 12px) are the `--radius-phone-*` and `--shadow-phone-*` properties set by the `units` mixin of `presentation/styles/_phone.sass`, which the play page includes.
 
 ### Named Rules
 
@@ -261,7 +259,7 @@ The signature object: a top seen from above in a 100 × 100 box. Lacquer disc (r
 
 ### Room Plaque
 
-Enamel ground, ivory display lettering at 0.14em tracking, ivory inner filet, raised shadow. Text-box trimmed to the cap height where supported. Selectable, with a visually hidden label. One component serves both headers: full size in the join block (6.4cu, 1.2cu radius, 0.8cu filet), compact in the play header (2.6cu, 0.6cu radius, 0.45cu filet). The look is the `enamel` mixin of `presentation/styles/_plaque.sass`, resized through `font-size` and the `--plaque-*` properties; its `unpainted` mixin is the same plaque left as an outline.
+Enamel ground, ivory display lettering at 0.14em tracking, ivory inner filet, raised shadow. Text-box trimmed to the cap height where supported. Selectable, with a visually hidden label. One component serves both headers: full size in the join block (6.4cu, 1.2cu radius, 0.8cu filet), compact in the play header (2.6cu, 0.6cu radius, 0.45cu filet). The look is the `enamel` mixin of `presentation/styles/_plaque.sass`, resized through `font-size` and the `--plaque-*` properties; its `unpainted` mixin is the same plaque left as an outline. The phone's notice includes the same mixin at 3.625rem, a 12px radius and a 7px filet, raised by `--plaque-shadow`.
 
 ### Game Plaques
 
@@ -300,11 +298,11 @@ The middle of the game choice: the real arena and its lacquered tops, driven by 
 
 ### Floating Stick
 
-Its base is the arena plan in filets drawn in the cap colour at 50 % (95 % while held); its knob is the player's own top, turning as it moves. The base follows the thumb's anchor with an eased transition, dropped while held.
+Its base is the arena plan, its radii taken from `ARENA_PLAN` like the scene's, in filets drawn in the cap colour at 50 % (95 % while held); its knob is the player's own top, turning as it moves. The base follows the thumb's anchor with an eased transition, dropped while held.
 
 ### Bands
 
-Slate, full-width, brass top and bottom borders, wiped in from the left by `clip-path` on the slow transition. The phone's outcome band shows a top (ringed in chalk) and a display title ("In the gutter", "Round won" or "Match won"), with a label detail, and closes on the seat's tally: the roster's pips at 1.25rem, brass on slate. It is the only place the phone shows the score; in play the display's roster carries it. The won variants turn brass with ink borders, lettering and pips, and spin their top. The display's counterpart is the Announcement Band above.
+Slate, full-width, brass top and bottom borders, wiped in from the left by `clip-path` on the slow transition. The phone's outcome band shows a top (ringed in chalk) and a display title ("In the gutter", "Round won" or "Match won"), with a label detail, and closes on the seat's tally: the roster's pips at 1.25rem, brass on slate. It is the only place the phone shows the score; in play the display's roster carries it. The won variants turn brass with ink borders, lettering and pips, and spin their top. The display's counterpart is the Announcement Band above. Both include the `slate` mixin of `presentation/styles/_band.sass` (ground, brass filets, wipe in), each with its own filet width.
 
 ### Status chips
 

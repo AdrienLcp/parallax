@@ -12,23 +12,35 @@ import {
   subtracted
 } from '@/helpers/planar-vector'
 
+import { ARENA_PLAN } from './arena-camera'
 import { KNOB_TRAVEL_SHARE, stickAnchor, stickReading } from './stick-geometry'
 import { useKnobSpin } from './use-knob-spin'
 
 import './floating-stick.sass'
 
-const PLAN_TICK_COUNT = 8
+/** The plan's outer filet sits 3 units inside the 200-unit box, so its stroke is never cut. */
+const PLAN_SCALE = 97 / ARENA_PLAN.gutterEdge
+const PLAN_CENTRE = 100
+const PLAN_TICK_HALF_LENGTH = 6
 
-const planTicks = pointsOnCircle({ count: PLAN_TICK_COUNT, radius: 1 }).map(
-  (direction) => ({
-    key: `${direction.x.toFixed(3)},${direction.y.toFixed(3)}`,
-    x1: 100 + direction.x * 38,
-    x2: 100 + direction.x * 50,
-    y1: 100 + direction.y * 38,
-    y2: 100 + direction.y * 50
-  })
+const planRadius = (arenaRadius: number) => arenaRadius * PLAN_SCALE
+
+const planTicks = pointsOnCircle({ count: ARENA_PLAN.ticks, radius: 1 }).map(
+  (direction) => {
+    const inner = planRadius(ARENA_PLAN.tickRadius) - PLAN_TICK_HALF_LENGTH
+    const outer = planRadius(ARENA_PLAN.tickRadius) + PLAN_TICK_HALF_LENGTH
+
+    return {
+      key: `${direction.x.toFixed(3)},${direction.y.toFixed(3)}`,
+      x1: PLAN_CENTRE + direction.x * inner,
+      x2: PLAN_CENTRE + direction.x * outer,
+      y1: PLAN_CENTRE + direction.y * inner,
+      y2: PLAN_CENTRE + direction.y * outer
+    }
+  }
 )
 
+/** The arena's plan, at its proportions: gutter edge, rim, centre ring, ticks and spot. */
 const StickPlan: React.FC = () => (
   <svg
     aria-hidden='true'
@@ -37,15 +49,38 @@ const StickPlan: React.FC = () => (
     stroke='currentColor'
     viewBox='0 0 200 200'
   >
-    <circle cx='100' cy='100' opacity='0.55' r='97' strokeWidth='1.5' />
-    <circle cx='100' cy='100' r='88' strokeWidth='4' />
-    <circle cx='100' cy='100' opacity='0.6' r='44' strokeWidth='1.5' />
+    <circle
+      cx={PLAN_CENTRE}
+      cy={PLAN_CENTRE}
+      opacity='0.55'
+      r={planRadius(ARENA_PLAN.gutterEdge)}
+      strokeWidth='1.5'
+    />
+    <circle
+      cx={PLAN_CENTRE}
+      cy={PLAN_CENTRE}
+      r={planRadius(ARENA_PLAN.rim)}
+      strokeWidth='4'
+    />
+    <circle
+      cx={PLAN_CENTRE}
+      cy={PLAN_CENTRE}
+      opacity='0.6'
+      r={planRadius(ARENA_PLAN.centreRing)}
+      strokeWidth='1.5'
+    />
     <g opacity='0.8' strokeWidth='3'>
       {planTicks.map(({ key, ...line }) => (
         <line key={key} {...line} />
       ))}
     </g>
-    <circle cx='100' cy='100' fill='currentColor' r='4' stroke='none' />
+    <circle
+      cx={PLAN_CENTRE}
+      cy={PLAN_CENTRE}
+      fill='currentColor'
+      r={planRadius(ARENA_PLAN.centreSpot)}
+      stroke='none'
+    />
   </svg>
 )
 
