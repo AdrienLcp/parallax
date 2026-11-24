@@ -17,6 +17,10 @@ Both stand in front of the same display, and each player holds their own phone.
 
 A party-game host for the office's Looking Glass display. The display shows the game; phones are the controllers and join by scanning a QR code. The app hosts several games. The first is a sumo: 2 to 6 phones each drive a spinning top in an arena, and the last one on the board wins. A claw machine is being built. Planned next, all upright in the alcove: a tower to stack as high as possible without it falling, a shooting gallery with targets at several depths, and a ring toss onto pegs set at different depths.
 
+The tower, shaped on 2026-11-24 and parked until the sumo is finished: varied wooden blocks (planks, cubes, cylinders, arches, triangles) drawn at random; the phone's stick moves the floating block across AND in depth, a button drops it, so aiming means reading the alcove. Two rules, picked in the lobby: one shared tower built in turns, where whoever topples it loses, or one tower each racing for height (side by side, so best at 2 or 3).
+
+The lobby's choices (game, rule) are made from the players' own phones: any seated player can change them until everyone is ready, and the display shows the current choice. No second QR code for a non-playing host: two codes on the display would leave a visitor unsure which to scan, and a demo host already has the PC's mouse.
+
 Success: a group walks up, scans, and is playing within a minute, without reading instructions. **Depth is the point of every game:** each one is designed to read as objects inside the display's alcove, seen by players standing centred at about 1.5 m, so the player count follows what that viewing spot allows.
 
 ## Positioning
