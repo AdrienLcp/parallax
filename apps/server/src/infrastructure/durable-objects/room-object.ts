@@ -197,6 +197,9 @@ export class RoomObject extends DurableObject<Env> {
       case 'pinged':
         await this.dropSilentSockets()
         return
+      case 'seats_changed':
+        await this.refreshRoom(null)
+        return
       case 'to_screen':
         this.sendToScreens(outcome.event.message)
         return

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { screenTokenSchema, sessionIdSchema } from './identifiers'
+import { gameStartedSchema, seatReadySchema, seatUnreadySchema } from './lobby'
 import { sumoDashSchema, sumoStateSchema, sumoStickSchema } from './sumo'
 
 export const screenCredentialsSchema = z.object({
@@ -32,6 +33,9 @@ export const pingMessageSchema = z.object({ type: z.literal('ping') })
 export const clientMessageSchema = z.discriminatedUnion('type', [
   helloMessageSchema,
   pingMessageSchema,
+  seatReadySchema,
+  seatUnreadySchema,
+  gameStartedSchema,
   sumoStickSchema,
   sumoDashSchema,
   sumoStateSchema

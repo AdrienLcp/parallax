@@ -22,6 +22,8 @@ import type { RoomStore } from './room-store'
 export type SessionEvent =
   | { kind: 'admitted' }
   | { kind: 'pinged' }
+  /** A seat's name or ready mark changed: everyone sees the room again. */
+  | { kind: 'seats_changed' }
   | { kind: 'to_screen'; message: SumoSeatDash | SumoSeatStick }
   | { kind: 'to_players'; message: SumoState }
 
@@ -92,9 +94,32 @@ const greet = ({
   return passed(admitted.data, { kind: 'admitted' })
 }
 
-/** The phones drive, the screen reports: each frame belongs to one role. */
-const play = (admission: Admission, message: GameMessage): FrameOutcome => {
+const wrongRole = (admission: Admission): FrameOutcome =>
+  refused({ admission, code: 'wrong_role', isFatal: false })
+
+/** The phones drive and ready up, the screen reports and starts: each frame belongs to one role. */
+const play = ({
+  admission,
+  message,
+  store
+}: {
+  admission: Admission
+  message: GameMessage
+  store: RoomStore
+}): FrameOutcome => {
   switch (message.type) {
+    case 'seat.ready':
+      if (admission.role !== 'player') return wrongRole(admission)
+      store.markReady(admission.seatId, message.name)
+      return passed(admission, { kind: 'seats_changed' })
+    case 'seat.unready':
+      if (admission.role !== 'player') return wrongRole(admission)
+      store.markUnready(admission.seatId)
+      return passed(admission, { kind: 'seats_changed' })
+    case 'game.started':
+      if (admission.role !== 'screen') return wrongRole(admission)
+      store.spendReadyMarks()
+      return passed(admission, { kind: 'seats_changed' })
     case 'sumo.dash':
     case 'sumo.stick':
       return admission.role === 'player'
@@ -102,11 +127,11 @@ const play = (admission: Admission, message: GameMessage): FrameOutcome => {
             kind: 'to_screen',
             message: { ...message, seatId: admission.seatId }
           })
-        : refused({ admission, code: 'wrong_role', isFatal: false })
+        : wrongRole(admission)
     case 'sumo.state':
       return admission.role === 'screen'
         ? passed(admission, { kind: 'to_players', message })
-        : refused({ admission, code: 'wrong_role', isFatal: false })
+        : wrongRole(admission)
   }
 }
 
@@ -140,6 +165,6 @@ export const handleFrame = ({
     default:
       return admission === null
         ? refused({ admission, code: 'hello_required', isFatal: true })
-        : play(admission, message)
+        : play({ admission, message, store: context.store })
   }
 }

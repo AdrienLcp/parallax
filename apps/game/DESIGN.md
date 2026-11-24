@@ -99,6 +99,12 @@ components:
     textColor: "{colors.chalk-soft}"
   dash-button:
     rounded: "{rounded.pill}"
+  lobby-ready:
+    typography: "{typography.display}"
+    rounded: "{rounded.control}"
+    height: "5.5rem"
+  lobby-ready-pressed:
+    backgroundColor: "transparent"
   seat-roster:
     backgroundColor: "{colors.slate}"
     textColor: "{colors.chalk}"
@@ -136,7 +142,7 @@ A table game seen from directly above. The display is a billiard-green felt tabl
 
 In play, the display's arena is a real-time 3D scene seen through one perspective camera that leans 14° from straight above toward the people standing in front. The table itself stays a plan: unlit felt and brass filets. Before the scene loads, an SVG preview draws the same filets through the same camera (field of view, tilt, framing margin), so the scene lands on it without a jump. Only the tops are modelled: lacquered, clearcoated, ringed in brass, spinning on their point and casting soft ink shadows; a top that loses tips over and sinks into the gutter. The shell around the arena stays neutral: the game hands it a title, a subtitle, a cue, each seat's standing and the announcement of the moment, and the shell draws them in the bistrot vocabulary. For the game choice it hands three more pieces (`GameDefinition`'s `Preview`, `Showcase` and `Cues`): the arena before its scene loads, the game playing by itself, and its pictogram cues.
 
-The display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so it carries only the player's top and name, a stick and one button. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond pictogram cues (the game's two on the join block and the game choice, one tap cue in play).
+The display is read from a few metres away by a standing group and is never scrolled, so it is sized on one unit (`--cu`, 1 % of the portrait panel's height, capped by its 9:16 width) and holds a 3 % safe area that never touches the alcove's walls. The phone is used blind under two thumbs, so in play it carries only the player's top and name, a stick and one button; before a match it carries the name the room will call the player and one ready toggle. Density is low on both: few objects, very large uppercase lettering, no explanatory text beyond pictogram cues (the game's two on the join block and the game choice, one tap cue in play).
 
 The bistrot look is fixed whatever the system theme. The home is the game choice and stands on the display like a room: same `--cu` column, same felt. While it is shown, `:root:has(.home-page)` maps the neutral tokens onto the bistrot ones (`ground` felt, `ink` chalk, `ink-muted` soft chalk, `rule` brass at 40 %, `rule-strong` brass-deep, focus brass), so the site footer below the column sits on felt too. Only the legal page and its footer follow light or dark through the neutral `ground` / `ink` tokens. Today the bistrot tokens sit at `:root` and are shared by the room shell (QR, plaque, roster) and the sumo; the product principle is that each game brings its own world while the host stays neutral, so a second game is the moment to split them.
 
@@ -187,7 +193,7 @@ Six seats, by slot 0 to 5: **Red** (seat-red), **Ivory** (seat-ivory), **Black**
 
 **The Lacquer Rule.** The six seat lacquers are the only saturated colours, and they appear only as a seat: a top, a phone ground, a named seat. A seat colour never decorates anything that is not a player.
 
-**The Two Marks Rule.** A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone. In the arena, the modelled top carries a name tag hung above it. The game choice's demo tops are nobody's seat, so they go unnamed.
+**The Two Marks Rule.** A seat is always shown by its top (lacquer plus carved glyph) and its name together, never by colour alone. The name is the one the player picked on their phone (12 characters at most), or the seat's colour until they pick one. In the arena, the modelled top carries a name tag hung above it. The game choice's demo tops are nobody's seat, so they go unnamed.
 
 **The One Source Rule.** The 3D scene owns no colour. It resolves every token (`--felt`, `--brass`, `--seat`, `--seat-cap`, `--seat-mark`, `--seat-top-ring`, `color-mix` included) through a hidden probe in the page and draws without tone mapping, so the lacquer on the table is the lacquer in the roster.
 
@@ -200,9 +206,9 @@ Six seats, by slot 0 to 5: **Red** (seat-red), **Ivory** (seat-ivory), **Black**
 
 ### Hierarchy
 
-- **Display** (900, uppercase, 0.9 line-height, 0.02em tracking, balanced): every name, title, room code and button label. Sized by the caller: on the phone the lobby name (4.875rem), the band title (4rem), the plaque (3.625rem), the notice headline and rotate cue (2.875rem), the seat badge (2rem), the dash label (1.375rem). On the display, in `--cu`: countdown (16), game name on the game choice (15), play title (8), plaque (6.4, compact 2.6), announcement (5.5), join heading, notice and "Open the room" (5.4), game plaque (3.4), roster name (3.2), top tag (2.2).
+- **Display** (900, uppercase, 0.9 line-height, 0.02em tracking, balanced): every name, title, room code and button label. Sized by the caller: on the phone the lobby name field (4.875rem, shrinking to fit a long name), the band title (4rem), the plaque (3.625rem), the notice headline, rotate cue and ready button (2.875rem), the seat badge (2rem), the dash label (1.375rem). On the display, in `--cu`: countdown (16), game name on the game choice (15), play title (8), plaque (6.4, compact 2.6), announcement (5.5), join heading, notice and "Open the room" (5.4), game plaque (3.4), roster name (3.2, shrinking to fit its column for a long name), top tag (2.2).
 - **Plaque** (display voice, 0.14em tracking): the four-letter room code only, its trailing tracking removed from the end padding.
-- **Label** (700, 1.4 line-height): cues, statuses, the free / absent seat text, band detail. 1.25rem on the phone; 1.7 to 2.6 `--cu` on the display (absence 1.7, cues 1.9, subtitle, roster cue, tap cue and "Games" 2.2, free seat 2.4, player count 2.6).
+- **Label** (700, 1.4 line-height): cues, statuses, the free / absent seat text, band detail. 1.25rem on the phone; 1.7 to 2.6 `--cu` on the display (absence 1.7, cues and the roster's ready mark 1.9, subtitle, roster cue, tap cue and "Games" 2.2, free seat 2.4, player count 2.6).
 - **Body** (500, 1rem, 1.6 line-height, `text-wrap: pretty`): running text on the host's secondary pages.
 - **Small** (500, 0.875rem, 1.5 line-height): footer and notes on the host pages.
 
@@ -218,7 +224,7 @@ The display is a fixed portrait column, `56.25cu × 100cu` (9:16), centred on fe
 
 The game choice uses the same column in three rows: the head (game plaques, once there is more than one game, over the game name in 15cu with its player count bottom-aligned beside it, on a 0.2cu brass rule), the game playing by itself filling the middle (a touch on it opens the room), and the foot (the game's two pictogram cues over a 10cu-tall brass "Open the room" button spanning the column). The site footer follows below the column, outside the display: a drag on the column never pans to it (`touch-action: pinch-zoom`), so the display stays on its title.
 
-The phone is a full-viewport layer sized on `--pad-unit` (`min(1dvh, 0.5dvw, 0.3rem)`). In landscape the pad splits into two equal halves: the floating stick on the left (base 45 units, knob 42 % of it), the dash on the right (35 units), the seat badge centred at the top. In portrait the pad is hidden and a sheet takes over: the lobby (large spinning top and name) before a round, a rotate cue during one. Outcome bands span the full width at mid-height.
+The phone is a full-viewport layer sized on `--pad-unit` (`min(1dvh, 0.5dvw, 0.3rem)`). In landscape the pad splits into two equal halves: the floating stick on the left (base 45 units, knob 42 % of it), the dash on the right (35 units), the seat badge centred at the top. Before a match, in either orientation, the pad is hidden and the lobby sheet takes over: in portrait one column (spinning top, name field, ready button, ready count, and the landscape cue at the foot), in landscape two (top and name on the left, button and count on the right, no cue). During a round, in portrait, the pad is hidden behind a rotate cue. Outcome bands span the full width at mid-height.
 
 Spacing on the phone uses xs 0.5rem, s 0.75rem, m 1rem, l 1.5rem, 2xl 3rem; the gutter and page padding are l, widening to 2xl above 56.25rem. Safe-area insets are always honoured.
 
@@ -290,11 +296,15 @@ A name tag over each top on the arena, so a player finds their own top from acro
 
 ### Seat Roster
 
-Slate panel in a walnut frame, a 3 × 2 grid of seats; while a game runs it is the scoreboard. Taken seat: top plus display-voice name. Absent: top at 50 % opacity, name in soft chalk, an "absent" label. Free: a dashed brass socket (70 %) and a soft-chalk label. In play, a seat shows one tally pip per round the match needs: a 1.6cu brass ring that fills brass for each round won. A fallen seat keeps its place: its name takes a 0.35cu brass line-through and its top fades to 35 %. The match winner's place gets a 0.3cu inset brass ring with a 0.8cu radius. A footer row closes the panel: on the left a label-voice line, the player count while waiting, the game's cue in play ("Premier à 3 manches"); on the right the "Games" control, waiting and in play.
+Slate panel in a walnut frame, a 3 × 2 grid of seats; while a game runs it is the scoreboard. Taken seat: top plus display-voice name. While the room waits, a present seat whose player is ready shows a brass label under its name: a drawn tick and "Ready". Absent: top at 50 % opacity, name in soft chalk, an "absent" label. Free: a dashed brass socket (70 %) and a soft-chalk label. In play, a seat shows one tally pip per round the match needs: a 1.6cu brass ring that fills brass for each round won. A fallen seat keeps its place: its name takes a 0.35cu brass line-through and its top fades to 35 %. The match winner's place gets a 0.3cu inset brass ring with a 0.8cu radius. A footer row closes the panel: on the left a label-voice line, while waiting the player count until enough phones are present and then how many of them are ready ("2 of 3 ready"), the game's cue in play ("Premier à 3 manches"); on the right the "Games" control, waiting and in play.
 
 ### Game Showcase
 
 The middle of the game choice: the real arena and its lacquered tops, driven by bots round after round (four demo seats, a short beat on their marks, a beat on a decided round, a stalled round started over). No room and no names. While it loads, the game's `Preview` stands in with the demo tops drawn flat on their marks through the same camera (lacquer, brass edge, cap and glyph over a soft ink shadow), the marks its first round starts from, so the first screen is never an empty arena. Reduced motion leaves the tops still on their marks. A touch on it opens the room, like the brass button.
+
+### Lobby Sheet
+
+The phone before a match, on the seat's lacquer, in `features/room/` since every game readies the same way. The seat's top spins above a name field: the name in the display voice and the cap colour, centred, over a 3px filet in the cap colour at 45 % that thickens to 6px at full strength while focused, with a pencil pictogram in the same faded filet at its end. Its placeholder is the seat's colour name at full strength, so an untouched field already reads as the player's name; the last name the phone picked is offered again from its storage. Below, the ready toggle (`aria-pressed`): a 5.5rem button filled with the cap colour, its "Ready" lettered in the lacquer, raised by the control shadow; pressed, it empties to a triple inset filet (cap, lacquer, cap at 45 %) with a tick before the word, and the name field loses its filet and pencil and stops taking input until the player presses again to take the mark back. Under it, a label-voice line in the cap colour: "1 of 3 ready", or the players the game still needs. Enter in the field readies too. The name is cleaned (trimmed, inner spaces collapsed, invisible characters dropped) before it is sent with the ready mark; the room refuses one that was not.
 
 ### Floating Stick
 

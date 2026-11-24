@@ -1,9 +1,9 @@
 import type React from 'react'
 
-import type { SeatSlot } from '@parallax/protocol/room'
+import type { Seat, SeatSlot } from '@parallax/protocol/room'
 
 import { ScorePips } from '@/features/room/score-pips'
-import { seatNameKey } from '@/features/room/seat-name'
+import { seatNameOf } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import { RichText } from '@/presentation/i18n/rich-text'
@@ -13,15 +13,15 @@ import { SUMO_TUNING } from './sumo-tuning'
 import './sumo-band.sass'
 
 type PushedByProps = {
-  slot: SeatSlot
+  seat: Pick<Seat, 'name' | 'slot'>
 }
 
-const PushedBy: React.FC<PushedByProps> = ({ slot }) => {
+const PushedBy: React.FC<PushedByProps> = ({ seat }) => {
   const translate = useTranslate()
 
   const pusher = (children: string): React.ReactNode => (
     <span className='pusher'>
-      <SeatTop className='pusher-top' slot={slot} />
+      <SeatTop className='pusher-top' slot={seat.slot} />
       {children}
     </span>
   )
@@ -30,7 +30,7 @@ const PushedBy: React.FC<PushedByProps> = ({ slot }) => {
     <p className='band-detail'>
       <RichText
         parts={translate.rich('sumo.out.pushedBy', {
-          name: translate(seatNameKey(slot)),
+          name: seatNameOf(seat, translate),
           seat: pusher
         })}
       />
@@ -46,7 +46,7 @@ type SumoBandProps = {
   | {
       outcome: 'out'
       /** The seat whose top pushed this one off, when the screen says so. */
-      pushedBy?: SeatSlot
+      pushedBy?: Pick<Seat, 'name' | 'slot'>
     }
   | { outcome: 'matchWon' | 'roundWon' }
 )
@@ -66,7 +66,7 @@ export const SumoBand: React.FC<SumoBandProps> = (props) => {
         {props.outcome === 'out' ? (
           <>
             <p className='band-title'>{translate('sumo.out.title')}</p>
-            {props.pushedBy !== undefined && <PushedBy slot={props.pushedBy} />}
+            {props.pushedBy !== undefined && <PushedBy seat={props.pushedBy} />}
           </>
         ) : (
           <p className='band-title'>

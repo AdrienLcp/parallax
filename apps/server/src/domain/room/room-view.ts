@@ -12,8 +12,10 @@ export const seatsSeen = (
   seats: readonly StoredSeat[],
   connectedSeatIds: ReadonlySet<SeatId>
 ): Seat[] =>
-  seats.map(({ seatId, slot }) => ({
+  seats.map(({ isReady, name, seatId, slot }) => ({
     isConnected: connectedSeatIds.has(seatId),
+    isReady,
+    name,
     seatId,
     slot
   }))

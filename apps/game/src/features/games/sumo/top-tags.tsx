@@ -3,7 +3,7 @@ import { useImperativeHandle, useRef } from 'react'
 
 import type { Seat, SeatSlot } from '@parallax/protocol/room'
 
-import { seatNameKey } from '@/features/room/seat-name'
+import { seatNameOf } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
@@ -66,7 +66,7 @@ export const TopTags: React.FC<TopTagsProps> = ({ ref, seats }) => {
 
   return (
     <div aria-hidden='true' className='top-tags'>
-      {seats.map(({ seatId, slot }) => (
+      {seats.map(({ name, seatId, slot }) => (
         <div
           className='top-tag'
           hidden
@@ -81,7 +81,7 @@ export const TopTags: React.FC<TopTagsProps> = ({ ref, seats }) => {
         >
           <span className='top-tag-plate'>
             <SeatTop className='top-tag-top' slot={slot} />
-            {translate(seatNameKey(slot))}
+            {seatNameOf({ name, slot }, translate)}
           </span>
           <span className='top-tag-stem' />
         </div>

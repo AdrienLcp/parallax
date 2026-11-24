@@ -62,6 +62,14 @@ export default defineDictionary({
     },
     title: 'Mentions légales et confidentialité'
   },
+  lobby: {
+    fewest: '{fewest:number} joueurs minimum',
+    name: 'Pseudo',
+    ready: 'Prêt',
+    readyCount: defineTranslation('{ready:plural} sur {present:number}', {
+      plural: { ready: { one: '{?} prêt', other: '{?} prêts' } }
+    })
+  },
   play: {
     connecting: 'Connexion…',
     reconnecting: 'Reconnexion…',

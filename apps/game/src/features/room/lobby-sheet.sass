@@ -1,0 +1,160 @@
+@use '@adrienlcp/styles/accessibility'
+@use '@adrienlcp/styles/motion'
+@use '../../presentation/styles/typography'
+
+@layer components
+  .lobby-sheet
+    --text-lobby-name-full: 4.875rem
+    --text-lobby-ready: 2.875rem
+    --stroke-name-field: 3px
+    --stroke-ready-filet: 3px
+    --name-filet: color-mix(in oklab, var(--seat-cap) 45%, transparent)
+
+    align-items: center
+    display: flex
+    flex-direction: column
+    inset: 0
+    justify-content: space-between
+    padding: var(--page-padding-block-start) var(--gutter-right) var(--page-padding-block-end) var(--gutter-left)
+    position: absolute
+    text-align: center
+
+    ::selection
+      background: var(--seat-cap)
+      color: var(--seat)
+
+    .lobby-form
+      align-items: center
+      display: flex
+      flex-direction: column
+      gap: var(--space-2xl)
+      inline-size: min(100%, 24rem)
+      margin-block-start: 8dvh
+
+    .lobby-seat
+      align-items: center
+      display: flex
+      flex-direction: column
+      gap: var(--space-l)
+      inline-size: 100%
+
+    .lobby-top
+      @include motion.spin(calc(var(--transition-slow) * 15))
+
+      block-size: min(10rem, 24dvh)
+      filter: var(--shadow-phone-lobby-top)
+      inline-size: min(10rem, 24dvh)
+
+    .lobby-name-field
+      container-type: inline-size
+      display: block
+      inline-size: 100%
+      position: relative
+
+    .lobby-name-label
+      @include accessibility.visually-hidden
+
+    .lobby-name
+      --name-room: calc(100cqi - 5rem)
+      --text-lobby-name: min(var(--text-lobby-name-full), calc(var(--name-room) / (var(--name-length) * 0.5)))
+
+      @include typography.display
+
+      background: none
+      block-size: calc(var(--text-lobby-name-full) * 1.05)
+      border: none
+      border-block-end: var(--stroke-name-field) solid var(--name-filet)
+      border-radius: 0
+      caret-color: var(--seat-cap)
+      color: var(--seat-cap)
+      font-size: var(--text-lobby-name)
+      inline-size: 100%
+      outline: none
+      padding-inline: 2.5rem
+      text-align: center
+      transition: border-color var(--transition-base)
+
+      &::placeholder
+        color: var(--seat-cap)
+        opacity: 1
+
+      &:focus-visible
+        border-block-end-color: var(--seat-cap)
+        border-block-end-width: calc(var(--stroke-name-field) * 2)
+
+      &:focus::placeholder
+        color: var(--name-filet)
+
+    .pencil-pictogram
+      block-size: 2rem
+      color: var(--name-filet)
+      inline-size: 2rem
+      inset-block-end: var(--space-s)
+      inset-inline-end: 0
+      pointer-events: none
+      position: absolute
+      transition: opacity var(--transition-base)
+
+    .lobby-action
+      display: grid
+      gap: var(--space-m)
+      inline-size: 100%
+      justify-items: center
+
+    .lobby-ready
+      @include typography.display
+
+      align-items: center
+      background: var(--seat-cap)
+      block-size: 5.5rem
+      border: none
+      border-radius: var(--radius-phone-control)
+      box-shadow: var(--shadow-phone-control)
+      color: var(--seat)
+      display: flex
+      font-size: var(--text-lobby-ready)
+      gap: var(--space-s)
+      inline-size: 100%
+      justify-content: center
+      transition: background-color var(--transition-base), color var(--transition-base), box-shadow var(--transition-base), scale var(--transition-fast)
+
+      &:active
+        scale: 0.97
+
+      &[aria-pressed='true']
+        background: transparent
+        box-shadow: inset 0 0 0 var(--stroke-ready-filet) var(--seat-cap), inset 0 0 0 calc(var(--stroke-ready-filet) * 2.5) var(--seat), inset 0 0 0 calc(var(--stroke-ready-filet) * 3.2) var(--name-filet)
+        color: var(--seat-cap)
+
+    .lobby-ready-mark
+      block-size: 2.25rem
+      inline-size: 2.25rem
+
+    .lobby-count
+      @include typography.label
+
+      font-size: var(--text-l)
+
+    &[data-ready]
+      --name-filet: transparent
+
+      .lobby-name
+        pointer-events: none
+
+      .pencil-pictogram
+        opacity: 0
+
+    @media (orientation: landscape)
+      justify-content: center
+
+      .lobby-form
+        align-items: center
+        display: grid
+        gap: var(--space-2xl)
+        grid-template-columns: 1fr 1fr
+        inline-size: min(100%, 52rem)
+        margin-block-start: 0
+
+      .lobby-top
+        block-size: min(8rem, 30dvh)
+        inline-size: min(8rem, 30dvh)

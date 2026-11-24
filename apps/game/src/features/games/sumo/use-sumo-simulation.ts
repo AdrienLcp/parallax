@@ -11,6 +11,7 @@ import {
   advanceMatch,
   ejectedBetween,
   GATHERING,
+  hasMatchStarted,
   type SumoMatch
 } from './sumo-match'
 import type { SumoControl } from './sumo-physics'
@@ -37,9 +38,11 @@ type SumoSimulationInput = {
 }
 
 /**
- * Runs the sumo on the screen: hears the phones' sticks and dashes, steps the
- * match at a fixed rate whatever the display's refresh, tells the phones when
- * its state changes, and keeps the standings the room reads around the arena.
+ * Runs the sumo on the screen: hears the phones' sticks and dashes, starts a
+ * match once every present player is ready and tells the room their marks are
+ * spent, steps the match at a fixed rate whatever the display's refresh, tells
+ * the phones when its state changes, and keeps the standings the room reads
+ * around the arena.
  */
 export const useSumoSimulation = ({
   events,
@@ -51,6 +54,7 @@ export const useSumoSimulation = ({
   const controls = useRef(new Map<SeatId, SumoControl>())
   const dashes = useRef(new Set<SeatId>())
   const present = useRef<readonly SeatId[]>([])
+  const ready = useRef<ReadonlySet<SeatId>>(new Set())
   const seated = useRef<ReadonlySet<SeatId>>(new Set())
   const lastReport = useRef<string | null>(null)
   const drawFrame = useEffectEvent(onFrame)
@@ -60,6 +64,9 @@ export const useSumoSimulation = ({
     present.current = room.seats
       .filter((seat) => seat.isConnected)
       .map((seat) => seat.seatId)
+    ready.current = new Set(
+      room.seats.filter((seat) => seat.isReady).map((seat) => seat.seatId)
+    )
     seated.current = new Set(room.seats.map((seat) => seat.seatId))
     for (const seat of room.seats) {
       if (!seat.isConnected) {
@@ -85,6 +92,7 @@ export const useSumoSimulation = ({
 
   useEffect(() => {
     let match: SumoMatch = GATHERING
+    let isStartUntold = false
     let pendingSeconds = 0
     let sinceReport = SUMO_STATE_REPORT_SECONDS
     let ejection: ShownEjection | null = null
@@ -105,9 +113,14 @@ export const useSumoSimulation = ({
           controls: controls.current,
           dashes: dashes.current,
           present: present.current,
+          ready: ready.current,
           seated: seated.current,
           seconds: SUMO_STEP_SECONDS
         })
+        if (hasMatchStarted({ next: match, previous })) {
+          ready.current = new Set()
+          isStartUntold = true
+        }
         dashes.current = new Set()
         ejection = withEjected({
           ejected: ejectedBetween({ next: match, previous }),
@@ -120,6 +133,10 @@ export const useSumoSimulation = ({
       if (serializedStandings !== lastStandings) {
         lastStandings = serializedStandings
         setStandings(nextStandings)
+      }
+
+      if (isStartUntold && report({ type: 'game.started' })) {
+        isStartUntold = false
       }
 
       sinceReport += seconds

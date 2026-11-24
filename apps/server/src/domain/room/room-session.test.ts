@@ -100,6 +100,8 @@ describe('handleFrame', () => {
     expect(store.readSeats()).toEqual([
       {
         absentSinceMs: null,
+        isReady: false,
+        name: null,
         seatId: 'seat-1',
         sessionId: sessionOf(1),
         slot: 0
@@ -181,6 +183,8 @@ describe('handleFrame', () => {
     expect(outcome.admission).toEqual({ role: 'player', seatId: 'seat-7' })
     expect(store.readSeats().at(4)).toEqual({
       absentSinceMs: null,
+      isReady: false,
+      name: null,
       seatId: 'seat-7',
       sessionId: sessionOf(7),
       slot: 4
@@ -333,6 +337,99 @@ describe('handleFrame', () => {
       type: 'error'
     })
     expect(outcome.shouldClose).toBe(false)
+  })
+
+  it('marks a phone ready under its picked name, then takes the mark back and keeps the name', () => {
+    const store = openedStore()
+    sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(1) }),
+      store
+    })
+
+    const ready = sendFrame({
+      admission: PLAYER,
+      frame: '{"type":"seat.ready","name":"Ada"}',
+      store
+    })
+
+    expect(ready.event).toEqual({ kind: 'seats_changed' })
+    expect(store.readSeats().at(0)).toMatchObject({
+      isReady: true,
+      name: 'Ada'
+    })
+
+    sendFrame({ admission: PLAYER, frame: '{"type":"seat.unready"}', store })
+
+    expect(store.readSeats().at(0)).toMatchObject({
+      isReady: false,
+      name: 'Ada'
+    })
+  })
+
+  it('refuses a name the phone did not clean', () => {
+    const store = openedStore()
+    sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(1) }),
+      store
+    })
+
+    const outcome = sendFrame({
+      admission: PLAYER,
+      frame: JSON.stringify({ name: ' Ada‮ ', type: 'seat.ready' }),
+      store
+    })
+
+    expect(outcome.reply?.type === 'error' && outcome.reply.code).toBe(
+      'invalid_message'
+    )
+    expect(store.readSeats().at(0)).toMatchObject({
+      isReady: false,
+      name: null
+    })
+  })
+
+  it('spends every ready mark once the screen starts a game', () => {
+    const store = openedStore()
+    const mintSeatId = seatIdsInOrder()
+    for (const phone of [1, 2]) {
+      const { admission } = sendFrame({
+        frame: helloFrame({ role: 'player', sessionId: sessionOf(phone) }),
+        mintSeatId,
+        store
+      })
+      sendFrame({
+        admission,
+        frame: '{"type":"seat.ready","name":null}',
+        store
+      })
+    }
+
+    const started = sendFrame({
+      admission: SCREEN,
+      frame: '{"type":"game.started"}',
+      store
+    })
+
+    expect(started.event).toEqual({ kind: 'seats_changed' })
+    expect(store.readSeats().map((seat) => seat.isReady)).toEqual([
+      false,
+      false
+    ])
+  })
+
+  it('lets only phones ready up and only the screen start a game', () => {
+    const store = openedStore()
+
+    for (const [admission, frame] of [
+      [SCREEN, '{"type":"seat.ready","name":null}'],
+      [SCREEN, '{"type":"seat.unready"}'],
+      [PLAYER, '{"type":"game.started"}']
+    ] as const) {
+      const outcome = sendFrame({ admission, frame, store })
+      expect(outcome.reply?.type === 'error' && outcome.reply.code).toBe(
+        'wrong_role'
+      )
+    }
   })
 
   it('refuses a stick off its range', () => {

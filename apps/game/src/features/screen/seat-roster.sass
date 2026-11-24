@@ -62,17 +62,30 @@
     .seat-label
       display: grid
       gap: calc(var(--cu) * 0.3)
+      min-inline-size: 0
 
     .seat-name
+      --name-room: calc(var(--cu) * 7.2)
+      --text-seat-name: min(calc(var(--cu) * 3.2), calc(var(--name-room) / (var(--name-length) * 0.44)))
+
       @include typography.display
 
-      font-size: calc(var(--cu) * 3.2)
+      font-size: var(--text-seat-name)
 
     .seat-place.free .seat-label
       @include typography.label
 
       color: var(--chalk-soft)
       font-size: calc(var(--cu) * 2.4)
+
+    .seat-ready
+      @include typography.label
+
+      align-items: center
+      color: var(--brass)
+      display: flex
+      font-size: calc(var(--cu) * 1.9)
+      gap: calc(var(--cu) * 0.5)
 
     .seat-absence
       @include typography.label

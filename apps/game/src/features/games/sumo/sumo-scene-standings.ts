@@ -1,7 +1,7 @@
 import type { SeatId } from '@parallax/protocol/identifiers'
 import type { Seat, SeatSlot } from '@parallax/protocol/room'
 
-import { seatNameKey } from '@/features/room/seat-name'
+import { seatNameOf } from '@/features/room/seat-name'
 import type { Translate } from '@/presentation/i18n/translation'
 
 import type {
@@ -14,18 +14,18 @@ import { SUMO_TUNING } from './sumo-tuning'
 
 const announced = ({
   announcement,
-  slotOf,
+  seatOf,
   translate
 }: {
   announcement: SumoAnnouncement
-  slotOf: (seat: SeatId) => SeatSlot | undefined
+  seatOf: (seat: SeatId) => Seat | undefined
   translate: Translate
 }): SceneAnnouncement => {
   const slotsOf = (seats: readonly SeatId[]): SeatSlot[] =>
-    seats.flatMap((seat) => slotOf(seat) ?? [])
-  const nameOf = (seat: SeatId): string => {
-    const slot = slotOf(seat)
-    return slot === undefined ? '' : translate(seatNameKey(slot))
+    seats.flatMap((seat) => seatOf(seat)?.slot ?? [])
+  const nameOf = (seatId: SeatId): string => {
+    const seat = seatOf(seatId)
+    return seat === undefined ? '' : seatNameOf(seat, translate)
   }
 
   switch (announcement.kind) {
@@ -64,8 +64,8 @@ export const sceneStandingsOf = ({
   standings: SumoStandings
   translate: Translate
 }): SceneStandings => {
-  const slotOf = (seat: SeatId) =>
-    seats.find((candidate) => candidate.seatId === seat)?.slot
+  const seatOf = (seat: SeatId) =>
+    seats.find((candidate) => candidate.seatId === seat)
 
   return {
     announcement:
@@ -73,7 +73,7 @@ export const sceneStandingsOf = ({
         ? null
         : announced({
             announcement: standings.announcement,
-            slotOf,
+            seatOf,
             translate
           }),
     cue: translate('sumo.standings.firstTo', {

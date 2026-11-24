@@ -66,7 +66,14 @@ const seatPlayer = ({
   }
 
   const seatId = mintSeatId()
-  store.addSeat({ absentSinceMs: null, seatId, sessionId, slot })
+  store.addSeat({
+    absentSinceMs: null,
+    isReady: false,
+    name: null,
+    seatId,
+    sessionId,
+    slot
+  })
 
   return Result.success({ role: 'player', seatId })
 }

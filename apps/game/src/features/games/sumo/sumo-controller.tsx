@@ -1,9 +1,10 @@
 import type React from 'react'
 import { useEffect, useRef } from 'react'
 
-import type { SeatSlot } from '@parallax/protocol/room'
+import type { Seat } from '@parallax/protocol/room'
 
-import { seatNameKey } from '@/features/room/seat-name'
+import { LobbySheet } from '@/features/room/lobby-sheet'
+import { seatNameOf } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
 import {
   hasCoarsePointer,
@@ -20,6 +21,7 @@ import {
   type SumoControllerView,
   sumoControllerView
 } from './sumo-controller-view'
+import { SUMO_PLAYERS } from './sumo-tuning'
 import { usePacedStick } from './use-paced-stick'
 import { useSumoState } from './use-sumo-state'
 
@@ -44,16 +46,16 @@ const useOutcomeBuzz = (view: SumoControllerView): void => {
 }
 
 type SeatBadgeProps = {
-  slot: SeatSlot
+  seat: Seat
 }
 
-const SeatBadge: React.FC<SeatBadgeProps> = ({ slot }) => {
+const SeatBadge: React.FC<SeatBadgeProps> = ({ seat }) => {
   const translate = useTranslate()
 
   return (
     <header className='seat-badge'>
-      <SeatTop className='badge-top' slot={slot} />
-      <h1 className='badge-name'>{translate(seatNameKey(slot))}</h1>
+      <SeatTop className='badge-top' slot={seat.slot} />
+      <h1 className='badge-name'>{seatNameOf(seat, translate)}</h1>
     </header>
   )
 }
@@ -92,9 +94,10 @@ const TurnPictogram: React.FC = () => (
 )
 
 /**
- * The sumo in the player's hands, on their seat's lacquer. In landscape: the
- * floating stick under the left thumb, the dash under the right. In portrait:
- * the seat while the room gathers, a prompt to turn once a round is on.
+ * The sumo in the player's hands, on their seat's lacquer. Before a match:
+ * the seat's name and the ready toggle. Once a round is on, in landscape: the
+ * floating stick under the left thumb, the dash under the right; in portrait:
+ * a prompt to turn.
  */
 export const SumoController: React.FC<GameControllerProps> = ({
   events,
@@ -134,9 +137,7 @@ export const SumoController: React.FC<GameControllerProps> = ({
   const isRoundOver = isOutcome(view)
   const ownTop = state?.tops.find((top) => top.seatId === room.youId)
   const score = ownTop?.roundsWon ?? 0
-  const pushedBy = room.seats.find(
-    (seat) => seat.seatId === ownTop?.outBy
-  )?.slot
+  const pushedBy = room.seats.find((seat) => seat.seatId === ownTop?.outBy)
 
   return (
     <div
@@ -146,28 +147,27 @@ export const SumoController: React.FC<GameControllerProps> = ({
       onPointerUp={askLandscapeOnce}
     >
       {view === 'lobby' && (
-        <section className='lobby-sheet'>
-          <div className='lobby-seat'>
-            <SeatTop className='lobby-top' slot={ownSeat.slot} />
-            <h1 className='lobby-name'>
-              {translate(seatNameKey(ownSeat.slot))}
-            </h1>
-          </div>
+        <LobbySheet
+          fewest={SUMO_PLAYERS.fewest}
+          seat={ownSeat}
+          seats={room.seats}
+          send={send}
+        >
           <p className='lobby-cue'>
             <LandscapePictogram />
             {translate('sumo.playInLandscape')}
           </p>
-        </section>
+        </LobbySheet>
       )}
       {view === 'playing' && (
         <section className='rotate-sheet'>
-          <SeatBadge slot={ownSeat.slot} />
+          <SeatBadge seat={ownSeat} />
           <TurnPictogram />
           <p className='rotate-cue'>{translate('sumo.turnToLandscape')}</p>
         </section>
       )}
       <section className='pad' inert={isRoundOver}>
-        <SeatBadge slot={ownSeat.slot} />
+        <SeatBadge seat={ownSeat} />
         <FloatingStick onStick={sendStick} slot={ownSeat.slot} />
         <div className='dash-side'>
           <DashButton onDash={dash} />

@@ -12,9 +12,9 @@ import {
 import { SUMO_PLAYERS, SUMO_TUNING } from './sumo-tuning'
 
 /**
- * The match the screen runs: the room gathers until enough phones are present,
- * then rounds follow one another until a seat reaches the winning tally, and a
- * new match starts with whoever is still there.
+ * The match the screen runs: the room gathers until every present phone is
+ * ready, then rounds follow one another, among the seats that started the
+ * match, until one reaches the winning tally; then the room gathers again.
  */
 export type SumoMatch =
   | { readonly stage: 'gathering' }
@@ -33,37 +33,49 @@ export const GATHERING: SumoMatch = { stage: 'gathering' }
 export type SumoMatchStep = Omit<SumoStep, 'tops'> & {
   /** Seats whose phone is connected, in seating order: who the next round takes. */
   readonly present: readonly SeatId[]
+  /** Seats whose player is ready for the next match: a match starts once every present one is. */
+  readonly ready: ReadonlySet<SeatId>
   /** Every seat the room still holds, phone or not: a top whose seat is gone leaves the round. */
   readonly seated: ReadonlySet<SeatId>
 }
 
 const NO_WINS: ReadonlyMap<SeatId, number> = new Map()
 
-const nextRoundOrGathering = ({
-  present,
+const roundOrGathering = ({
+  players,
   roundNumber,
   wins
 }: {
-  present: readonly SeatId[]
+  players: readonly SeatId[]
   roundNumber: number
   wins: ReadonlyMap<SeatId, number>
 }): SumoMatch =>
-  present.length >= SUMO_PLAYERS.fewest
+  players.length >= SUMO_PLAYERS.fewest
     ? {
         decidedFor: 0,
-        round: startRound(present.slice(0, SUMO_PLAYERS.most)),
+        round: startRound(players.slice(0, SUMO_PLAYERS.most)),
         roundNumber,
         stage: 'playing',
         wins
       }
     : GATHERING
 
+/** An absent phone never holds the room back: only the present ones have to be ready. */
+const isEveryoneReady = ({
+  present,
+  ready
+}: Pick<SumoMatchStep, 'present' | 'ready'>): boolean =>
+  present.length >= SUMO_PLAYERS.fewest &&
+  present.every((seat) => ready.has(seat))
+
 export const advanceMatch = (
   match: SumoMatch,
-  { present, seated, ...step }: SumoMatchStep
+  { present, ready, seated, ...step }: SumoMatchStep
 ): SumoMatch => {
   if (match.stage === 'gathering') {
-    return nextRoundOrGathering({ present, roundNumber: 1, wins: NO_WINS })
+    return isEveryoneReady({ present, ready })
+      ? roundOrGathering({ players: present, roundNumber: 1, wins: NO_WINS })
+      : GATHERING
   }
 
   if (match.round.phase !== 'decided') {
@@ -81,12 +93,29 @@ export const advanceMatch = (
     return { ...match, decidedFor }
   }
 
-  return nextRoundOrGathering({
-    present,
-    roundNumber: isMatchOver ? 1 : match.roundNumber + 1,
-    wins: isMatchOver ? NO_WINS : match.wins
+  if (isMatchOver) {
+    return GATHERING
+  }
+
+  const stillPresent = new Set(present)
+
+  return roundOrGathering({
+    players: match.round.tops
+      .map((top) => top.seat)
+      .filter((seat) => stillPresent.has(seat)),
+    roundNumber: match.roundNumber + 1,
+    wins: match.wins
   })
 }
+
+/** The step that took the room from gathering to a match: the moment its ready marks are spent. */
+export const hasMatchStarted = ({
+  next,
+  previous
+}: {
+  next: SumoMatch
+  previous: SumoMatch
+}): boolean => previous.stage === 'gathering' && next.stage === 'playing'
 
 const topsOf = (match: SumoMatch): readonly Top[] =>
   match.stage === 'playing' ? match.round.tops : []

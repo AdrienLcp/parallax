@@ -10,7 +10,7 @@ import {
 
 import type { PlayerGameEvent } from '@/features/games/game-definition'
 import { CURRENT_GAME, games } from '@/features/games/games'
-import { createEventChannel } from '@/helpers/event-channel'
+import { createReplayingEventChannel } from '@/helpers/event-channel'
 import { paintBrowserBarBehind } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
@@ -58,7 +58,7 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
   const translate = useTranslate()
   const sessionId = usePlayerSessionId()
   const [roomView, setRoomView] = useState<PlayerRoomMessage | null>(null)
-  const [gameEvents] = useState(createEventChannel<PlayerGameEvent>)
+  const [gameEvents] = useState(createReplayingEventChannel<PlayerGameEvent>)
   const game = games[CURRENT_GAME]
 
   const socket = useRoomSocket({

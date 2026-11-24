@@ -14,6 +14,8 @@ const seatAt = (
   absentSinceMs: number | null = null
 ): StoredSeat => ({
   absentSinceMs,
+  isReady: false,
+  name: null,
   seatId: `seat-${slot}`,
   sessionId: `session-of-phone-${slot}`,
   slot

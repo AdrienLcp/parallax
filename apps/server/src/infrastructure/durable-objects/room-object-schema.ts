@@ -10,5 +10,9 @@ export const ROOM_OBJECT_MIGRATIONS: readonly SchemaMigration[] = [
   [
     'ALTER TABLE room ADD COLUMN erase_at_ms INTEGER',
     'ALTER TABLE seats ADD COLUMN absent_since_ms INTEGER'
+  ],
+  [
+    'ALTER TABLE seats ADD COLUMN name TEXT',
+    'ALTER TABLE seats ADD COLUMN is_ready INTEGER NOT NULL DEFAULT 0'
   ]
 ]

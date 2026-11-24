@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { createEventChannel } from './event-channel'
+import {
+  createEventChannel,
+  createReplayingEventChannel
+} from './event-channel'
 
 describe('createEventChannel', () => {
   it('delivers each event to every listener subscribed at the time', () => {
@@ -27,5 +30,30 @@ describe('createEventChannel', () => {
     channel.publish(2)
 
     expect(heard).toEqual([1])
+  })
+})
+
+describe('createReplayingEventChannel', () => {
+  it('gives a late listener the last event first, then the next ones', () => {
+    const channel = createReplayingEventChannel<number>()
+    const heard: number[] = []
+    channel.publish(1)
+    channel.publish(2)
+
+    channel.subscribe((event) => heard.push(event))
+    channel.publish(3)
+
+    expect(heard).toEqual([2, 3])
+  })
+
+  it('stops delivering once a listener unsubscribes, too', () => {
+    const channel = createReplayingEventChannel<number>()
+    const heard: number[] = []
+    const stop = channel.subscribe((event) => heard.push(event))
+
+    stop()
+    channel.publish(1)
+
+    expect(heard).toEqual([])
   })
 })

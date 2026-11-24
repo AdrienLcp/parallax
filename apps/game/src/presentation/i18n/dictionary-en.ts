@@ -64,6 +64,14 @@ export const EN_DICTIONARY = defineDictionary({
     },
     title: 'Legal notice and privacy'
   },
+  lobby: {
+    fewest: 'At least {fewest:number} players',
+    name: 'Nickname',
+    ready: 'Ready',
+    readyCount: defineTranslation('{ready:plural} of {present:number} ready', {
+      plural: { ready: { one: '{?}', other: '{?}' } }
+    })
+  },
   play: {
     connecting: 'Connecting…',
     reconnecting: 'Reconnecting…',

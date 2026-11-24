@@ -30,9 +30,11 @@ already translated.
 ## Fake phones
 
 A Node script stands in for players: one `WebSocket` per `sessionId`
-(`/^[\w-]{16,64}$/`) on `ws://localhost:8798/ws/rooms/<CODE>`, sends
-`hello` `{ protocolVersion: 1, credentials: { role: 'player', sessionId } }`,
-`ping` every 4 s, `sumo.stick` every 50 ms at 0.45 magnitude (at 1 almost every
+(`/^[\w-]{16,64}$/`) on `ws://127.0.0.1:8798/ws/rooms/<CODE>` (wrangler listens on IPv4 only), sends
+`hello` `{ protocolVersion: 2, credentials: { role: 'player', sessionId } }`,
+then `seat.ready` `{ name: null }` (a match starts once every present seat is
+ready, and each match spends the marks: ready again for the next one), `ping`
+every 4 s, `sumo.stick` every 50 ms at 0.45 magnitude (at 1 almost every
 round ends in a draw), and a rare `sumo.dash`. A seat is never given back, so a
 reused `sessionId` takes its old seat and a fresh room after many runs answers
 `room_full`: put the process id in the `sessionId`, and clear

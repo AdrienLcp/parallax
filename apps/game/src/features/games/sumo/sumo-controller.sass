@@ -1,11 +1,9 @@
-@use '@adrienlcp/styles/motion'
 @use '../../../presentation/styles/typography'
 
 @layer components
   .sumo-controller
     --pad-unit: min(1dvh, 0.5dvw, 0.3rem)
     --text-seat-name: 2rem
-    --text-lobby-name: 4.875rem
     --text-rotate-cue: 2.875rem
     --sumo-ground: var(--seat)
     --seat-top-ring: var(--seat-cap)
@@ -20,6 +18,9 @@
 
     &[data-view='out']
       --sumo-ground: color-mix(in oklab, var(--seat) 55%, var(--slate))
+
+    &[data-view='lobby'] .pad
+      display: none
 
     .pad
       display: grid
@@ -58,7 +59,6 @@
 
       font-size: var(--text-seat-name)
 
-    .lobby-sheet,
     .rotate-sheet
       align-items: center
       display: none
@@ -67,27 +67,6 @@
       padding: var(--page-padding-block-start) var(--gutter-right) var(--page-padding-block-end) var(--gutter-left)
       position: absolute
       text-align: center
-
-    .lobby-sheet
-      justify-content: space-between
-
-    .lobby-seat
-      display: grid
-      gap: var(--space-m)
-      justify-items: center
-      margin-block-start: 18dvh
-
-    .lobby-top
-      @include motion.spin(calc(var(--transition-slow) * 15))
-
-      block-size: 12.5rem
-      filter: var(--shadow-phone-lobby-top)
-      inline-size: 12.5rem
-
-    .lobby-name
-      @include typography.display
-
-      font-size: var(--text-lobby-name)
 
     .lobby-cue
       @include typography.label
@@ -132,11 +111,14 @@
       position: absolute
 
     @media (orientation: portrait)
-      .lobby-sheet,
       .rotate-sheet
         display: flex
 
       .pad
+        display: none
+
+    @media (orientation: landscape)
+      .lobby-cue
         display: none
 
   @keyframes sumo-turn

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { seatIdSchema } from './identifiers'
+import { seatNameSchema } from './lobby'
 
 /** The most phones a room seats, whatever the game: one colour each on the arena. */
 export const ROOM_SEAT_LIMIT = 6
@@ -14,6 +15,10 @@ export const seatSlotSchema = z
 
 export const seatSchema = z.object({
   isConnected: z.boolean(),
+  /** Ready for the next game; spent once the screen starts it. */
+  isReady: z.boolean(),
+  /** The name its player picked, `null` while the seat goes by its colour. */
+  name: seatNameSchema.nullable(),
   seatId: seatIdSchema,
   slot: seatSlotSchema
 })

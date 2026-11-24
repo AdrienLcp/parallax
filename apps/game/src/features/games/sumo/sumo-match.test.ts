@@ -4,6 +4,7 @@ import {
   advanceMatch,
   ejectedBetween,
   GATHERING,
+  hasMatchStarted,
   type SumoMatch
 } from './sumo-match'
 import type { SpinningTop } from './sumo-physics'
@@ -13,11 +14,13 @@ import { SUMO_STEP_SECONDS, SUMO_TUNING } from './sumo-tuning'
 const step = (
   present: readonly string[],
   seconds = SUMO_STEP_SECONDS,
-  seated: ReadonlySet<string> = new Set(present)
+  seated: ReadonlySet<string> = new Set(present),
+  ready: ReadonlySet<string> = new Set(present)
 ) => ({
   controls: new Map(),
   dashes: new Set<string>(),
   present,
+  ready,
   seated,
   seconds
 })
@@ -43,7 +46,7 @@ const decidedFor = ({
     phase: 'decided',
     tops: [
       spinningAt(winner, 0),
-      { outBy: null, position: { x: 2, y: 0 }, seat: 'other', status: 'out' }
+      { outBy: null, position: { x: 2, y: 0 }, seat: 'blue', status: 'out' }
     ],
     winner
   },
@@ -53,13 +56,44 @@ const decidedFor = ({
 })
 
 describe('sumo match', () => {
-  it('[sumo] the room gathers until two phones are present', () => {
+  it('[sumo] the room gathers until two phones are present and ready', () => {
     expect(advanceMatch(GATHERING, step(['red']))).toBe(GATHERING)
     const started = advanceMatch(GATHERING, step(['red', 'blue']))
     expect(started).toMatchObject({
       round: { phase: 'countdown' },
       stage: 'playing'
     })
+    expect(hasMatchStarted({ next: started, previous: GATHERING })).toBe(true)
+  })
+
+  it('[sumo] one present phone not ready holds the match back', () => {
+    const present = ['red', 'blue', 'green']
+    expect(
+      advanceMatch(
+        GATHERING,
+        step(
+          present,
+          SUMO_STEP_SECONDS,
+          new Set(present),
+          new Set(['red', 'blue'])
+        )
+      )
+    ).toBe(GATHERING)
+  })
+
+  it('[sumo] a seat whose phone is away never holds the match back', () => {
+    const started = advanceMatch(
+      GATHERING,
+      step(
+        ['red', 'blue'],
+        SUMO_STEP_SECONDS,
+        new Set(['red', 'blue', 'green']),
+        new Set(['red', 'blue'])
+      )
+    )
+    expect(
+      started.stage === 'playing' && started.round.tops.map((top) => top.seat)
+    ).toEqual(['red', 'blue'])
   })
 
   it('[sumo] a round takes the six first present seats at most', () => {
@@ -130,7 +164,7 @@ describe('sumo match', () => {
     expect(next.stage === 'playing' && next.wins.get('red')).toBe(1)
   })
 
-  it('[sumo] a won match starts over from no wins after its longer pause', () => {
+  it('[sumo] a won match gathers the room again after its longer pause', () => {
     const decided = decidedFor({
       winner: 'red',
       wins: new Map([['red', SUMO_TUNING.roundsToWin]])
@@ -140,11 +174,23 @@ describe('sumo match', () => {
       step(['red', 'blue'], SUMO_TUNING.roundPauseSeconds)
     )
     expect(held.stage === 'playing' && held.round.phase).toBe('decided')
-    const fresh = advanceMatch(
+    expect(
+      advanceMatch(
+        decided,
+        step(['red', 'blue'], SUMO_TUNING.matchPauseSeconds)
+      )
+    ).toBe(GATHERING)
+  })
+
+  it('[sumo] a phone that joins during a match waits for the next one', () => {
+    const decided = decidedFor({ winner: 'red', wins: new Map([['red', 1]]) })
+    const next = advanceMatch(
       decided,
-      step(['red', 'blue'], SUMO_TUNING.matchPauseSeconds)
+      step(['red', 'blue', 'green'], SUMO_TUNING.roundPauseSeconds)
     )
-    expect(fresh).toMatchObject({ roundNumber: 1, wins: new Map() })
+    expect(
+      next.stage === 'playing' && next.round.tops.map((top) => top.seat)
+    ).toEqual(['red', 'blue'])
   })
 
   it('[sumo] the room gathers again when too few phones stay for the next round', () => {

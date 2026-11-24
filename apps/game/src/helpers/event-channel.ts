@@ -29,3 +29,27 @@ export const createEventChannel = <TEvent>(): EventChannel<TEvent> => {
     }
   }
 }
+
+/**
+ * A channel whose listener first hears the last event published before it
+ * subscribed: for a state sent whole and only on change, which a listener
+ * mounted late would otherwise wait for until the next change.
+ */
+export const createReplayingEventChannel = <TEvent>(): EventChannel<TEvent> => {
+  const channel = createEventChannel<TEvent>()
+  let latest: { event: TEvent } | null = null
+
+  return {
+    publish: (event) => {
+      latest = { event }
+      channel.publish(event)
+    },
+    subscribe: (listener) => {
+      if (latest !== null) {
+        listener(latest.event)
+      }
+
+      return channel.subscribe(listener)
+    }
+  }
+}
