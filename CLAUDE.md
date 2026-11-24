@@ -51,6 +51,10 @@ alarm rings for it, so a release test waits a full minute.
 - Python scripts writing files on Windows open them with `newline=''`, or they
   write CRLF; Biome does not reformat Sass.
 - cspell rejects unknown CSS words too: add real ones to `cspell.json`.
+- The stylesheet audit (`@adrienlcp/styles/audit`) judges a declaration by its
+  property name only: a `px` value passes only in a property named `--radius*`,
+  `--shadow*`, `--stroke*`, `--outline*`, `--target*` or `*-px`, and a literal
+  `font-size` fails (go through a `--text-*` property).
 
 ## Online
 
