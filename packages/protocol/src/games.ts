@@ -5,7 +5,7 @@ import { z } from 'zod'
  * game is added here and in the app's registry together: both ends ship from
  * this repository.
  */
-export const GAME_IDS = ['sumo'] as const
+export const GAME_IDS = ['sumo', 'tower'] as const
 
 export const gameIdSchema = z.enum(GAME_IDS)
 

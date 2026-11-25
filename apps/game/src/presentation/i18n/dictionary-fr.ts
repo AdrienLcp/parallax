@@ -2,7 +2,8 @@ import { defineDictionary, defineTranslation } from '@adrienlcp/i18n'
 
 export default defineDictionary({
   games: {
-    sumo: { name: 'Sumo' }
+    sumo: { name: 'Sumo' },
+    tower: { name: 'La tour' }
   },
   home: {
     games: 'Jeux',
@@ -158,6 +159,53 @@ export default defineDictionary({
     won: {
       match: 'Partie gagnée',
       round: 'Manche gagnée'
+    }
+  },
+  tower: {
+    block: {
+      arch: 'Arche',
+      cube: 'Cube',
+      cylinder: 'Cylindre',
+      plank: 'Planche',
+      triangle: 'Triangle'
+    },
+    cue: {
+      aim: 'Visez en largeur et en profondeur',
+      drop: 'Lâchez-le sur la tour'
+    },
+    drop: 'Lâcher',
+    height: {
+      centimetres: '{cm:number} cm',
+      metres: '{metres:number} m {cm}'
+    },
+    next: 'Ensuite',
+    outcome: {
+      ceiling: 'Jusqu’au plafond',
+      lost: 'Perdu',
+      toppled: 'Tu l’as fait tomber',
+      won: 'Gagné'
+    },
+    rule: {
+      label: 'Règle',
+      race: 'Course à la hauteur',
+      shared: 'Tour commune'
+    },
+    standings: {
+      ceiling: 'La tour touche le plafond',
+      race: 'Course',
+      raceCue: 'La plus haute gagne',
+      shared: 'La tour',
+      sharedCue: 'Qui la fait tomber perd',
+      tie: 'Égalité',
+      timeLeft: 'Encore {seconds:number} s',
+      toppled: '{seat} a tout fait tomber',
+      turnOf: '{seat} vise',
+      won: '{seat} gagne · {height}'
+    },
+    turn: {
+      settling: 'On retient son souffle…',
+      theirs: '{seat} vise',
+      yours: 'À toi'
     }
   },
   tuning: {

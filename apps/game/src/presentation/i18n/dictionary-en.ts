@@ -2,7 +2,8 @@ import { defineDictionary, defineTranslation } from '@adrienlcp/i18n'
 
 export const EN_DICTIONARY = defineDictionary({
   games: {
-    sumo: { name: 'Sumo' }
+    sumo: { name: 'Sumo' },
+    tower: { name: 'Tower' }
   },
   home: {
     games: 'Games',
@@ -160,6 +161,53 @@ export const EN_DICTIONARY = defineDictionary({
     won: {
       match: 'Match won',
       round: 'Round won'
+    }
+  },
+  tower: {
+    block: {
+      arch: 'Arch',
+      cube: 'Cube',
+      cylinder: 'Cylinder',
+      plank: 'Plank',
+      triangle: 'Triangle'
+    },
+    cue: {
+      aim: 'Aim across and in depth',
+      drop: 'Drop it on the tower'
+    },
+    drop: 'Drop',
+    height: {
+      centimetres: '{cm:number} cm',
+      metres: '{metres:number} m {cm}'
+    },
+    next: 'Next',
+    outcome: {
+      ceiling: 'Up to the roof',
+      lost: 'Lost',
+      toppled: 'You toppled it',
+      won: 'You win'
+    },
+    rule: {
+      label: 'Rule',
+      race: 'Height race',
+      shared: 'One tower'
+    },
+    standings: {
+      ceiling: 'The tower touches the roof',
+      race: 'Race',
+      raceCue: 'The tallest wins',
+      shared: 'The tower',
+      sharedCue: 'Topple it and you lose',
+      tie: 'A tie',
+      timeLeft: '{seconds:number} s left',
+      toppled: '{seat} toppled the tower',
+      turnOf: '{seat} aims',
+      won: '{seat} wins · {height}'
+    },
+    turn: {
+      settling: 'Hold your breath…',
+      theirs: '{seat} aims',
+      yours: 'Your block'
     }
   },
   tuning: {

@@ -1,0 +1,72 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .tower-scene
+    display: grid
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr)
+    min-block-size: 0
+    position: relative
+
+    .tower-view
+      min-block-size: 0
+      position: relative
+
+    .scene-canvas
+      block-size: 100%
+      display: block
+      inline-size: 100%
+      max-inline-size: none
+
+    .tower-marks
+      inset: 0
+      pointer-events: none
+      position: absolute
+
+    // A pencil stroke at the tower's top, its height written above the stroke's end.
+    .height-mark
+      border-block-start: calc(var(--cu) * 0.3) solid var(--graphite)
+      inline-size: calc(var(--cu) * 9)
+      inset: 0 auto auto 0
+      position: absolute
+      rotate: -0.6deg
+      transform: translateX(-100%)
+
+      &[hidden]
+        display: none
+
+    .height-label
+      @include typography.display
+
+      color: var(--graphite)
+      font-size: calc(var(--cu) * 2.6)
+      inset: auto 0 calc(var(--cu) * 0.3) auto
+      position: absolute
+      white-space: nowrap
+
+    .float-tag
+      background: var(--graphite)
+      border-radius: calc(var(--cu) * 3)
+      color: var(--paper)
+      inset: 0 auto auto 0
+      padding: calc(var(--cu) * 0.4) calc(var(--cu) * 1.2)
+      position: absolute
+      transform: translate(-50%, -100%)
+
+      &[hidden]
+        display: none
+
+      &::before
+        background: var(--seat)
+        border-radius: 50%
+        content: ''
+        display: inline-block
+        block-size: calc(var(--cu) * 1.6)
+        inline-size: calc(var(--cu) * 1.6)
+        margin-inline-end: calc(var(--cu) * 0.6)
+        vertical-align: -0.15em
+
+    .float-name
+      @include typography.display
+
+      font-size: calc(var(--cu) * 2.2)
+      white-space: nowrap

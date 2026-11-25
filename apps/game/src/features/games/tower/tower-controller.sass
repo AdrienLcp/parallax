@@ -1,0 +1,46 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .tower-controller
+    .drop-button
+      --drop-size: calc(var(--pad-unit) * 35)
+      --text-drop: 1.375rem
+
+      @include typography.display
+
+      align-content: center
+      background: var(--seat-cap)
+      block-size: var(--drop-size)
+      border: 0
+      border-radius: var(--radius-pill)
+      box-shadow: var(--shadow-phone-dash)
+      color: var(--seat)
+      display: grid
+      font-size: var(--text-drop)
+      inline-size: var(--drop-size)
+      justify-items: center
+      margin-inline-end: var(--space-xs)
+      padding: 0
+      touch-action: none
+      transition: scale var(--transition-fast) var(--ease-out)
+      translate: 0 50%
+
+      &[data-pressed]
+        scale: 0.94
+
+    .drop-arrow
+      block-size: 2.5rem
+      inline-size: 2.5rem
+
+    .tower-status
+      @include typography.display
+
+      font-size: var(--text-seat-name)
+      inset: auto 0 max(var(--space-l), var(--safe-area-bottom)) 0
+      margin: 0
+      pointer-events: none
+      position: absolute
+      text-align: center
+
+      &:empty
+        display: none

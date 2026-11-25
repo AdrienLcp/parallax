@@ -6,6 +6,9 @@ import type { GameDefinition } from './game-definition'
 import { SumoCues } from './sumo/sumo-cues'
 import { SumoPreview } from './sumo/sumo-preview'
 import { SUMO_PLAYERS } from './sumo/sumo-tuning'
+import { TowerCues } from './tower/tower-cues'
+import { TowerPreview } from './tower/tower-preview'
+import { TOWER_PLAYERS } from './tower/tower-tuning'
 
 import './sumo/sumo-world.sass'
 import './tower/tower-world.sass'
@@ -31,6 +34,21 @@ export const games = {
     })),
     Showcase: lazy(async () => ({
       default: (await import('./sumo/sumo-showcase')).SumoShowcase
+    }))
+  },
+  tower: {
+    Controller: lazy(async () => ({
+      default: (await import('./tower/tower-controller')).TowerController
+    })),
+    Cues: TowerCues,
+    name: 'games.tower.name',
+    Preview: TowerPreview,
+    players: TOWER_PLAYERS,
+    Scene: lazy(async () => ({
+      default: (await import('./tower/tower-scene')).TowerScene
+    })),
+    Showcase: lazy(async () => ({
+      default: (await import('./tower/tower-showcase')).TowerShowcase
     }))
   }
 } satisfies Record<GameId, GameDefinition>
