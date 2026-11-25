@@ -17,9 +17,11 @@ already translated.
 
 Every game stands its scene in the measured alcove through `features/alcove/`:
 `SHIPPED_ALCOVE` (the calibration solved as a box and an eye),
-`aimAlcoveCamera` (the camera at the players' eye) and `buildAlcoveStage`
-(invisible floor and back wall that only catch shadows). A new calibration
-replaces `measured-alcove.ts` and moves every game at once.
+`aimAlcoveCamera` (the camera at the players' eye), `alcoveInterior` (the
+room every object stays in: 25 px inside each edge on the display, the floor
+excepted) and `buildAlcoveStage` (invisible floor and back wall that only catch
+shadows). A new calibration replaces `measured-alcove.ts` and moves every game
+at once.
 
 ## Running it
 
