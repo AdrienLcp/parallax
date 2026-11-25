@@ -29,11 +29,14 @@
     "dashoffset",
     "EDID",
     "esbuild",
+    "essai",
     "evenodd",
     "focusables",
     "Foncer",
     "fract",
+    "Fredoka",
     "Hololuminescent",
+    "Kalam",
     "Lacourpaille",
     "LCEN",
     "lightfield",
@@ -57,6 +60,7 @@
     "rrggbb",
     "subgrid",
     "subp",
+    "toise",
     "webxr",
     "workerd"
   ]
