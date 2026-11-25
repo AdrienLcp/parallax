@@ -325,6 +325,73 @@ describe('handleFrame', () => {
     expect(outcome.event).toEqual({ kind: 'to_players', message: state })
   })
 
+  it.each([
+    [
+      '{"type":"tower.aim","x":-0.25,"z":1}',
+      { type: 'tower.aim', x: -0.25, z: 1 }
+    ],
+    ['{"type":"tower.drop"}', { type: 'tower.drop' }],
+    [
+      '{"rule":"race","type":"tower.rule"}',
+      { rule: 'race', type: 'tower.rule' }
+    ]
+  ])(
+    'passes the tower frame %s to the screen stamped with its seat',
+    (frame, message) => {
+      const outcome = sendFrame({
+        admission: PLAYER,
+        frame,
+        store: openedStore()
+      })
+
+      expect(outcome.event).toEqual({
+        kind: 'to_screen',
+        message: { ...message, seatId: 'seat-1' }
+      })
+    }
+  )
+
+  it('passes the tower state to the phones, and only from the screen', () => {
+    const state = {
+      phase: 'aiming',
+      rule: 'shared',
+      seats: [
+        { heightCm: 42, nextBlock: 'arch', seatId: 'seat-1', toppled: false }
+      ],
+      turnSeatId: 'seat-1',
+      type: 'tower.state'
+    }
+    const frame = JSON.stringify(state)
+
+    const fromScreen = sendFrame({
+      admission: SCREEN,
+      frame,
+      store: openedStore()
+    })
+    const fromPhone = sendFrame({
+      admission: PLAYER,
+      frame,
+      store: openedStore()
+    })
+
+    expect(fromScreen.event).toEqual({ kind: 'to_players', message: state })
+    expect(fromPhone.reply?.type === 'error' && fromPhone.reply.code).toBe(
+      'wrong_role'
+    )
+  })
+
+  it('refuses a tower rule it does not know', () => {
+    const outcome = sendFrame({
+      admission: PLAYER,
+      frame: '{"rule":"solo","type":"tower.rule"}',
+      store: openedStore()
+    })
+
+    expect(outcome.reply?.type === 'error' && outcome.reply.code).toBe(
+      'invalid_message'
+    )
+  })
+
   it('refuses a frame from the wrong role without closing', () => {
     const outcome = sendFrame({
       admission: SCREEN,

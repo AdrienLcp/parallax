@@ -11,6 +11,12 @@ import {
   seatUnreadySchema
 } from './lobby'
 import { sumoDashSchema, sumoStateSchema, sumoStickSchema } from './sumo'
+import {
+  towerAimSchema,
+  towerDropSchema,
+  towerRuleChoiceSchema,
+  towerStateSchema
+} from './tower'
 
 export const screenCredentialsSchema = z.object({
   role: z.literal('screen'),
@@ -50,7 +56,11 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   seatLeaveSchema,
   sumoStickSchema,
   sumoDashSchema,
-  sumoStateSchema
+  sumoStateSchema,
+  towerAimSchema,
+  towerDropSchema,
+  towerRuleChoiceSchema,
+  towerStateSchema
 ])
 
 export type Credentials = z.infer<typeof credentialsSchema>

@@ -9,6 +9,12 @@ import {
   sumoSeatStickSchema,
   sumoStateSchema
 } from './sumo'
+import {
+  towerSeatAimSchema,
+  towerSeatDropSchema,
+  towerSeatRuleChoiceSchema,
+  towerStateSchema
+} from './tower'
 
 /** A fatal error is followed by the socket closing; the client stops retrying. */
 export const errorMessageSchema = z.object({
@@ -43,13 +49,17 @@ export const playerRoomMessageSchema = screenRoomMessageSchema.extend({
 export const screenEventSchema = z.discriminatedUnion('type', [
   screenRoomMessageSchema,
   sumoSeatStickSchema,
-  sumoSeatDashSchema
+  sumoSeatDashSchema,
+  towerSeatAimSchema,
+  towerSeatDropSchema,
+  towerSeatRuleChoiceSchema
 ])
 
 /** What only a phone hears: the room and the game as the screen tells it. */
 export const playerEventSchema = z.discriminatedUnion('type', [
   playerRoomMessageSchema,
-  sumoStateSchema
+  sumoStateSchema,
+  towerStateSchema
 ])
 
 export const screenServerMessageSchema = z.discriminatedUnion('type', [

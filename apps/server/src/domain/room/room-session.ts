@@ -12,6 +12,12 @@ import type {
   SumoSeatStick,
   SumoState
 } from '@parallax/protocol/sumo'
+import type {
+  TowerSeatAim,
+  TowerSeatDrop,
+  TowerSeatRuleChoice,
+  TowerState
+} from '@parallax/protocol/tower'
 import { PROTOCOL_VERSION } from '@parallax/protocol/version'
 
 import type { Admission } from './admission'
@@ -26,8 +32,16 @@ export type SessionEvent =
   | { kind: 'room_changed' }
   /** The screen removed a seat: its phone is told, then let go. */
   | { kind: 'seat_removed'; seatId: SeatId }
-  | { kind: 'to_screen'; message: SumoSeatDash | SumoSeatStick }
-  | { kind: 'to_players'; message: SumoState }
+  | {
+      kind: 'to_screen'
+      message:
+        | SumoSeatDash
+        | SumoSeatStick
+        | TowerSeatAim
+        | TowerSeatDrop
+        | TowerSeatRuleChoice
+    }
+  | { kind: 'to_players'; message: SumoState | TowerState }
 
 export type FrameOutcome = {
   /** The socket's admission after this frame, to keep on it. */
@@ -152,6 +166,9 @@ const play = ({
       }
     case 'sumo.dash':
     case 'sumo.stick':
+    case 'tower.aim':
+    case 'tower.drop':
+    case 'tower.rule':
       return admission.role === 'player'
         ? passed(admission, {
             kind: 'to_screen',
@@ -159,6 +176,7 @@ const play = ({
           })
         : wrongRole(admission)
     case 'sumo.state':
+    case 'tower.state':
       return admission.role === 'screen'
         ? passed(admission, { kind: 'to_players', message })
         : wrongRole(admission)
