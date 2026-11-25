@@ -29,6 +29,11 @@ replaces `measured-alcove.ts` and moves every game at once.
 - After any change to `apps/server/wrangler.jsonc`:
   `corepack pnpm --filter @parallax/server cf-typegen`. The server build runs
   `wrangler types --check` and fails otherwise.
+- A page for the unit fills the whole F11 window: the camera frames the box
+  that holds the canvas, so a canvas in a thumbnail, a padded page or a page
+  that scrolls stands the scene off the alcove. Before handing Adrien a URL,
+  open that exact URL in a portrait 9:16 window and check `.scene-canvas`
+  equals `innerWidth` × `innerHeight` with nothing to scroll.
 - A background tab stops `requestAnimationFrame`, so a display left in one stops
   simulating. Give each real phone its own isolated browser context (separate
   localStorage = separate seat).
