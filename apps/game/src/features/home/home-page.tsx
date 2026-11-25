@@ -26,7 +26,7 @@ export const HomePage: React.FC = () => {
   const openRoom = () => void navigate(paths.screen)
 
   return (
-    <Main className='home-page'>
+    <Main className='home-page' data-game={gameId}>
       <title>{translate('home.title')}</title>
       <div className='home-display'>
         <header className='home-head'>

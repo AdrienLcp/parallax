@@ -3,15 +3,15 @@
 @use '../../presentation/styles/typography'
 
 @layer components
-  // The game choice stands on the alcove's lacquer-ink backdrop, footer
-  // included: the host's neutral tokens take the bistrot's values while it is shown.
+  // The game choice stands on the chosen game's backdrop, footer included:
+  // the host's neutral tokens take that game's roles while it is shown.
   :root:has(.home-page)
-    --ground: var(--lacquer-ink)
-    --ink: var(--chalk)
-    --ink-muted: var(--chalk-soft)
-    --rule: color-mix(in oklab, var(--brass) 40%, transparent)
-    --rule-strong: var(--brass-deep)
-    --focus: var(--brass)
+    --ground: var(--host-backdrop)
+    --ink: var(--host-ink)
+    --ink-muted: var(--host-ink-soft)
+    --rule: color-mix(in oklab, var(--host-line) 40%, transparent)
+    --rule-strong: var(--host-accent-deep)
+    --focus: var(--host-accent)
 
   .home-page
     @include display.units
@@ -38,7 +38,7 @@
 
   .game-head
     align-items: end
-    border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
+    border-block-end: calc(var(--cu) * 0.2) solid var(--host-line)
     column-gap: calc(var(--cu) * 2)
     display: grid
     grid-template-areas: "name switch" "name players"
@@ -61,7 +61,7 @@
 
     grid-area: players
     justify-self: end
-    color: var(--chalk-soft)
+    color: var(--host-ink-soft)
     font-size: calc(var(--cu) * 2.6)
     padding-block-end: calc(var(--cu) * 0.6)
 

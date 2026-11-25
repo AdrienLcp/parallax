@@ -1,0 +1,44 @@
+// Side effect: the sumo's world, loaded with the game registry so it is there
+// before any of the sumo's own pieces load. While a page shows the sumo
+// (`data-game='sumo'` on its landmark), the bistrot palette is declared and
+// the host's roles take its values, footer and page ground included.
+
+@layer tokens
+  :root:has([data-game='sumo'])
+    // The bistrot table, the same whatever the system theme.
+    --felt: oklch(31.7% 0.051 162.2)
+    --felt-deep: oklch(26.3% 0.041 163.2)
+    --slate: oklch(28.3% 0.008 169.8)
+    --slate-line: oklch(42.7% 0.011 160.9)
+    --chalk: oklch(93.1% 0.015 90.2)
+    --chalk-soft: oklch(79.2% 0.015 124.6)
+    --ivory: oklch(94.4% 0.023 87.2)
+    --lacquer-ink: oklch(20.8% 0.009 59.2)
+    --brass: oklch(73.1% 0.115 85.2)
+    --brass-deep: oklch(54.3% 0.095 83.4)
+    --enamel: oklch(37.6% 0.105 261)
+    --walnut: oklch(38% 0.058 56.8)
+
+    // The brass ring round every top on the display, flat or modelled.
+    --seat-top-ring: var(--brass)
+
+    --host-backdrop: var(--lacquer-ink)
+    --host-ground: var(--felt)
+    --host-ink: var(--chalk)
+    --host-ink-soft: var(--chalk-soft)
+    --host-ink-on-light: var(--lacquer-ink)
+    --host-ink-soft-on-light: color-mix(in oklab, var(--lacquer-ink) 74%, var(--ivory))
+    --host-line: var(--brass)
+    --host-line-faint: var(--slate-line)
+    --host-accent: var(--brass)
+    --host-accent-deep: var(--brass-deep)
+    --host-accent-hover: color-mix(in oklab, var(--brass), var(--ivory) 22%)
+    --host-accent-ink: var(--lacquer-ink)
+    --host-panel: var(--slate)
+    --host-panel-frame: var(--walnut)
+    --host-panel-frame-deep: color-mix(in oklab, var(--walnut) 55%, var(--lacquer-ink))
+    --host-plaque: var(--enamel)
+    --host-plaque-ink: var(--ivory)
+    --host-qr-quiet: var(--ivory)
+    --host-qr-ink: var(--lacquer-ink)
+    --host-shadow: var(--lacquer-ink)

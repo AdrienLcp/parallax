@@ -10,25 +10,29 @@
     --ground: light-dark(oklch(100% 0 0), oklch(0% 0 0))
     --ink: light-dark(oklch(20% 0 0), oklch(95% 0 0))
     --ink-muted: light-dark(oklch(45% 0 0), oklch(72% 0 0))
-    --focus: light-dark(var(--brass-deep), var(--brass))
+    --focus: light-dark(oklch(54.3% 0.095 83.4), oklch(73.1% 0.115 85.2))
     --rule: light-dark(oklch(85% 0 0), oklch(30% 0 0))
     --rule-strong: light-dark(oklch(60% 0 0), oklch(55% 0 0))
     --selection: light-dark(oklch(88% 0.06 85), oklch(44% 0.08 84))
 
-    // The bistrot table: one deliberate look the room and its games share,
-    // the same whatever the system theme.
-    --felt: oklch(31.7% 0.051 162.2)
-    --felt-deep: oklch(26.3% 0.041 163.2)
-    --slate: oklch(28.3% 0.008 169.8)
-    --slate-line: oklch(42.7% 0.011 160.9)
-    --chalk: oklch(93.1% 0.015 90.2)
-    --chalk-soft: oklch(79.2% 0.015 124.6)
-    --ivory: oklch(94.4% 0.023 87.2)
-    --lacquer-ink: oklch(20.8% 0.009 59.2)
-    --brass: oklch(73.1% 0.115 85.2)
-    --brass-deep: oklch(54.3% 0.095 83.4)
-    --enamel: oklch(37.6% 0.105 261)
-    --walnut: oklch(38% 0.058 56.8)
+    // The host draws only through these roles, and a host surface always
+    // stands in a game's world: each game sets them under its own scope
+    // (the sumo in `features/games/sumo/sumo-world.sass`), so the room's
+    // shell takes the look of the game it hosts.
+    //   --host-backdrop: behind the display's column, where the arena stands
+    //   --host-ground: the ground of a notice and of a phone outside a seat
+    //   --host-ink, --host-ink-soft: lettering on both, and its quieter voice
+    //   --host-ink-on-light, --host-ink-soft-on-light: the same once a tuned
+    //     backdrop is light
+    //   --host-line, --host-line-faint: a rule, and the rule between seats
+    //   --host-accent, --host-accent-deep, --host-accent-hover,
+    //     --host-accent-ink: the action fill, its inset filet, under the
+    //     pointer, and the lettering on it
+    //   --host-panel, --host-panel-frame, --host-panel-frame-deep: the roster,
+    //     the band and the chips, and the roster's double frame
+    //   --host-plaque, --host-plaque-ink: the room-code plaque and its lettering
+    //   --host-qr-quiet, --host-qr-ink: the QR card's quiet zone and modules
+    //   --host-shadow: the tint of every shadow
 
     --seat-red: oklch(56.6% 0.175 31.9)
     --seat-ivory: oklch(91.8% 0.032 87.3)
@@ -36,7 +40,11 @@
     --seat-ochre: oklch(72.4% 0.138 78.8)
     --seat-blue: oklch(45.9% 0.094 251.4)
     --seat-green: oklch(72.1% 0.107 131.3)
-    --seat-top-ring: var(--brass)
+
+    // The cap and the glyph on a seat's lacquer: light on dark lacquers,
+    // dark on light ones. Seats identify a player across games.
+    --seat-cap-light: oklch(94.4% 0.023 87.2)
+    --seat-cap-dark: oklch(20.8% 0.009 59.2)
 
     // Each '… fallback' is the Arial `_fonts.sass` scales to the web face,
     // named here because fontaine adds it to a `font-family` declaration,

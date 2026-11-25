@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-24T09:10:33Z",
+  "generatedAt": "2026-11-25T10:19:56Z",
   "title": "Design System: Parallax",
   "extensions": {
     "colorMeta": {
@@ -630,6 +630,11 @@
     ],
     "rules": [
       {
+        "name": "The Host Roles Rule",
+        "body": "A host surface reads only the `--host-*` roles, the seat tokens and the neutral tokens, never a game's palette; a game's palette is declared only on its scope, never at `:root`.",
+        "section": "colors"
+      },
+      {
         "name": "The Filet Rule",
         "body": "Structure is drawn, not filled: a ring, a rule, a tick or a gauge is a brass stroke on felt or slate, with opacity carrying its rank. No filled shapes stand in for lines.",
         "section": "colors"
@@ -676,7 +681,8 @@
       "**Do** set names, codes, titles and button labels in Big Shoulders Display 900 uppercase, and everything else in Barlow Semi Condensed 500 / 700.",
       "**Do** size display surfaces in `--cu` and keep them inside the 3 % safe area.",
       "**Do** tint every shadow with lacquer ink at 30 to 40 %.",
-      "**Do** keep the bistrot look fixed regardless of system theme; the game choice stands on the lacquer-ink backdrop too, and only the legal page and its footer follow light / dark.",
+      "**Do** keep each game's world fixed regardless of system theme; the game choice stands on the chosen game's backdrop too, and only the legal page and its footer follow light / dark.",
+      "**Do** give a new game its world as a mapping of the `--host-*` roles under `:root:has([data-game='<id>'])`, with its contrast test; the host's stylesheets do not change.",
       "**Do** let a game speak to the room only through its standings: title, subtitle, cue, pips, fallen and winner marks, and the one announcement band across the header.",
       "**Do** read every 3D colour from the CSS tokens through the probe."
     ],

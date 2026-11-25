@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { CURRENT_GAME } from '@/features/games/games'
 import { useRoomCodeParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
 
@@ -13,7 +14,7 @@ export const PlayPage: React.FC = () => {
   const roomCode = useRoomCodeParam()
 
   return (
-    <Main className='play-page'>
+    <Main className='play-page' data-game={CURRENT_GAME}>
       {roomCode === null ? (
         <RoomNotice
           canRetry={false}

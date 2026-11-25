@@ -3,7 +3,8 @@
 // Pure: the enamel plaque, as a mixin a component includes. Emits no CSS of
 // its own. Sized on the display's `--cu`; the phone resizes it in rem and px.
 
-/// Enamel ground, ivory capitals and an ivory inner filet, raised off the felt.
+/// The game's plaque ground, its capitals and an inner filet of the same ink,
+/// raised (enamel and ivory in the sumo).
 /// A caller resizes it through `font-size` and the `--plaque-*` properties,
 /// `--plaque-shadow` included.
 @mixin enamel
@@ -15,10 +16,10 @@
 
   @include typography.display
 
-  background: var(--enamel)
+  background: var(--host-plaque)
   border-radius: calc(var(--cu) * 1.2)
-  box-shadow: inset 0 0 0 calc(var(--plaque-filet) * 0.56) var(--enamel), inset 0 0 0 var(--plaque-filet) var(--ivory), var(--plaque-shadow)
-  color: var(--ivory)
+  box-shadow: inset 0 0 0 calc(var(--plaque-filet) * 0.56) var(--host-plaque), inset 0 0 0 var(--plaque-filet) var(--host-plaque-ink), var(--plaque-shadow)
+  color: var(--host-plaque-ink)
   font-size: calc(var(--cu) * 6.4)
   letter-spacing: var(--plaque-tracking)
   padding: var(--plaque-pad-block) var(--plaque-pad-inline)
@@ -28,9 +29,9 @@
     padding-block: calc(var(--plaque-pad-block) + (1lh - 1cap) / 2)
     text-box: trim-both cap alphabetic
 
-/// The same plaque left unpainted: only its ivory filet, faded, around soft
-/// chalk capitals. What a plaque looks like when it is not the chosen one.
+/// The same plaque left unpainted: only its filet, faded, around soft
+/// capitals. What a plaque looks like when it is not the chosen one.
 @mixin unpainted
   background: transparent
-  box-shadow: inset 0 0 0 calc(var(--cu) * 0.25) color-mix(in oklab, var(--ivory) 45%, transparent)
-  color: var(--chalk-soft)
+  box-shadow: inset 0 0 0 calc(var(--cu) * 0.25) color-mix(in oklab, var(--host-plaque-ink) 45%, transparent)
+  color: var(--host-ink-soft)

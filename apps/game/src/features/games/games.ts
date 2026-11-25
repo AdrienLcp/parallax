@@ -5,6 +5,8 @@ import { SumoCues } from './sumo/sumo-cues'
 import { SumoPreview } from './sumo/sumo-preview'
 import { SUMO_PLAYERS } from './sumo/sumo-tuning'
 
+import './sumo/sumo-world.sass'
+
 /** Every game the app hosts, in the order the game choice lists them. */
 export const GAME_IDS = ['sumo'] as const
 

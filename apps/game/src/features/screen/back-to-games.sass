@@ -8,7 +8,7 @@
     background: none
     border: 0
     border-radius: calc(var(--cu) * 0.6)
-    color: var(--chalk-soft)
+    color: var(--host-ink-soft)
     cursor: pointer
     display: flex
     font-size: calc(var(--cu) * 2.2)
@@ -25,12 +25,12 @@
       fill: none
 
     .hold-track
-      stroke: var(--slate-line)
+      stroke: var(--host-line-faint)
       stroke-width: 3
 
     .hold-fill
       rotate: -90deg
-      stroke: var(--brass)
+      stroke: var(--host-accent)
       stroke-dasharray: 0 101
       stroke-width: 3.5
       transform-box: view-box
@@ -43,7 +43,7 @@
       stroke-width: 4
 
     &[data-pressed]
-      color: var(--chalk)
+      color: var(--host-ink)
 
       .hold-fill
         stroke-dasharray: 101 101

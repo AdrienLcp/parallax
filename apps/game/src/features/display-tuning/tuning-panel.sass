@@ -6,10 +6,10 @@
     --tuning-row: calc(var(--cu) * 3)
     --tuning-rule: calc(var(--cu) * 0.15)
 
-    background: var(--slate)
+    background: var(--host-panel)
     border-radius: calc(var(--cu) * 0.8)
-    box-shadow: inset 0 0 0 var(--tuning-rule) var(--slate-line), var(--screen-shadow-raised)
-    color: var(--chalk)
+    box-shadow: inset 0 0 0 var(--tuning-rule) var(--host-line-faint), var(--screen-shadow-raised)
+    color: var(--host-ink)
     display: grid
     gap: calc(var(--cu) * 1.4)
     inline-size: calc(var(--cu) * 27)
@@ -20,14 +20,14 @@
     overscroll-behavior: contain
     padding: calc(var(--cu) * 1.4) calc(var(--cu) * 1.8) calc(var(--cu) * 1.8)
     position: fixed
-    scrollbar-color: var(--slate-line) transparent
+    scrollbar-color: var(--host-line-faint) transparent
     scrollbar-width: thin
     user-select: none
     z-index: 10
 
   .tuning-head
     align-items: center
-    border-block-end: calc(var(--cu) * 0.2) solid var(--brass)
+    border-block-end: calc(var(--cu) * 0.2) solid var(--host-line)
     display: grid
     grid-template-columns: minmax(0, 1fr) auto
     padding-block-end: calc(var(--cu) * 0.8)
@@ -42,7 +42,7 @@
     block-size: var(--tuning-row)
     border: 0
     border-radius: calc(var(--cu) * 0.5)
-    color: var(--chalk-soft)
+    color: var(--host-ink-soft)
     cursor: pointer
     display: grid
     inline-size: var(--tuning-row)
@@ -58,7 +58,7 @@
       stroke-width: 2.5
 
     &[data-hovered]
-      color: var(--chalk)
+      color: var(--host-ink)
 
   // Sliders share their group's columns, so the tracks of one group line up.
   .tuning-group
@@ -73,7 +73,7 @@
   .tuning-group-title
     @include typography.display
 
-    color: var(--chalk-soft)
+    color: var(--host-ink-soft)
     font-size: calc(var(--cu) * 1.8)
     margin-block-end: calc(var(--cu) * 0.3)
 
@@ -91,7 +91,7 @@
   .tuning-slider-value
     @include typography.display
 
-    color: var(--brass)
+    color: var(--host-accent)
     font-size: calc(var(--cu) * 2)
     font-variant-numeric: tabular-nums
     min-inline-size: calc(var(--cu) * 4.8)
@@ -105,7 +105,7 @@
     position: relative
 
     &::before
-      background: var(--slate-line)
+      background: var(--host-line-faint)
       block-size: calc(var(--cu) * 0.3)
       border-radius: var(--radius-pill)
       content: ''
@@ -114,7 +114,7 @@
       position: absolute
 
   .tuning-slider-fill
-    background: var(--brass)
+    background: var(--host-accent)
     block-size: calc(var(--cu) * 0.3)
     border-radius: var(--radius-pill)
     inline-size: calc(var(--fill) * 100%)
@@ -123,10 +123,10 @@
     position: absolute
 
   .tuning-slider-thumb
-    background: var(--brass)
+    background: var(--host-accent)
     block-size: calc(var(--cu) * 1.9)
     border-radius: 50%
-    box-shadow: inset 0 0 0 calc(var(--cu) * 0.35) var(--brass-deep), 0 calc(var(--cu) * 0.2) calc(var(--cu) * 0.5) var(--screen-shadow-ink)
+    box-shadow: inset 0 0 0 calc(var(--cu) * 0.35) var(--host-accent-deep), 0 calc(var(--cu) * 0.2) calc(var(--cu) * 0.5) var(--screen-shadow-ink)
     inline-size: calc(var(--cu) * 1.9)
     inset-block-start: 50%
     transition: scale var(--transition-fast) var(--ease-out)
@@ -136,7 +136,7 @@
       scale: 1.15
 
     &[data-focus-visible]
-      outline: calc(var(--cu) * 0.25) solid var(--chalk)
+      outline: calc(var(--cu) * 0.25) solid var(--host-ink)
       outline-offset: calc(var(--cu) * 0.25)
 
   .backdrop-picker
@@ -161,32 +161,32 @@
       background: var(--swatch)
       block-size: 100%
       border-radius: 50%
-      box-shadow: inset 0 0 0 var(--tuning-rule) color-mix(in oklab, var(--chalk) 35%, transparent)
+      box-shadow: inset 0 0 0 var(--tuning-rule) color-mix(in oklab, var(--host-ink) 35%, transparent)
       inline-size: 100%
 
     &[data-hovered]
-      outline-color: var(--slate-line)
+      outline-color: var(--host-line-faint)
 
     &[data-selected]
-      outline-color: var(--brass)
+      outline-color: var(--host-accent)
 
     &[data-focus-visible]
-      outline-color: var(--chalk)
+      outline-color: var(--host-ink)
 
   .backdrop-custom
     &:hover
-      outline-color: var(--slate-line)
+      outline-color: var(--host-line-faint)
 
     &:has(:focus-visible)
-      outline-color: var(--chalk)
+      outline-color: var(--host-ink)
 
     &[data-selected]
-      outline-color: var(--brass)
+      outline-color: var(--host-accent)
 
     input
       appearance: none
       background: none
-      border: var(--tuning-rule) dashed var(--chalk-soft)
+      border: var(--tuning-rule) dashed var(--host-ink-soft)
       cursor: pointer
       padding: calc(var(--cu) * 0.3)
 
@@ -216,8 +216,8 @@
     block-size: var(--tuning-row)
     border: 0
     border-radius: calc(var(--cu) * 0.5)
-    box-shadow: inset 0 0 0 var(--tuning-rule) var(--slate-line)
-    color: var(--chalk-soft)
+    box-shadow: inset 0 0 0 var(--tuning-rule) var(--host-line-faint)
+    color: var(--host-ink-soft)
     cursor: pointer
     display: grid
     font-size: calc(var(--cu) * 1.6)
@@ -225,19 +225,19 @@
     transition: background-color var(--transition-fast) var(--ease-out), color var(--transition-fast) var(--ease-out)
 
     &[data-hovered]
-      color: var(--chalk)
+      color: var(--host-ink)
 
     &[data-selected]
-      background: var(--brass)
+      background: var(--host-accent)
       box-shadow: none
-      color: var(--lacquer-ink)
+      color: var(--host-accent-ink)
 
     &[data-focus-visible]
-      outline: calc(var(--cu) * 0.25) solid var(--chalk)
+      outline: calc(var(--cu) * 0.25) solid var(--host-ink)
       outline-offset: calc(var(--cu) * 0.2)
 
   .tuning-foot
-    border-block-start: var(--tuning-rule) solid var(--slate-line)
+    border-block-start: var(--tuning-rule) solid var(--host-line-faint)
     display: grid
     gap: calc(var(--cu) * 1)
     grid-template-columns: minmax(0, 1fr) auto
@@ -267,8 +267,8 @@
     block-size: calc(var(--cu) * 4.4)
     border: 0
     border-radius: calc(var(--cu) * 0.5)
-    box-shadow: inset 0 0 0 var(--tuning-rule) var(--slate-line)
-    color: var(--chalk-soft)
+    box-shadow: inset 0 0 0 var(--tuning-rule) var(--host-line-faint)
+    color: var(--host-ink-soft)
     cursor: pointer
     display: grid
     inline-size: calc(var(--cu) * 4.4)
@@ -284,11 +284,11 @@
       stroke-width: 2.4
 
     &[data-hovered]
-      color: var(--chalk)
+      color: var(--host-ink)
 
     &[data-pressed]
       scale: 0.97
 
   :is(.tuning-close, .tuning-download, .tuning-reset)[data-focus-visible]
-    outline: calc(var(--cu) * 0.25) solid var(--chalk)
+    outline: calc(var(--cu) * 0.25) solid var(--host-ink)
     outline-offset: calc(var(--cu) * 0.25)

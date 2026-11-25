@@ -1,6 +1,7 @@
 import type React from 'react'
 
 import { TuningLayer } from '@/features/display-tuning/tuning-layer'
+import { CURRENT_GAME } from '@/features/games/games'
 import { DisplaySoundProvider } from '@/features/sound/display-sound'
 import { Main } from '@/presentation/components/main'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
@@ -18,7 +19,7 @@ export const ScreenPage: React.FC = () => {
 
   return (
     <DisplaySoundProvider>
-      <Main className='screen-page'>
+      <Main className='screen-page' data-game={CURRENT_GAME}>
         {state.kind === 'failed' && (
           <ScreenNotice
             action={translate('screen.retry')}

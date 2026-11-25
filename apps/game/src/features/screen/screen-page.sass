@@ -2,24 +2,24 @@
 
 @layer components
   :root:has(.screen-page)
-    background: var(--felt)
+    background: var(--host-ground)
     scrollbar-gutter: auto
 
   // The alcove's backdrop: solid and unlit wherever the arena stands.
   :root:has(.screen-room)
-    background: var(--backdrop, var(--lacquer-ink))
+    background: var(--backdrop, var(--host-backdrop))
 
   .screen-page
     @include display.units
 
     -webkit-touch-callout: none
-    background: var(--felt)
+    background: var(--host-ground)
     block-size: 100dvh
-    color: var(--chalk)
+    color: var(--host-ink)
     display: grid
     overflow: clip
     place-items: center
     user-select: none
 
     &:has(.screen-room)
-      background: var(--backdrop, var(--lacquer-ink))
+      background: var(--backdrop, var(--host-backdrop))

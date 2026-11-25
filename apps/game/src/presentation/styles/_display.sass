@@ -22,23 +22,23 @@
   --cu: var(--display-cu)
   --screen-safe-block: calc(var(--cu) * 1.7)
   --screen-safe-inline: calc(var(--cu) * 1.6875)
-  --screen-shadow-ink: color-mix(in oklab, var(--lacquer-ink) 40%, transparent)
+  --screen-shadow-ink: color-mix(in oklab, var(--host-shadow) 40%, transparent)
   --screen-shadow-raised: 0 calc(var(--cu) * 0.5) calc(var(--cu) * 1.2) var(--screen-shadow-ink)
-  --focus: var(--brass)
+  --focus: var(--host-accent)
 
 /// A block of the HUD around the arena (header, roster), sized by the HUD
 /// scale the display was tuned to.
 @mixin hud
   --cu: calc(var(--display-cu) * var(--hud-scale, 1))
 
-/// Lettering that stands straight on the backdrop: chalk on a dark backdrop,
-/// lacquer ink once the backdrop is light enough to call for it.
+/// Lettering that stands straight on the backdrop: the game's ink on a dark
+/// backdrop, its ink for a light one once the tuned backdrop calls for it.
 @mixin on-backdrop
-  color: var(--chalk)
+  color: var(--host-ink)
 
   :root[data-backdrop-tone='light'] &
-    --chalk: var(--lacquer-ink)
-    --chalk-soft: color-mix(in oklab, var(--lacquer-ink) 74%, var(--ivory))
+    --host-ink: var(--host-ink-on-light)
+    --host-ink-soft: var(--host-ink-soft-on-light)
 
 /// The portrait column itself, 56.25 × 100 units, its content kept inside the
 /// safe area that never touches the alcove's walls.

@@ -3,21 +3,22 @@
 // Pure: the display's brass button, as a mixin a control includes. Emits no
 // CSS of its own. The caller sizes it.
 
-/// Brass fill, lacquer-ink capitals, an inset brass-deep filet, raised off the
-/// felt. Lightens under the pointer and gives under the finger.
+/// The game's accent fill and lettering, an inset deep-accent filet, raised
+/// (brass on lacquer ink in the sumo). Lightens under the pointer and gives
+/// under the finger.
 @mixin brass
   @include typography.display
 
-  background: var(--brass)
+  background: var(--host-accent)
   border: 0
   border-radius: calc(var(--cu) * 0.5)
-  box-shadow: inset 0 0 0 calc(var(--cu) * 0.4) var(--brass-deep), inset 0 0 0 calc(var(--cu) * 0.7) var(--brass), var(--screen-shadow-raised)
-  color: var(--lacquer-ink)
+  box-shadow: inset 0 0 0 calc(var(--cu) * 0.4) var(--host-accent-deep), inset 0 0 0 calc(var(--cu) * 0.7) var(--host-accent), var(--screen-shadow-raised)
+  color: var(--host-accent-ink)
   cursor: pointer
   transition: background-color var(--transition-fast) var(--ease-out), scale var(--transition-fast) var(--ease-out)
 
   &[data-hovered]
-    background: color-mix(in oklab, var(--brass), var(--ivory) 22%)
+    background: var(--host-accent-hover)
 
   &[data-pressed]
     scale: 0.97
