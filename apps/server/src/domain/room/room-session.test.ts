@@ -16,6 +16,7 @@ import { SEAT_RELEASE_AFTER_MS } from './seat-release'
 
 const ROOM: OpenedRoom = {
   code: 'ABCD',
+  game: 'sumo',
   screenToken: 'screen-token-of-the-test-room'
 }
 
@@ -352,7 +353,7 @@ describe('handleFrame', () => {
       store
     })
 
-    expect(ready.event).toEqual({ kind: 'seats_changed' })
+    expect(ready.event).toEqual({ kind: 'room_changed' })
     expect(store.readSeats().at(0)).toMatchObject({
       isReady: true,
       name: 'Ada'
@@ -410,7 +411,7 @@ describe('handleFrame', () => {
       store
     })
 
-    expect(started.event).toEqual({ kind: 'seats_changed' })
+    expect(started.event).toEqual({ kind: 'room_changed' })
     expect(store.readSeats().map((seat) => seat.isReady)).toEqual([
       false,
       false
@@ -424,6 +425,125 @@ describe('handleFrame', () => {
       [SCREEN, '{"type":"seat.ready","name":null}'],
       [SCREEN, '{"type":"seat.unready"}'],
       [PLAYER, '{"type":"game.started"}']
+    ] as const) {
+      const outcome = sendFrame({ admission, frame, store })
+      expect(outcome.reply?.type === 'error' && outcome.reply.code).toBe(
+        'wrong_role'
+      )
+    }
+  })
+
+  it('starts a game in the playing phase and brings the room back to its lobby when it ends', () => {
+    const store = openedStore()
+
+    sendFrame({ admission: SCREEN, frame: '{"type":"game.started"}', store })
+    expect(store.readRoom()?.phase).toBe('playing')
+
+    const ended = sendFrame({
+      admission: SCREEN,
+      frame: '{"type":"game.ended"}',
+      store
+    })
+
+    expect(ended.event).toEqual({ kind: 'room_changed' })
+    expect(store.readRoom()?.phase).toBe('lobby')
+  })
+
+  it('lets a phone or the screen change the game in the lobby, spending every ready mark', () => {
+    const store = openedStore()
+    const { admission } = sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(1) }),
+      store
+    })
+    sendFrame({ admission, frame: '{"type":"seat.ready","name":null}', store })
+
+    for (const by of [admission, SCREEN]) {
+      const changed = sendFrame({
+        admission: by,
+        frame: '{"type":"room.game","game":"sumo"}',
+        store
+      })
+      expect(changed.event).toEqual({ kind: 'room_changed' })
+    }
+
+    expect(store.readRoom()?.game).toBe('sumo')
+    expect(store.readSeats().at(0)?.isReady).toBe(false)
+  })
+
+  it('refuses a game change while a game runs, without closing', () => {
+    const store = openedStore()
+    sendFrame({ admission: SCREEN, frame: '{"type":"game.started"}', store })
+
+    const outcome = sendFrame({
+      admission: PLAYER,
+      frame: '{"type":"room.game","game":"sumo"}',
+      store
+    })
+
+    expect(outcome.reply).toEqual({
+      code: 'wrong_phase',
+      isFatal: false,
+      type: 'error'
+    })
+    expect(outcome.shouldClose).toBe(false)
+  })
+
+  it('refuses a game the app does not host', () => {
+    const outcome = sendFrame({
+      admission: SCREEN,
+      frame: '{"type":"room.game","game":"chess"}',
+      store: openedStore()
+    })
+
+    expect(outcome.reply?.type === 'error' && outcome.reply.code).toBe(
+      'invalid_message'
+    )
+  })
+
+  it('lets the screen remove a seat, which a returning phone does not get back', () => {
+    const store = openedStore()
+    const mintSeatId = seatIdsInOrder()
+    const hello = helloFrame({ role: 'player', sessionId: sessionOf(1) })
+    sendFrame({ frame: hello, mintSeatId, store })
+
+    const kicked = sendFrame({
+      admission: SCREEN,
+      frame: '{"type":"seat.kick","seatId":"seat-1"}',
+      store
+    })
+
+    expect(kicked.event).toEqual({ kind: 'seat_removed', seatId: 'seat-1' })
+    expect(store.readSeats()).toEqual([])
+    expect(sendFrame({ frame: hello, mintSeatId, store }).admission).toEqual({
+      role: 'player',
+      seatId: 'seat-2'
+    })
+  })
+
+  it('lets a phone give its seat back, and closes it', () => {
+    const store = openedStore()
+    const { admission } = sendFrame({
+      frame: helloFrame({ role: 'player', sessionId: sessionOf(1) }),
+      store
+    })
+
+    const left = sendFrame({ admission, frame: '{"type":"seat.leave"}', store })
+
+    expect(left).toMatchObject({
+      event: { kind: 'room_changed' },
+      reply: { code: 'seat_left', isFatal: true, type: 'error' },
+      shouldClose: true
+    })
+    expect(store.readSeats()).toEqual([])
+  })
+
+  it('lets only the screen end a game or remove a seat, and only a phone leave', () => {
+    const store = openedStore()
+
+    for (const [admission, frame] of [
+      [PLAYER, '{"type":"game.ended"}'],
+      [PLAYER, '{"type":"seat.kick","seatId":"seat-1"}'],
+      [SCREEN, '{"type":"seat.leave"}']
     ] as const) {
       const outcome = sendFrame({ admission, frame, store })
       expect(outcome.reply?.type === 'error' && outcome.reply.code).toBe(

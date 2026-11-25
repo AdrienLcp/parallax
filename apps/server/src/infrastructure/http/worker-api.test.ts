@@ -15,6 +15,7 @@ import {
   fillRoute,
   ROOM_SOCKET_ROUTE
 } from '@parallax/protocol/routes'
+import { screenRoomMessageSchema } from '@parallax/protocol/server-message'
 import { PROTOCOL_VERSION } from '@parallax/protocol/version'
 
 const WORKERD_START_TIMEOUT_MS = 120_000
@@ -131,7 +132,13 @@ describe('worker API', () => {
     const { code, screenToken } = await openRoom()
     const screen = await joinRoom(code, { role: 'screen', screenToken })
 
-    expect(screen.welcome).toEqual({ code, seats: [], type: 'room.updated' })
+    expect(screen.welcome).toEqual({
+      code,
+      game: 'sumo',
+      phase: 'lobby',
+      seats: [],
+      type: 'room.updated'
+    })
 
     const seated = screen.nextMatching(ofType('room.updated'))
     const phone = await joinRoom(code, {
@@ -175,6 +182,30 @@ describe('worker API', () => {
 
     phone.close()
     returned.close()
+  })
+
+  it('tells a removed phone, and shows the screen the room without it', async () => {
+    const { code, screenToken } = await openRoom()
+    const screen = await joinRoom(code, { role: 'screen', screenToken })
+    const seated = screen.nextMatching(ofType('room.updated'))
+    const phone = await joinRoom(code, {
+      role: 'player',
+      sessionId: 'session-of-the-kick-test'
+    })
+    const [seat] = screenRoomMessageSchema.parse(await seated).seats
+
+    const told = phone.nextMatching(ofType('error'))
+    const emptied = screen.nextMatching(ofType('room.updated'))
+    screen.send({ seatId: seat?.seatId, type: 'seat.kick' })
+
+    expect(await told).toEqual({
+      code: 'seat_removed',
+      isFatal: true,
+      type: 'error'
+    })
+    expect(await emptied).toMatchObject({ seats: [] })
+
+    screen.close()
   })
 
   it('refuses a phone in a room nobody opened', async () => {

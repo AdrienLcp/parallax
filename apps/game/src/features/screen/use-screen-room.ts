@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import type { GameId } from '@parallax/protocol/games'
 import type { CreateRoomResponse } from '@parallax/protocol/http'
 
 import { type OpenRoomError, openRoom } from '@/infrastructure/api/rooms-api'
@@ -30,7 +31,10 @@ const storedRoomOrOpening = (): ScreenRoomState => {
  * reload, or a fresh one. `openAnother` gives it up for a new room — once the
  * server no longer knows it, or to retry a failed opening.
  */
-export const useScreenRoom = (): {
+export const useScreenRoom = (
+  /** The game a fresh room opens on. */
+  game: GameId
+): {
   openAnother: () => void
   state: ScreenRoomState
 } => {
@@ -44,7 +48,7 @@ export const useScreenRoom = (): {
 
     const request = new AbortController()
 
-    void openRoom(request.signal).then((opened) => {
+    void openRoom(game, request.signal).then((opened) => {
       if (opened.status === 'failure') {
         if (opened.error !== 'aborted') {
           setState({ error: opened.error, kind: 'failed' })
@@ -61,7 +65,7 @@ export const useScreenRoom = (): {
     })
 
     return () => request.abort()
-  }, [isOpening])
+  }, [game, isOpening])
 
   return { openAnother: () => setState(OPENING), state }
 }

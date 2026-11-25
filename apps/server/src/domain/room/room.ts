@@ -1,3 +1,4 @@
+import type { GameId, RoomPhase } from '@parallax/protocol/games'
 import type {
   RoomCode,
   ScreenToken,
@@ -6,10 +7,16 @@ import type {
 } from '@parallax/protocol/identifiers'
 import type { SeatSlot } from '@parallax/protocol/room'
 
-/** A room once its screen opened it. */
+/** A room once its screen opened it, on the game the screen picked. */
 export type OpenedRoom = {
   code: RoomCode
+  game: GameId
   screenToken: ScreenToken
+}
+
+/** A room as it stands: the game it plays next or now, and whether that game runs. */
+export type StoredRoom = OpenedRoom & {
+  phase: RoomPhase
 }
 
 /** A seat as the room keeps it: the session behind it never leaves the server. */

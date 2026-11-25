@@ -1,10 +1,11 @@
 import type React from 'react'
 
+import type { SeatId } from '@parallax/protocol/identifiers'
 import { ROOM_SEAT_LIMIT, type Seat } from '@parallax/protocol/room'
 
 import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
 import type { SceneStandings } from '@/features/games/game-definition'
-import { CURRENT_GAME, games } from '@/features/games/games'
+import { type GameId, games } from '@/features/games/games'
 import { CheckMark } from '@/features/room/check-mark'
 import { ScorePips } from '@/features/room/score-pips'
 import { seatNameOf } from '@/features/room/seat-name'
@@ -12,6 +13,7 @@ import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { BackToGames } from './back-to-games'
+import { KickSeat } from './kick-seat'
 import { SoundSwitch } from './sound-switch'
 
 import './seat-roster.sass'
@@ -23,6 +25,15 @@ const longestWordLength = (name: string): number =>
   Math.max(...name.split(' ').map((word) => word.length))
 
 type SeatRosterProps = {
+  game: GameId
+  /** A game runs: the hold control stops it rather than leaving for the game choice. */
+  isPlaying: boolean
+  /** The mouse at the display removes a seat from the room. */
+  onKick: (seatId: SeatId) => void
+  /** Leaves the room's lobby for the game choice, the room kept. */
+  onLeave: () => void
+  /** Stops the running game: the room is back in its lobby. */
+  onStop: () => void
   /** The seats taken; a slot no seat holds shows as free. */
   seats: readonly Seat[]
   /** While a game runs: each playing seat's score, who fell, who won. */
@@ -33,9 +44,17 @@ type SeatRosterProps = {
  * The room's places on a slate framed in walnut: who sits, who is away, what
  * is free and, while a game runs, the scoreboard.
  */
-export const SeatRoster: React.FC<SeatRosterProps> = ({ seats, standings }) => {
+export const SeatRoster: React.FC<SeatRosterProps> = ({
+  game,
+  isPlaying,
+  onKick,
+  onLeave,
+  onStop,
+  seats,
+  standings
+}) => {
   const translate = useTranslate()
-  const { players } = games[CURRENT_GAME]
+  const { players } = games[game]
   const present = seats.filter((seat) => seat.isConnected)
   const waitingCue =
     present.length < players.fewest
@@ -88,6 +107,7 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({ seats, standings }) => {
               key={slot}
             >
               <SeatTop className='seat-place-top' slot={slot} />
+              <KickSeat name={name} onKick={() => onKick(seat.seatId)} />
               <span className='seat-label'>
                 <span
                   className='seat-name'
@@ -121,7 +141,7 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({ seats, standings }) => {
         <p className='seat-cue'>{standings?.cue ?? waitingCue}</p>
         <SoundSwitch />
         <FullscreenSwitch />
-        <BackToGames />
+        <BackToGames isPlaying={isPlaying} onLeave={onLeave} onStop={onStop} />
       </div>
     </div>
   )

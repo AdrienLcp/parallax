@@ -13,6 +13,14 @@ const internalErrorBody: ApiErrorResponse = {
   message: 'Unexpected failure'
 }
 
+const invalidInputBody: ApiErrorResponse = {
+  code: 'invalid_input',
+  message: 'The request body does not match its schema'
+}
+
+export const answerInvalidInput = (context: Context) =>
+  context.json(invalidInputBody, 400)
+
 export const answerNotFound = (context: Context) =>
   context.json(notFoundBody, 404)
 

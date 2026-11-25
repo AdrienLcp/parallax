@@ -10,7 +10,12 @@ holds the rooms, `packages/protocol` the messages between them.
 **The display simulates, the Durable Object relays.** `RoomObject` keeps the
 room and its seats and forwards phone input (`sumo.stick`, `sumo.dash`, stamped
 with the `seatId`) to the display, then the display's `sumo.state` to the
-phones. Game rules and physics live in the game's feature
+phones. The room also keeps its game and its phase (`lobby` or `playing`):
+any seated phone or the screen changes the game in the lobby (`room.game`),
+the screen reports `game.started` and `game.ended` (a match over or stopped:
+every seat stays), and only the screen removes a seat (`seat.kick`); a phone
+gives its own back with `seat.leave`. A screen that connects brings the room
+back to its lobby, since a reloaded display lost its game. Game rules and physics live in the game's feature
 (`apps/game/src/features/games/sumo/`), never in the server. The host screens
 (`features/screen/`) stay game-agnostic: a game hands them `SceneStandings`
 already translated.
@@ -48,7 +53,7 @@ at once.
 
 A Node script stands in for players: one `WebSocket` per `sessionId`
 (`/^[\w-]{16,64}$/`) on `ws://127.0.0.1:8798/ws/rooms/<CODE>` (wrangler listens on IPv4 only), sends
-`hello` `{ protocolVersion: 2, credentials: { role: 'player', sessionId } }`,
+`hello` `{ protocolVersion: 3, credentials: { role: 'player', sessionId } }`,
 then `seat.ready` `{ name: null }` (a match starts once every present seat is
 ready, and each match spends the marks: ready again for the next one), `ping`
 every 4 s, `sumo.stick` every 50 ms at 0.45 magnitude (at 1 almost every

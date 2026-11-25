@@ -1,5 +1,6 @@
 import type React from 'react'
-import { Suspense, useEffect, useEffectEvent, useState } from 'react'
+import { Suspense, useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 
 import type { ProtocolErrorCode } from '@parallax/protocol/error-code'
 import type { CreateRoomResponse } from '@parallax/protocol/http'
@@ -12,11 +13,12 @@ import type {
   SceneStandings,
   ScreenGameEvent
 } from '@/features/games/game-definition'
-import { CURRENT_GAME, games } from '@/features/games/games'
+import { DEFAULT_GAME_ID, type GameId, games } from '@/features/games/games'
 import { type MusicMood, useDisplaySound } from '@/features/sound/display-sound'
 import { createEventChannel } from '@/helpers/event-channel'
 import { reloadPage } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
+import { homePathFor, paths } from '@/infrastructure/router/navigation'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { AnnouncementBand } from './announcement-band'
@@ -35,18 +37,32 @@ const ROOM_LOST_CODES: ReadonlySet<ProtocolErrorCode> = new Set([
 ])
 
 type ScreenRoomProps = {
+  /** The game picked on the game choice, asked of the room once on arrival; `null` to play on. */
+  askedGame: GameId | null
+  /** Called with the game the room plays, whenever it changes. */
+  onGame: (game: GameId) => void
   /** Called once the server no longer holds this room for this display. */
   onRoomLost: () => void
   room: CreateRoomResponse
 }
 
 /** The room on the display: how to join it or how the game stands, the arena the game plays on, and its seats. */
-export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
+export const ScreenRoom: React.FC<ScreenRoomProps> = ({
+  askedGame,
+  onGame,
+  onRoomLost,
+  room
+}) => {
   const translate = useTranslate()
+  const navigate = useNavigate()
   const [roomView, setRoomView] = useState<ScreenRoomMessage | null>(null)
   const [gameEvents] = useState(createEventChannel<ScreenGameEvent>)
   const [standings, setStandings] = useState<SceneStandings | null>(null)
-  const game = games[CURRENT_GAME]
+  /** Bumped when the display stops a game: the scene starts over, gathering. */
+  const [sceneRun, setSceneRun] = useState(0)
+  const isGameAsked = useRef(askedGame !== null)
+  const gameId = roomView?.game ?? askedGame ?? DEFAULT_GAME_ID
+  const game = games[gameId]
   const { sound } = useDisplaySound()
   const mood: MusicMood =
     standings !== null
@@ -73,6 +89,37 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
     },
     roomCode: room.code
   })
+
+  const tellGame = useEffectEvent(onGame)
+
+  useEffect(() => {
+    tellGame(gameId)
+  }, [gameId])
+
+  // The game choice sent this display back to its room with a game: asked once,
+  // then the address forgets it, so a reload never undoes a phone's later pick.
+  useEffect(() => {
+    if (roomView === null || !isGameAsked.current) {
+      return
+    }
+
+    isGameAsked.current = false
+    void navigate(paths.screen, { replace: true })
+
+    if (
+      askedGame !== null &&
+      roomView.game !== askedGame &&
+      roomView.phase === 'lobby'
+    ) {
+      socket.send({ game: askedGame, type: 'room.game' })
+    }
+  }, [askedGame, navigate, roomView, socket])
+
+  const stopGame = () => {
+    socket.send({ type: 'game.ended' })
+    setStandings(null)
+    setSceneRun((run) => run + 1)
+  }
 
   const isRoomLost =
     socket.status.kind === 'refused' && ROOM_LOST_CODES.has(socket.status.code)
@@ -102,7 +149,7 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
     <div className='screen-room'>
       <div className='screen-head'>
         {standings === null ? (
-          <RoomJoin code={room.code} />
+          <RoomJoin code={room.code} game={gameId} />
         ) : (
           <PlayHeader
             code={room.code}
@@ -119,6 +166,7 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
           <Suspense fallback={<game.Preview />}>
             <game.Scene
               events={gameEvents}
+              key={`${gameId}-${sceneRun}`}
               onStandings={setStandings}
               room={roomView}
               send={socket.send}
@@ -132,7 +180,15 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({ onRoomLost, room }) => {
           </p>
         )}
       </div>
-      <SeatRoster seats={roomView?.seats ?? []} standings={standings} />
+      <SeatRoster
+        game={gameId}
+        isPlaying={roomView?.phase === 'playing'}
+        onKick={(seatId) => socket.send({ seatId, type: 'seat.kick' })}
+        onLeave={() => void navigate(homePathFor(gameId))}
+        onStop={stopGame}
+        seats={roomView?.seats ?? []}
+        standings={standings}
+      />
     </div>
   )
 }

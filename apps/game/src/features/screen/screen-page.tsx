@@ -1,8 +1,10 @@
 import type React from 'react'
+import { useState } from 'react'
 
 import { TuningLayer } from '@/features/display-tuning/tuning-layer'
-import { CURRENT_GAME } from '@/features/games/games'
+import { DEFAULT_GAME_ID, type GameId } from '@/features/games/games'
 import { DisplaySoundProvider } from '@/features/sound/display-sound'
+import { useGameParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
@@ -15,11 +17,16 @@ import './screen-page.sass'
 /** What the shared display shows: the room phones join, then the game they play. */
 export const ScreenPage: React.FC = () => {
   const translate = useTranslate()
-  const { openAnother, state } = useScreenRoom()
+  const askedGame = useGameParam()
+  const { openAnother, state } = useScreenRoom(askedGame ?? DEFAULT_GAME_ID)
+  const [roomGame, setRoomGame] = useState<GameId | null>(null)
 
   return (
     <DisplaySoundProvider>
-      <Main className='screen-page' data-game={CURRENT_GAME}>
+      <Main
+        className='screen-page'
+        data-game={roomGame ?? askedGame ?? DEFAULT_GAME_ID}
+      >
         {state.kind === 'failed' && (
           <ScreenNotice
             action={translate('screen.retry')}
@@ -29,7 +36,9 @@ export const ScreenPage: React.FC = () => {
         )}
         {state.kind === 'open' && (
           <ScreenRoom
+            askedGame={askedGame}
             key={state.room.code}
+            onGame={setRoomGame}
             onRoomLost={openAnother}
             room={state.room}
           />

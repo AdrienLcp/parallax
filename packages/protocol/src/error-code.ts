@@ -15,6 +15,12 @@ export const protocolErrorCodes = [
   'screen_replaced',
   /** A frame the sender's role never sends: a phone's state, a screen's stick. */
   'wrong_role',
+  /** A frame the room's phase does not take, such as a game change mid-game. */
+  'wrong_phase',
+  /** The screen removed this phone's seat. Fatal. */
+  'seat_removed',
+  /** This phone gave its seat back. Fatal. */
+  'seat_left',
   'internal_error'
 ] as const
 

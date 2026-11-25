@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { protocolErrorCodeSchema } from './error-code'
+import { gameIdSchema, roomPhaseSchema } from './games'
 import { roomCodeSchema, seatIdSchema } from './identifiers'
 import { seatSchema } from './room'
 import {
@@ -27,6 +28,8 @@ export const replyMessageSchema = z.discriminatedUnion('type', [
 /** The whole room as the screen sees it, sent on every change: never a delta. */
 export const screenRoomMessageSchema = z.object({
   code: roomCodeSchema,
+  game: gameIdSchema,
+  phase: roomPhaseSchema,
   seats: z.array(seatSchema),
   type: z.literal('room.updated')
 })

@@ -64,6 +64,8 @@ export default defineDictionary({
   },
   lobby: {
     fewest: '{fewest:number} joueurs minimum',
+    game: 'Jeu',
+    leave: 'Quitter',
     name: 'Pseudo',
     ready: 'Prêt',
     readyCount: defineTranslation('{ready:plural} sur {present:number}', {
@@ -74,7 +76,9 @@ export default defineDictionary({
     connecting: 'Connexion…',
     reconnecting: 'Reconnexion…',
     refused: {
+      left: 'Vous avez quitté la salle',
       outdated: 'Page périmée',
+      removed: 'Retiré de la salle',
       roomFull: 'Salle pleine',
       roomGone: 'Aucune salle ici',
       unexpected: 'Entrée refusée'
@@ -102,9 +106,14 @@ export default defineDictionary({
     roomCode: 'Code de la salle',
     seat: {
       absent: 'absent',
-      free: 'Libre'
+      free: 'Libre',
+      kick: 'Retirer {name} de la salle'
     },
     sound: 'Son',
+    stopGame: {
+      hold: 'Arrêter la partie (maintenir)',
+      label: 'Arrêter'
+    },
     takeBack: 'Reprendre'
   },
   seat: {

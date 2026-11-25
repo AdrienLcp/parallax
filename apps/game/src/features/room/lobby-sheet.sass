@@ -135,6 +135,63 @@
 
       font-size: var(--text-l)
 
+    // Leaving gives the seat back for good: a quiet control in the corner, away from the ready button.
+    .lobby-leave
+      @include typography.label
+
+      align-items: center
+      background: none
+      border: none
+      color: var(--seat-cap)
+      display: flex
+      font-size: var(--text-m)
+      gap: var(--space-xs)
+      inset-block-start: var(--page-padding-block-start)
+      inset-inline-start: var(--gutter-left)
+      min-block-size: var(--target)
+      opacity: 0.8
+      padding: var(--space-xs)
+      position: absolute
+
+    .leave-pictogram
+      block-size: 1.5rem
+      inline-size: 1.5rem
+
+    .lobby-games
+      border: none
+      display: flex
+      flex-wrap: wrap
+      gap: var(--space-s)
+      justify-content: center
+      margin: 0
+      margin-block-start: calc(var(--target) + var(--space-m))
+      padding: 0
+
+    .lobby-games-label
+      @include accessibility.visually-hidden
+
+    .lobby-game
+      @include typography.display
+
+      border-radius: var(--radius-phone-control)
+      box-shadow: inset 0 0 0 var(--stroke-ready-filet) var(--name-filet)
+      color: var(--seat-cap)
+      cursor: pointer
+      font-size: var(--text-l)
+      padding: var(--space-s) var(--space-l)
+
+      input
+        @include accessibility.visually-hidden
+
+      &:has(input:checked)
+        background: var(--seat-cap)
+        box-shadow: none
+        color: var(--seat)
+
+      &:has(input:focus-visible)
+        outline: var(--stroke-ready-filet) solid var(--seat-cap)
+        outline-offset: var(--stroke-ready-filet)
+
     &[data-ready]
       --name-filet: transparent
 

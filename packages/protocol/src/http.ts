@@ -1,7 +1,13 @@
 import { z } from 'zod'
 
 import { protocolErrorCodeSchema } from './error-code'
+import { gameIdSchema } from './games'
 import { roomCodeSchema, screenTokenSchema } from './identifiers'
+
+/** A screen opens its room on the game it picked; without one, the default game. */
+export const createRoomRequestSchema = z.object({
+  game: gameIdSchema.optional()
+})
 
 /** The one place a `screenToken` reaches a client: the screen that opened the room. */
 export const createRoomResponseSchema = z.object({
@@ -29,6 +35,7 @@ export const apiErrorResponseSchema = z.object({
 })
 
 export type HttpErrorCode = z.infer<typeof httpErrorCodeSchema>
+export type CreateRoomRequest = z.infer<typeof createRoomRequestSchema>
 export type CreateRoomResponse = z.infer<typeof createRoomResponseSchema>
 export type HealthResponse = z.infer<typeof healthResponseSchema>
 export type ApiErrorResponse = z.infer<typeof apiErrorResponseSchema>

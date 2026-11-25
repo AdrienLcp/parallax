@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { cleanSeatName, SEAT_NAME_MAX_LENGTH } from '@parallax/protocol/lobby'
 import type { Seat } from '@parallax/protocol/room'
 
+import { GAME_IDS, type GameId, games } from '@/features/games/games'
 import { warnOnFailure } from '@/infrastructure/diagnostics'
 import type { RoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import {
@@ -67,11 +68,57 @@ const ReadyCount: React.FC<ReadyCountProps> = ({ fewest, seats }) => {
   )
 }
 
+type GameChoiceProps = {
+  game: GameId
+  send: RoomSocket['send']
+}
+
+/** The room's next game, which any seated player changes; every ready mark is spent on a change. */
+const GameChoice: React.FC<GameChoiceProps> = ({ game, send }) => {
+  const translate = useTranslate()
+
+  return (
+    <fieldset className='lobby-games'>
+      <legend className='lobby-games-label'>{translate('lobby.game')}</legend>
+      {GAME_IDS.map((id) => (
+        <label className='lobby-game' key={id}>
+          <input
+            checked={id === game}
+            name='game'
+            onChange={() => send({ game: id, type: 'room.game' })}
+            type='radio'
+            value={id}
+          />
+          {translate(games[id].name)}
+        </label>
+      ))}
+    </fieldset>
+  )
+}
+
+const LeavePictogram: React.FC = () => (
+  <svg
+    aria-hidden='true'
+    className='leave-pictogram'
+    fill='none'
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    strokeWidth='4'
+    viewBox='0 0 48 48'
+  >
+    <path d='M20 8 H10 V40 H20' />
+    <path d='M22 24 H40 M32 16 L40 24 L32 32' />
+  </svg>
+)
+
 type LobbySheetProps = {
   /** The game's own cue, under the seat while the player waits. */
   children?: React.ReactNode
   /** Present players a game needs: until then, the sheet says so. */
   fewest: number
+  /** The game the room plays next. */
+  game: GameId
   seat: Seat
   seats: readonly Seat[]
   send: RoomSocket['send']
@@ -86,6 +133,7 @@ type LobbySheetProps = {
 export const LobbySheet: React.FC<LobbySheetProps> = ({
   children,
   fewest,
+  game,
   seat,
   seats,
   send
@@ -112,6 +160,15 @@ export const LobbySheet: React.FC<LobbySheetProps> = ({
 
   return (
     <section className='lobby-sheet' data-ready={seat.isReady ? '' : undefined}>
+      <button
+        className='lobby-leave'
+        onClick={() => send({ type: 'seat.leave' })}
+        type='button'
+      >
+        <LeavePictogram />
+        {translate('lobby.leave')}
+      </button>
+      {GAME_IDS.length > 1 && <GameChoice game={game} send={send} />}
       <form className='lobby-form' onSubmit={markReady}>
         <div className='lobby-seat'>
           <SeatTop className='lobby-top' slot={seat.slot} />

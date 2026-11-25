@@ -1,0 +1,33 @@
+@layer components
+  .kick-seat
+    align-items: center
+    background: var(--host-panel)
+    block-size: calc(var(--cu) * 3)
+    border: calc(var(--cu) * 0.15) solid var(--host-line-faint)
+    border-radius: 50%
+    color: var(--host-ink-soft)
+    cursor: pointer
+    display: flex
+    inline-size: calc(var(--cu) * 3)
+    inset-block-start: calc(var(--cu) * 0.4)
+    inset-inline-end: calc(var(--cu) * 0.4)
+    justify-content: center
+    opacity: 0
+    padding: 0
+    position: absolute
+    transition: opacity var(--transition-fast)
+
+    svg
+      block-size: 60%
+      fill: none
+      inline-size: 60%
+      stroke: currentColor
+      stroke-linecap: round
+      stroke-width: 2.5
+
+    &[data-hovered]
+      border-color: var(--host-line)
+      color: var(--host-ink)
+
+  .seat-place:hover .kick-seat, .kick-seat[data-focus-visible]
+    opacity: 1

@@ -1,5 +1,5 @@
 import type React from 'react'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useEffectEvent, useState } from 'react'
 
 import type { ProtocolErrorCode } from '@parallax/protocol/error-code'
 import type { RoomCode } from '@parallax/protocol/identifiers'
@@ -9,7 +9,7 @@ import {
 } from '@parallax/protocol/server-message'
 
 import type { PlayerGameEvent } from '@/features/games/game-definition'
-import { CURRENT_GAME, games } from '@/features/games/games'
+import { type GameId, games } from '@/features/games/games'
 import { createReplayingEventChannel } from '@/helpers/event-channel'
 import { paintBrowserBarBehind } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
@@ -46,20 +46,24 @@ const refusals = {
   room_not_found: ROOM_GONE,
   screen_replaced: UNEXPECTED,
   screen_token_invalid: UNEXPECTED,
+  seat_left: { canRetry: true, reason: 'play.refused.left' },
+  seat_removed: { canRetry: true, reason: 'play.refused.removed' },
+  wrong_phase: UNEXPECTED,
   wrong_role: UNEXPECTED
 } satisfies Record<ProtocolErrorCode, Refusal>
 
 type PlayerSeatProps = {
+  /** Called with the game the room plays, whenever it changes. */
+  onGame: (game: GameId) => void
   roomCode: RoomCode
 }
 
 /** A phone seated in the room: its place, then the game's controller. */
-export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
+export const PlayerSeat: React.FC<PlayerSeatProps> = ({ onGame, roomCode }) => {
   const translate = useTranslate()
   const sessionId = usePlayerSessionId()
   const [roomView, setRoomView] = useState<PlayerRoomMessage | null>(null)
   const [gameEvents] = useState(createReplayingEventChannel<PlayerGameEvent>)
-  const game = games[CURRENT_GAME]
 
   const socket = useRoomSocket({
     credentials: { role: 'player', sessionId },
@@ -73,6 +77,15 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
     },
     roomCode
   })
+
+  const roomGame = roomView?.game ?? null
+  const tellGame = useEffectEvent(onGame)
+
+  useEffect(() => {
+    if (roomGame !== null) {
+      tellGame(roomGame)
+    }
+  }, [roomGame])
 
   if (socket.status.kind === 'refused') {
     return (
@@ -91,6 +104,7 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
   }
 
   const isReconnecting = socket.status.kind === 'reconnecting'
+  const game = games[roomView.game]
 
   return (
     <div
@@ -102,6 +116,7 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({ roomCode }) => {
         <Suspense fallback={null}>
           <game.Controller
             events={gameEvents}
+            key={roomView.game}
             room={roomView}
             send={socket.send}
           />

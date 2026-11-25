@@ -1,8 +1,6 @@
 import type React from 'react'
 import { useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router'
 
-import { paths } from '@/infrastructure/router/navigation'
 import { Button } from '@/presentation/components/button'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
@@ -11,14 +9,25 @@ import './back-to-games.sass'
 /** How long the control is held before the display leaves for the game choice. */
 export const HOLD_TO_LEAVE_MS = 1200
 
+type BackToGamesProps = {
+  /** A game runs: holding stops it, back to the room's lobby. */
+  isPlaying: boolean
+  onLeave: () => void
+  onStop: () => void
+}
+
 /**
- * Leaves the room for the game choice once held down, so a passing touch never
- * ends a game: a brass ring fills while held and empties on release. Leaving
- * ends the match: reopening the room keeps its seats and starts from round 1.
+ * Held down at the display's mouse, so a passing click never ends a game: a
+ * ring fills while held and empties on release. While a game runs it stops
+ * the game, every seat kept in the room's lobby; in the lobby it leaves for
+ * the game choice, and the room waits there for the next game.
  */
-export const BackToGames: React.FC = () => {
+export const BackToGames: React.FC<BackToGamesProps> = ({
+  isPlaying,
+  onLeave,
+  onStop
+}) => {
   const translate = useTranslate()
-  const navigate = useNavigate()
   const holdTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const release = () => clearTimeout(holdTimer.current)
@@ -26,7 +35,7 @@ export const BackToGames: React.FC = () => {
   const hold = () => {
     release()
     holdTimer.current = setTimeout(
-      () => void navigate(paths.home),
+      isPlaying ? onStop : onLeave,
       HOLD_TO_LEAVE_MS
     )
   }
@@ -35,7 +44,9 @@ export const BackToGames: React.FC = () => {
 
   return (
     <Button
-      aria-label={translate('screen.backToGames.hold')}
+      aria-label={translate(
+        isPlaying ? 'screen.stopGame.hold' : 'screen.backToGames.hold'
+      )}
       className='back-to-games'
       onPressEnd={release}
       onPressStart={hold}
@@ -46,7 +57,9 @@ export const BackToGames: React.FC = () => {
         <circle className='hold-fill' cx='24' cy='24' pathLength='100' r='20' />
         <path className='hold-chevron' d='M27 15 L18 24 L27 33' />
       </svg>
-      {translate('screen.backToGames.label')}
+      {translate(
+        isPlaying ? 'screen.stopGame.label' : 'screen.backToGames.label'
+      )}
     </Button>
   )
 }

@@ -5,7 +5,7 @@ import type {
   ScreenRoomMessage
 } from '@parallax/protocol/server-message'
 
-import type { OpenedRoom, StoredSeat } from './room'
+import type { StoredRoom, StoredSeat } from './room'
 
 /** The seats as anyone may see them: no session, and whether a phone is there right now. */
 export const seatsSeen = (
@@ -24,16 +24,22 @@ export const screenRoomMessageOf = ({
   room,
   seats
 }: {
-  room: OpenedRoom
+  room: StoredRoom
   seats: Seat[]
-}): ScreenRoomMessage => ({ code: room.code, seats, type: 'room.updated' })
+}): ScreenRoomMessage => ({
+  code: room.code,
+  game: room.game,
+  phase: room.phase,
+  seats,
+  type: 'room.updated'
+})
 
 export const playerRoomMessageOf = ({
   room,
   seats,
   youId
 }: {
-  room: OpenedRoom
+  room: StoredRoom
   seats: Seat[]
   youId: SeatId
 }): PlayerRoomMessage => ({ ...screenRoomMessageOf({ room, seats }), youId })

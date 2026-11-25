@@ -1,6 +1,12 @@
 import { z } from 'zod'
 
 import {
+  type GameId,
+  gameIdSchema,
+  type RoomPhase,
+  roomPhaseSchema
+} from '@parallax/protocol/games'
+import {
   roomCodeSchema,
   type SeatId,
   screenTokenSchema,
@@ -12,13 +18,23 @@ import { seatSlotSchema } from '@parallax/protocol/room'
 
 import type { SqlDatabase } from '@/infrastructure/durable-objects/sql-database'
 
-import type { OpenedRoom, StoredSeat } from './room'
+import type { OpenedRoom, StoredRoom, StoredSeat } from './room'
 import type { AbsenceChange } from './seat-release'
 
 const roomRowSchema = z
-  .object({ code: roomCodeSchema, screen_token: screenTokenSchema })
+  .object({
+    code: roomCodeSchema,
+    game: gameIdSchema,
+    phase: roomPhaseSchema,
+    screen_token: screenTokenSchema
+  })
   .transform(
-    (row): OpenedRoom => ({ code: row.code, screenToken: row.screen_token })
+    (row): StoredRoom => ({
+      code: row.code,
+      game: row.game,
+      phase: row.phase,
+      screenToken: row.screen_token
+    })
   )
 
 const erasureRowSchema = z.object({
@@ -56,11 +72,15 @@ export type RoomStore = {
   open: (room: OpenedRoom) => void
   /** `null` until the room is opened, or for a room opened before erasure was stored. */
   readErasureAt: () => number | null
-  readRoom: () => OpenedRoom | null
+  readRoom: () => StoredRoom | null
   /** In slot order. */
   readSeats: () => StoredSeat[]
   recordAbsences: (changes: readonly AbsenceChange[]) => void
+  /** The seat is gone for good: its phone comes back, if ever, as a newcomer. */
+  removeSeat: (seatId: SeatId) => void
   setErasureAt: (atMs: number) => void
+  setGame: (game: GameId) => void
+  setPhase: (phase: RoomPhase) => void
   /** A game started: every seat has to be ready again for the next one. */
   spendReadyMarks: () => void
 }
@@ -96,11 +116,12 @@ export const createRoomStore = (database: SqlDatabase): RoomStore => ({
   markUnready: (seatId) => {
     database.run('UPDATE seats SET is_ready = 0 WHERE seat_id = ?', seatId)
   },
-  open: ({ code, screenToken }) => {
+  open: ({ code, game, screenToken }) => {
     database.run(
-      'INSERT INTO room (id, code, screen_token) VALUES (1, ?, ?)',
+      "INSERT INTO room (id, code, screen_token, game, phase) VALUES (1, ?, ?, ?, 'lobby')",
       code,
-      screenToken
+      screenToken,
+      game
     )
   },
   readErasureAt: () => {
@@ -109,7 +130,9 @@ export const createRoomStore = (database: SqlDatabase): RoomStore => ({
     return row === undefined ? null : erasureRowSchema.parse(row).erase_at_ms
   },
   readRoom: () => {
-    const row = database.run('SELECT code, screen_token FROM room').at(0)
+    const row = database
+      .run('SELECT code, screen_token, game, phase FROM room')
+      .at(0)
 
     return row === undefined ? null : roomRowSchema.parse(row)
   },
@@ -130,8 +153,17 @@ export const createRoomStore = (database: SqlDatabase): RoomStore => ({
       }
     })
   },
+  removeSeat: (seatId) => {
+    database.run('DELETE FROM seats WHERE seat_id = ?', seatId)
+  },
   setErasureAt: (atMs) => {
     database.run('UPDATE room SET erase_at_ms = ?', atMs)
+  },
+  setGame: (game) => {
+    database.run('UPDATE room SET game = ?', game)
+  },
+  setPhase: (phase) => {
+    database.run('UPDATE room SET phase = ?', phase)
   },
   spendReadyMarks: () => {
     database.run('UPDATE seats SET is_ready = 0')

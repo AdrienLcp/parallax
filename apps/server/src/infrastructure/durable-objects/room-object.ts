@@ -187,6 +187,11 @@ export class RoomObject extends DurableObject<Env> {
     if (outcome.shouldClose) {
       closeSocket(socket, POLICY_VIOLATION, 'refused')
 
+      // A phone that gave its seat back: everyone else sees the seat go.
+      if (outcome.event?.kind === 'room_changed') {
+        await this.refreshRoom(socket)
+      }
+
       return
     }
 
@@ -197,8 +202,11 @@ export class RoomObject extends DurableObject<Env> {
       case 'pinged':
         await this.dropSilentSockets()
         return
-      case 'seats_changed':
+      case 'room_changed':
         await this.refreshRoom(null)
+        return
+      case 'seat_removed':
+        await this.letSeatGo(outcome.event.seatId)
         return
       case 'to_screen':
         this.sendToScreens(outcome.event.message)
@@ -239,6 +247,9 @@ export class RoomObject extends DurableObject<Env> {
     admission: Admission | null
   ): Promise<void> {
     if (admission?.role === 'screen') {
+      // A display that reloaded lost the game it was running: the room is back in its lobby.
+      this.store.setPhase('lobby')
+
       for (const other of this.openSockets(socket)) {
         if (admissionOf(other)?.role === 'screen') {
           sendFrame(other, errorFrame('screen_replaced'))
@@ -249,6 +260,22 @@ export class RoomObject extends DurableObject<Env> {
 
     this.store.setErasureAt(roomErasureAtMs(nowMs()))
     await this.refreshRoom(null)
+  }
+
+  /** Tells the phone behind a removed seat, closes it, and shows everyone the room without it. */
+  private async letSeatGo(seatId: string): Promise<void> {
+    const removed = this.ctx.getWebSockets().filter((socket) => {
+      const admission = admissionOf(socket)
+
+      return admission?.role === 'player' && admission.seatId === seatId
+    })
+
+    for (const socket of removed) {
+      sendFrame(socket, errorFrame('seat_removed'))
+      closeSocket(socket, POLICY_VIOLATION, 'seat_removed')
+    }
+
+    await this.refreshRoom(removed.at(0) ?? null)
   }
 
   private async letRoomSeeLeave(socket: WebSocket): Promise<void> {

@@ -100,6 +100,7 @@ export const SumoController: React.FC<GameControllerProps> = ({
       {view === 'lobby' && (
         <LobbySheet
           fewest={SUMO_PLAYERS.fewest}
+          game={room.game}
           seat={ownSeat}
           seats={room.seats}
           send={send}

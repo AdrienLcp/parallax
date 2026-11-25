@@ -1,6 +1,7 @@
 import type React from 'react'
+import { useState } from 'react'
 
-import { CURRENT_GAME } from '@/features/games/games'
+import { DEFAULT_GAME_ID, type GameId } from '@/features/games/games'
 import { useRoomCodeParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
 
@@ -12,9 +13,10 @@ import './play-page.sass'
 /** What a phone shows once it joined a room by its code: held to the screen, edge to edge. */
 export const PlayPage: React.FC = () => {
   const roomCode = useRoomCodeParam()
+  const [game, setGame] = useState<GameId>(DEFAULT_GAME_ID)
 
   return (
-    <Main className='play-page' data-game={CURRENT_GAME}>
+    <Main className='play-page' data-game={game}>
       {roomCode === null ? (
         <RoomNotice
           canRetry={false}
@@ -23,7 +25,7 @@ export const PlayPage: React.FC = () => {
           roomCode={null}
         />
       ) : (
-        <PlayerSeat key={roomCode} roomCode={roomCode} />
+        <PlayerSeat key={roomCode} onGame={setGame} roomCode={roomCode} />
       )}
     </Main>
   )

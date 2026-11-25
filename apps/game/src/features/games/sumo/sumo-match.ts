@@ -117,6 +117,15 @@ export const hasMatchStarted = ({
   previous: SumoMatch
 }): boolean => previous.stage === 'gathering' && next.stage === 'playing'
 
+/** The step that took the room from a match back to gathering: over, or short of players. */
+export const hasMatchEnded = ({
+  next,
+  previous
+}: {
+  next: SumoMatch
+  previous: SumoMatch
+}): boolean => previous.stage === 'playing' && next.stage === 'gathering'
+
 const topsOf = (match: SumoMatch): readonly Top[] =>
   match.stage === 'playing' ? match.round.tops : []
 

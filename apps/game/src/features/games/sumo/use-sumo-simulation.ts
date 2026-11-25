@@ -18,6 +18,7 @@ import {
   advanceMatch,
   ejectedBetween,
   GATHERING,
+  hasMatchEnded,
   hasMatchStarted,
   type SumoMatch
 } from './sumo-match'
@@ -126,6 +127,7 @@ export const useSumoSimulation = ({
   useEffect(() => {
     let match: SumoMatch = GATHERING
     let isStartUntold = false
+    let isEndUntold = false
     let pendingSeconds = 0
     let sinceReport = SUMO_STATE_REPORT_SECONDS
     let ejection: ShownEjection | null = null
@@ -160,6 +162,9 @@ export const useSumoSimulation = ({
           ready.current = new Set()
           isStartUntold = true
         }
+        if (hasMatchEnded({ next: match, previous })) {
+          isEndUntold = true
+        }
         dashes.current = new Set()
         ejection = withEjected({
           ejected: ejectedBetween({ next: match, previous }),
@@ -176,6 +181,11 @@ export const useSumoSimulation = ({
 
       if (isStartUntold && report({ type: 'game.started' })) {
         isStartUntold = false
+      }
+
+      // The room goes back to its lobby: every phone shows its lobby sheet again.
+      if (isEndUntold && report({ type: 'game.ended' })) {
+        isEndUntold = false
       }
 
       sinceReport += seconds

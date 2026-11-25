@@ -22,8 +22,10 @@ import type { RoomStore } from './room-store'
 export type SessionEvent =
   | { kind: 'admitted' }
   | { kind: 'pinged' }
-  /** A seat's name or ready mark changed: everyone sees the room again. */
-  | { kind: 'seats_changed' }
+  /** The room's game, its phase, or a seat's name or ready mark changed: everyone sees the room again. */
+  | { kind: 'room_changed' }
+  /** The screen removed a seat: its phone is told, then let go. */
+  | { kind: 'seat_removed'; seatId: SeatId }
   | { kind: 'to_screen'; message: SumoSeatDash | SumoSeatStick }
   | { kind: 'to_players'; message: SumoState }
 
@@ -97,6 +99,9 @@ const greet = ({
 const wrongRole = (admission: Admission): FrameOutcome =>
   refused({ admission, code: 'wrong_role', isFatal: false })
 
+const wrongPhase = (admission: Admission): FrameOutcome =>
+  refused({ admission, code: 'wrong_phase', isFatal: false })
+
 /** The phones drive and ready up, the screen reports and starts: each frame belongs to one role. */
 const play = ({
   admission,
@@ -111,15 +116,40 @@ const play = ({
     case 'seat.ready':
       if (admission.role !== 'player') return wrongRole(admission)
       store.markReady(admission.seatId, message.name)
-      return passed(admission, { kind: 'seats_changed' })
+      return passed(admission, { kind: 'room_changed' })
     case 'seat.unready':
       if (admission.role !== 'player') return wrongRole(admission)
       store.markUnready(admission.seatId)
-      return passed(admission, { kind: 'seats_changed' })
+      return passed(admission, { kind: 'room_changed' })
+    case 'room.game':
+      // Any seated phone, or the screen; never under a running game.
+      if (store.readRoom()?.phase !== 'lobby') return wrongPhase(admission)
+      store.setGame(message.game)
+      store.spendReadyMarks()
+      return passed(admission, { kind: 'room_changed' })
     case 'game.started':
       if (admission.role !== 'screen') return wrongRole(admission)
+      store.setPhase('playing')
       store.spendReadyMarks()
-      return passed(admission, { kind: 'seats_changed' })
+      return passed(admission, { kind: 'room_changed' })
+    case 'game.ended':
+      if (admission.role !== 'screen') return wrongRole(admission)
+      store.setPhase('lobby')
+      store.spendReadyMarks()
+      return passed(admission, { kind: 'room_changed' })
+    case 'seat.kick':
+      if (admission.role !== 'screen') return wrongRole(admission)
+      store.removeSeat(message.seatId)
+      return passed(admission, { kind: 'seat_removed', seatId: message.seatId })
+    case 'seat.leave':
+      if (admission.role !== 'player') return wrongRole(admission)
+      store.removeSeat(admission.seatId)
+      return {
+        admission,
+        event: { kind: 'room_changed' },
+        reply: { code: 'seat_left', isFatal: true, type: 'error' },
+        shouldClose: true
+      }
     case 'sumo.dash':
     case 'sumo.stick':
       return admission.role === 'player'

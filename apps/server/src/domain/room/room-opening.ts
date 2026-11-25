@@ -1,5 +1,6 @@
 import { Result } from '@adrienlcp/result'
 
+import type { GameId } from '@parallax/protocol/games'
 import type { RoomCode, ScreenToken } from '@parallax/protocol/identifiers'
 
 import type { OpenedRoom } from './room'
@@ -11,11 +12,13 @@ const OPEN_ATTEMPTS = 20
 /** Opens a room under a code nobody holds yet, drawing again when the one drawn is taken. */
 export const openFreshRoom = async ({
   attemptsLeft = OPEN_ATTEMPTS,
+  game,
   newRoomCode,
   newScreenToken,
   rooms
 }: {
   attemptsLeft?: number
+  game: GameId
   newRoomCode: () => RoomCode
   newScreenToken: () => ScreenToken
   rooms: Rooms
@@ -26,6 +29,7 @@ export const openFreshRoom = async ({
 
   const room: OpenedRoom = {
     code: newRoomCode(),
+    game,
     screenToken: newScreenToken()
   }
   const opened = await rooms.open(room)
@@ -34,6 +38,7 @@ export const openFreshRoom = async ({
     ? Result.success(room)
     : openFreshRoom({
         attemptsLeft: attemptsLeft - 1,
+        game,
         newRoomCode,
         newScreenToken,
         rooms

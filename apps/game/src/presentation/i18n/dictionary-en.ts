@@ -66,6 +66,8 @@ export const EN_DICTIONARY = defineDictionary({
   },
   lobby: {
     fewest: 'At least {fewest:number} players',
+    game: 'Game',
+    leave: 'Leave',
     name: 'Nickname',
     ready: 'Ready',
     readyCount: defineTranslation('{ready:plural} of {present:number} ready', {
@@ -76,7 +78,9 @@ export const EN_DICTIONARY = defineDictionary({
     connecting: 'Connecting…',
     reconnecting: 'Reconnecting…',
     refused: {
+      left: 'You left the room',
       outdated: 'Page out of date',
+      removed: 'Removed from the room',
       roomFull: 'Room full',
       roomGone: 'No room here',
       unexpected: 'Turned away'
@@ -104,9 +108,14 @@ export const EN_DICTIONARY = defineDictionary({
     roomCode: 'Room code',
     seat: {
       absent: 'away',
-      free: 'Free'
+      free: 'Free',
+      kick: 'Remove {name} from the room'
     },
     sound: 'Sound',
+    stopGame: {
+      hold: 'Stop the game (hold)',
+      label: 'Stop'
+    },
     takeBack: 'Take back'
   },
   seat: {

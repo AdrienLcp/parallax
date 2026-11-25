@@ -4,8 +4,8 @@ import { Link } from 'react-aria-components'
 import { useNavigate } from 'react-router'
 
 import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
-import { CURRENT_GAME, GAME_IDS, games } from '@/features/games/games'
-import { paths } from '@/infrastructure/router/navigation'
+import { DEFAULT_GAME_ID, GAME_IDS, games } from '@/features/games/games'
+import { screenPathFor, useGameParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
@@ -20,10 +20,11 @@ import './home-page.sass'
  */
 export const HomePage: React.FC = () => {
   const translate = useTranslate()
-  const [gameId, setGameId] = useState(CURRENT_GAME)
+  const askedGame = useGameParam()
+  const [gameId, setGameId] = useState(askedGame ?? DEFAULT_GAME_ID)
   const game = games[gameId]
   const navigate = useNavigate()
-  const openRoom = () => void navigate(paths.screen)
+  const openRoom = () => void navigate(screenPathFor(gameId))
 
   return (
     <Main className='home-page' data-game={gameId}>
@@ -56,7 +57,7 @@ export const HomePage: React.FC = () => {
         </div>
         <div className='home-foot'>
           <game.Cues />
-          <Link className='open-room' href={paths.screen}>
+          <Link className='open-room' href={screenPathFor(gameId)}>
             {translate('home.open')}
           </Link>
         </div>

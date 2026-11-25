@@ -4,6 +4,7 @@ import {
   advanceMatch,
   ejectedBetween,
   GATHERING,
+  hasMatchEnded,
   hasMatchStarted,
   type SumoMatch
 } from './sumo-match'
@@ -195,9 +196,13 @@ describe('sumo match', () => {
 
   it('[sumo] the room gathers again when too few phones stay for the next round', () => {
     const decided = decidedFor({ winner: 'red', wins: new Map([['red', 1]]) })
-    expect(
-      advanceMatch(decided, step(['red'], SUMO_TUNING.roundPauseSeconds))
-    ).toBe(GATHERING)
+    const gathered = advanceMatch(
+      decided,
+      step(['red'], SUMO_TUNING.roundPauseSeconds)
+    )
+    expect(gathered).toBe(GATHERING)
+    expect(hasMatchEnded({ next: gathered, previous: decided })).toBe(true)
+    expect(hasMatchEnded({ next: decided, previous: decided })).toBe(false)
   })
 
   it('[sumo] a top that leaves the platform is ejected once', () => {

@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { seatIdSchema } from './identifiers'
+
 /** Long enough for a first name or a nickname, short enough to fit a seat on the roster. */
 export const SEAT_NAME_MAX_LENGTH = 12
 
@@ -41,5 +43,17 @@ export const seatUnreadySchema = z.object({ type: z.literal('seat.unready') })
 
 /** The screen started a game with the ready seats: every ready mark is spent. */
 export const gameStartedSchema = z.object({ type: z.literal('game.started') })
+
+/** The screen's game is over, or was stopped: the room is back in its lobby. */
+export const gameEndedSchema = z.object({ type: z.literal('game.ended') })
+
+/** The screen removes a seat from the room; its phone is told and let go. */
+export const seatKickSchema = z.object({
+  seatId: seatIdSchema,
+  type: z.literal('seat.kick')
+})
+
+/** A phone gives its seat back for good. */
+export const seatLeaveSchema = z.object({ type: z.literal('seat.leave') })
 
 export type SeatReady = z.infer<typeof seatReadySchema>

@@ -1,5 +1,7 @@
 import { lazy } from 'react'
 
+import type { GameId } from '@parallax/protocol/games'
+
 import type { GameDefinition } from './game-definition'
 import { SumoCues } from './sumo/sumo-cues'
 import { SumoPreview } from './sumo/sumo-preview'
@@ -8,10 +10,11 @@ import { SUMO_PLAYERS } from './sumo/sumo-tuning'
 import './sumo/sumo-world.sass'
 import './tower/tower-world.sass'
 
-/** Every game the app hosts, in the order the game choice lists them. */
-export const GAME_IDS = ['sumo'] as const
-
-export type GameId = (typeof GAME_IDS)[number]
+export {
+  DEFAULT_GAME_ID,
+  GAME_IDS,
+  type GameId
+} from '@parallax/protocol/games'
 
 /** Every game the app hosts. Each one's scene, controller and showcase load only when shown. */
 export const games = {
@@ -31,6 +34,3 @@ export const games = {
     }))
   }
 } satisfies Record<GameId, GameDefinition>
-
-/** Every room plays this game until a room carries the game its screen picked. */
-export const CURRENT_GAME: GameId = 'sumo'
