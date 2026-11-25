@@ -1,0 +1,40 @@
+// Side effect: the tower's world, loaded with the game registry so it is there
+// before any of the tower's own pieces load. While a page shows the tower
+// (`data-game='tower'` on its landmark), the bedroom-wall palette is declared
+// and the host's roles take its values, footer and page ground included.
+
+@layer tokens
+  :root:has([data-game='tower'])
+    // A child's bedroom wall and its height chart, the same whatever the
+    // system theme.
+    --bedroom-wall: oklch(91.2% 0.015 151.8)
+    --graphite: oklch(28.7% 0.007 118.3)
+    --graphite-soft: oklch(48.9% 0.019 142.5)
+    --graphite-deep: oklch(24.6% 0.006 121.9)
+    --chart-yellow: oklch(83.2% 0.159 88.6)
+    --chart-yellow-deep: oklch(68% 0.14 80)
+    --paper: oklch(98.7% 0.005 106.5)
+    --beech: oklch(72.1% 0.081 69.7)
+    --beech-dark: oklch(61.8% 0.082 64.7)
+    --wall-shadow: oklch(33.5% 0.02 159.5)
+
+    --host-backdrop: var(--bedroom-wall)
+    --host-ground: var(--bedroom-wall)
+    --host-ink: var(--graphite)
+    --host-ink-soft: var(--graphite-soft)
+    --host-ink-on-light: var(--graphite)
+    --host-ink-soft-on-light: var(--graphite-soft)
+    --host-line: var(--graphite)
+    --host-line-faint: color-mix(in oklab, var(--graphite) 30%, var(--bedroom-wall))
+    --host-accent: var(--chart-yellow)
+    --host-accent-deep: var(--chart-yellow-deep)
+    --host-accent-hover: color-mix(in oklab, var(--chart-yellow), var(--paper) 22%)
+    --host-accent-ink: var(--graphite-deep)
+    --host-panel: var(--paper)
+    --host-panel-frame: var(--beech)
+    --host-panel-frame-deep: var(--beech-dark)
+    --host-plaque: var(--chart-yellow)
+    --host-plaque-ink: var(--graphite-deep)
+    --host-qr-quiet: var(--paper)
+    --host-qr-ink: var(--graphite-deep)
+    --host-shadow: var(--wall-shadow)
