@@ -33,9 +33,13 @@ at once.
   `wrangler types --check` and fails otherwise.
 - A page for the unit fills the whole F11 window: the camera frames the box
   that holds the canvas, so a canvas in a thumbnail, a padded page or a page
-  that scrolls stands the scene off the alcove. Before handing Adrien a URL,
-  open that exact URL in a portrait 9:16 window and check `.scene-canvas`
-  equals `innerWidth` × `innerHeight` with nothing to scroll.
+  that scrolls stands the scene off the alcove. Such a page shows the canvas
+  alone by default, never depending on the window's shape at load: the unit's
+  page often loads before F11 or on another monitor, and stays as it loaded
+  (a brief around a thumbnail goes behind a flag, `?brief` in the claw mocks).
+  Before handing Adrien a URL, open that exact URL in a portrait 9:16 window
+  and in a landscape one, and check `.scene-canvas` equals `innerWidth` ×
+  `innerHeight` with nothing to scroll.
 - A background tab stops `requestAnimationFrame`, so a display left in one stops
   simulating. Give each real phone its own isolated browser context (separate
   localStorage = separate seat).
