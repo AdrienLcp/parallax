@@ -6,22 +6,25 @@ const PLAYERS_DISTANCE_METRES = 1.5
 const SCREEN_HEIGHT_METRES = 0.598
 
 /**
- * The first rough calibration, traced by eye on the unit on 2026-11-24
- * (`docs/display-calibration/2026-11-24.json`). The back wall's bottom
- * corners are the floor's back corners.
+ * Traced by eye on the unit on 2026-11-25, from the players' spot
+ * (`docs/display-calibration/2026-11-25.json`), then checked with a frame
+ * the player wedged in the box at five depths
+ * (`docs/display-calibration/2026-11-25-contact.json`): every contact landed
+ * within 0.5 % of the screen of this solve, the back left wall within 1 %.
+ * The back wall's bottom corners are the floor's back corners.
  */
 export const MEASURED_ALCOVE: AlcoveCalibration = {
   back: {
-    bottomLeft: { x: 0.13472, y: 0.90391 },
-    bottomRight: { x: 0.86435, y: 0.90417 },
-    topLeft: { x: 0.12917, y: 0.09714 },
-    topRight: { x: 0.85833, y: 0.09479 }
+    bottomLeft: { x: 0.12176, y: 0.90885 },
+    bottomRight: { x: 0.87315, y: 0.9026 },
+    topLeft: { x: 0.1162, y: 0.09427 },
+    topRight: { x: 0.87824, y: 0.09505 }
   },
   eyeDistance: PLAYERS_DISTANCE_METRES / SCREEN_HEIGHT_METRES,
   front: {
-    floorLeft: { x: 0.05407, y: 0.97573 },
-    floorRight: { x: 0.96815, y: 0.97469 },
-    roofLeft: { x: 0.04574, y: 0.02536 },
-    roofRight: { x: 0.95657, y: 0.02198 }
+    floorLeft: { x: 0.04667, y: 0.97911 },
+    floorRight: { x: 0.96815, y: 0.97885 },
+    roofLeft: { x: 0.04528, y: 0.02354 },
+    roofRight: { x: 0.9575, y: 0.0225 }
   }
 }
