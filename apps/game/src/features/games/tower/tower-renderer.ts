@@ -15,7 +15,6 @@ import {
   Mesh,
   MeshStandardMaterial,
   NoToneMapping,
-  PCFSoftShadowMap,
   PerspectiveCamera,
   PlaneGeometry,
   RepeatWrapping,
@@ -33,6 +32,10 @@ import type { TowerBlock } from '@parallax/protocol/tower'
 
 import { aimAlcoveCamera } from '@/features/alcove/aim-alcove-camera'
 import type { AlcoveInterior } from '@/features/alcove/alcove-bounds'
+import {
+  enableSoftShadows,
+  softenShadow
+} from '@/features/alcove/alcove-soft-shadows'
 import { buildAlcoveStage } from '@/features/alcove/alcove-stage'
 import { SHIPPED_ALCOVE } from '@/features/alcove/shipped-alcove'
 
@@ -244,8 +247,7 @@ export const createTowerRenderer = (
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.outputColorSpace = SRGBColorSpace
   renderer.toneMapping = NoToneMapping
-  renderer.shadowMap.enabled = true
-  renderer.shadowMap.type = PCFSoftShadowMap
+  enableSoftShadows(renderer)
   renderer.domElement.classList.add('scene-canvas')
   host.prepend(renderer.domElement)
 
@@ -280,6 +282,7 @@ export const createTowerRenderer = (
     right: 1,
     top: 1.3
   })
+  softenShadow(key)
   scene.add(key.target)
   // Straight down, so every block's shadow lands right under it: the aim reads off the shadow.
   const overhead = new DirectionalLight('#ffffff', 0.7)
@@ -288,7 +291,6 @@ export const createTowerRenderer = (
   overhead.castShadow = true
   overhead.shadow.mapSize.set(2048, 2048)
   overhead.shadow.bias = -0.0008
-  overhead.shadow.radius = 4
   Object.assign(overhead.shadow.camera, {
     bottom: -0.7,
     far: 7,
@@ -297,6 +299,7 @@ export const createTowerRenderer = (
     right: 0.7,
     top: 0.7
   })
+  softenShadow(overhead)
   scene.add(key, overhead, overhead.target)
 
   const chartWidth = 0.09
