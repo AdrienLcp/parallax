@@ -392,6 +392,57 @@ describe('handleFrame', () => {
     )
   })
 
+  it.each([
+    [
+      '{"type":"claw.stick","x":0.5,"z":-1}',
+      { type: 'claw.stick', x: 0.5, z: -1 }
+    ],
+    ['{"type":"claw.drop"}', { type: 'claw.drop' }]
+  ])(
+    'passes the claw frame %s to the screen stamped with its seat',
+    (frame, message) => {
+      const outcome = sendFrame({
+        admission: PLAYER,
+        frame,
+        store: openedStore()
+      })
+
+      expect(outcome.event).toEqual({
+        kind: 'to_screen',
+        message: { ...message, seatId: 'seat-1' }
+      })
+    }
+  )
+
+  it('passes the claw state to the phones, and only from the screen', () => {
+    const state = {
+      phase: 'playing',
+      seats: [
+        { activity: 'aiming', score: 3, seatId: 'seat-1', x: 0.2, z: -0.4 }
+      ],
+      secondsLeft: 41,
+      type: 'claw.state',
+      winners: []
+    }
+    const frame = JSON.stringify(state)
+
+    const fromScreen = sendFrame({
+      admission: SCREEN,
+      frame,
+      store: openedStore()
+    })
+    const fromPhone = sendFrame({
+      admission: PLAYER,
+      frame,
+      store: openedStore()
+    })
+
+    expect(fromScreen.event).toEqual({ kind: 'to_players', message: state })
+    expect(fromPhone.reply?.type === 'error' && fromPhone.reply.code).toBe(
+      'wrong_role'
+    )
+  })
+
   it('refuses a frame from the wrong role without closing', () => {
     const outcome = sendFrame({
       admission: SCREEN,

@@ -1,3 +1,8 @@
+import type {
+  ClawSeatDrop,
+  ClawSeatStick,
+  ClawState
+} from '@parallax/protocol/claw'
 import {
   type ClientMessage,
   clientMessageSchema,
@@ -40,8 +45,10 @@ export type SessionEvent =
         | TowerSeatAim
         | TowerSeatDrop
         | TowerSeatRuleChoice
+        | ClawSeatStick
+        | ClawSeatDrop
     }
-  | { kind: 'to_players'; message: SumoState | TowerState }
+  | { kind: 'to_players'; message: SumoState | TowerState | ClawState }
 
 export type FrameOutcome = {
   /** The socket's admission after this frame, to keep on it. */
@@ -169,6 +176,8 @@ const play = ({
     case 'tower.aim':
     case 'tower.drop':
     case 'tower.rule':
+    case 'claw.stick':
+    case 'claw.drop':
       return admission.role === 'player'
         ? passed(admission, {
             kind: 'to_screen',
@@ -177,6 +186,7 @@ const play = ({
         : wrongRole(admission)
     case 'sumo.state':
     case 'tower.state':
+    case 'claw.state':
       return admission.role === 'screen'
         ? passed(admission, { kind: 'to_players', message })
         : wrongRole(admission)

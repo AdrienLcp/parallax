@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+import {
+  clawSeatDropSchema,
+  clawSeatStickSchema,
+  clawStateSchema
+} from './claw'
 import { protocolErrorCodeSchema } from './error-code'
 import { gameIdSchema, roomPhaseSchema } from './games'
 import { roomCodeSchema, seatIdSchema } from './identifiers'
@@ -52,14 +57,17 @@ export const screenEventSchema = z.discriminatedUnion('type', [
   sumoSeatDashSchema,
   towerSeatAimSchema,
   towerSeatDropSchema,
-  towerSeatRuleChoiceSchema
+  towerSeatRuleChoiceSchema,
+  clawSeatStickSchema,
+  clawSeatDropSchema
 ])
 
 /** What only a phone hears: the room and the game as the screen tells it. */
 export const playerEventSchema = z.discriminatedUnion('type', [
   playerRoomMessageSchema,
   sumoStateSchema,
-  towerStateSchema
+  towerStateSchema,
+  clawStateSchema
 ])
 
 export const screenServerMessageSchema = z.discriminatedUnion('type', [
