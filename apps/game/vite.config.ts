@@ -8,6 +8,7 @@ import optimizeLocales from '@react-aria/optimize-locales-plugin'
 import react from '@vitejs/plugin-react'
 import fontaine from 'fontaine/postcss'
 import { defineConfig } from 'vite'
+import wasm from 'vite-plugin-wasm'
 
 import { API_PREFIX, SOCKET_PREFIX } from '@parallax/protocol/routes'
 
@@ -79,7 +80,9 @@ export default defineConfig({
       ...optimizeLocales.vite({ locales: Object.values(REGIONAL_LOCALES) }),
       enforce: 'pre'
     },
-    themePreferencePlugin(themeStore)
+    themePreferencePlugin(themeStore),
+    // Rapier's physics ships as a `.wasm` file imported as a module.
+    wasm()
   ],
   resolve: {
     alias: {

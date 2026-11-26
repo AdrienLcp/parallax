@@ -255,16 +255,34 @@ export const createTowerRenderer = (
   scene.add(
     buildAlcoveStage(SHIPPED_ALCOVE, {
       color: shadowTint,
-      floorOpacity: 0.42,
-      wallOpacity: 0.16
+      floorOpacity: 0.5,
+      wallOpacity: 0.22
     }),
     new HemisphereLight('#ffffff', '#6b6157', 1.2),
     new AmbientLight('#ffffff', 0.15)
   )
+  // From the players' side, above and to the left: each block's shadow runs
+  // back along the floor and climbs the back wall. Seen almost level, the gap
+  // between the tower and its shadow on the wall is what tells its depth, and
+  // the shadow leaving its foot is what stands it on the floor.
   const key = new DirectionalLight('#ffffff', 1.3)
-  key.position.set(-1.4, 2.6, 3.2)
+  key.position.set(-0.9, 2.2, 2.4)
+  key.target.position.set(0, 0.3, -SHIPPED_ALCOVE.depth)
+  key.castShadow = true
+  key.shadow.mapSize.set(2048, 2048)
+  key.shadow.bias = -0.0006
+  key.shadow.normalBias = 0.002
+  Object.assign(key.shadow.camera, {
+    bottom: -1.3,
+    far: 6,
+    left: -1,
+    near: 1,
+    right: 1,
+    top: 1.3
+  })
+  scene.add(key.target)
   // Straight down, so every block's shadow lands right under it: the aim reads off the shadow.
-  const overhead = new DirectionalLight('#ffffff', 1.1)
+  const overhead = new DirectionalLight('#ffffff', 0.7)
   overhead.position.set(0.05, 6, -SHIPPED_ALCOVE.depth / 2 + 0.25)
   overhead.target.position.set(0, 0, -SHIPPED_ALCOVE.depth / 2)
   overhead.castShadow = true

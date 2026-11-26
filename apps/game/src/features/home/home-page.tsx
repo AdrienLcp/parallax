@@ -1,12 +1,13 @@
 import type React from 'react'
 import { Suspense, useState } from 'react'
 import { Link } from 'react-aria-components'
-import { useNavigate } from 'react-router'
+import { useNavigate, useNavigation } from 'react-router'
 
 import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
 import { DEFAULT_GAME_ID, GAME_IDS, games } from '@/features/games/games'
 import { screenPathFor, useGameParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
+import { Spinner } from '@/presentation/components/spinner'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { GameTabs } from './game-tabs'
@@ -25,6 +26,8 @@ export const HomePage: React.FC = () => {
   const game = games[gameId]
   const navigate = useNavigate()
   const openRoom = () => void navigate(screenPathFor(gameId))
+  // The room's page loads before it shows: the button turns as soon as it is pressed.
+  const isOpening = useNavigation().state !== 'idle'
 
   return (
     <Main className='home-page' data-game={gameId}>
@@ -57,7 +60,12 @@ export const HomePage: React.FC = () => {
         </div>
         <div className='home-foot'>
           <game.Cues />
-          <Link className='open-room' href={screenPathFor(gameId)}>
+          <Link
+            aria-busy={isOpening}
+            className='open-room'
+            href={screenPathFor(gameId)}
+          >
+            {isOpening && <Spinner />}
             {translate('home.open')}
           </Link>
         </div>

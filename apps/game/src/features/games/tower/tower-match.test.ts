@@ -1,5 +1,5 @@
-import RAPIER from '@dimforge/rapier3d-compat'
-import { beforeAll, describe, expect, it } from 'vitest'
+import * as RAPIER from '@dimforge/rapier3d'
+import { describe, expect, it } from 'vitest'
 
 import type { SeatId } from '@parallax/protocol/identifiers'
 import type { TowerRule } from '@parallax/protocol/tower'
@@ -21,10 +21,6 @@ const INTERIOR = alcoveInterior(SHIPPED_ALCOVE)
 const ANA = 'seat-ana'
 const BEN = 'seat-ben'
 const BOTH = new Set([ANA, BEN])
-
-beforeAll(async () => {
-  await RAPIER.init()
-})
 
 /** Every block drawn is a cube: the rules, not the luck of the draw, are under test. */
 const CUBES = () => 0.4

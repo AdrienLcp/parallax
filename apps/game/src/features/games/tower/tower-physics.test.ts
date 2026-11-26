@@ -1,5 +1,5 @@
-import RAPIER from '@dimforge/rapier3d-compat'
-import { beforeAll, describe, expect, it } from 'vitest'
+import * as RAPIER from '@dimforge/rapier3d'
+import { describe, expect, it } from 'vitest'
 
 import { alcoveInterior } from '@/features/alcove/alcove-bounds'
 import { SHIPPED_ALCOVE } from '@/features/alcove/shipped-alcove'
@@ -10,10 +10,6 @@ import { createTowerPhysics, type TowerPhysics } from './tower-physics'
 const INTERIOR = alcoveInterior(SHIPPED_ALCOVE)
 const U = 0.105
 const Z = (INTERIOR.z.min + INTERIOR.floorFront) / 2
-
-beforeAll(async () => {
-  await RAPIER.init()
-})
 
 const settle = (physics: TowerPhysics, seconds = 3) => {
   for (let step = 0; step < seconds * 120; step += 1) {

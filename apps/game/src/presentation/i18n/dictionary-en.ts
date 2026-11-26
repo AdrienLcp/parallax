@@ -100,6 +100,7 @@ export const EN_DICTIONARY = defineDictionary({
     fullscreen: 'Full screen',
     join: 'Scan to play',
     openFailed: 'The room did not open.',
+    opening: 'Opening the room',
     players: '{fewest:number} to {most:number} players',
     qr: 'QR code to join room {code}',
     reconnecting: 'Reconnecting…',

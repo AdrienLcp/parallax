@@ -98,6 +98,7 @@ export default defineDictionary({
     fullscreen: 'Plein écran',
     join: 'Scannez pour jouer',
     openFailed: 'La salle ne s’est pas ouverte.',
+    opening: 'Ouverture de la salle',
     players: '{fewest:number} à {most:number} joueurs',
     qr: 'QR code pour rejoindre la salle {code}',
     reconnecting: 'Reconnexion…',

@@ -4,10 +4,9 @@ import type { RoomCode } from '@parallax/protocol/identifiers'
 
 import { paintBrowserBarBehind, reloadPage } from '@/infrastructure/browser'
 import { Button } from '@/presentation/components/button'
+import { Spinner } from '@/presentation/components/spinner'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import type { PlainTranslationKey } from '@/presentation/i18n/translation'
-
-import { Spinner } from './spinner'
 
 import './room-notice.sass'
 

@@ -6,6 +6,7 @@ import { DEFAULT_GAME_ID, type GameId } from '@/features/games/games'
 import { DisplaySoundProvider } from '@/features/sound/display-sound'
 import { useGameParam } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
+import { Spinner } from '@/presentation/components/spinner'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { ScreenNotice } from './screen-notice'
@@ -27,6 +28,12 @@ export const ScreenPage: React.FC = () => {
         className='screen-page'
         data-game={roomGame ?? askedGame ?? DEFAULT_GAME_ID}
       >
+        {state.kind === 'opening' && (
+          <p className='screen-opening' role='status'>
+            <Spinner />
+            {translate('screen.opening')}
+          </p>
+        )}
         {state.kind === 'failed' && (
           <ScreenNotice
             action={translate('screen.retry')}

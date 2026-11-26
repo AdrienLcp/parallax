@@ -23,3 +23,12 @@
 
     &:has(.screen-room)
       background: var(--backdrop, var(--host-backdrop))
+
+  .screen-opening
+    @include display.on-backdrop
+
+    align-items: center
+    display: flex
+    font-size: calc(var(--cu) * 3.2)
+    gap: calc(var(--cu) * 1.6)
+    margin: 0

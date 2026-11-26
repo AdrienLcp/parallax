@@ -13,11 +13,11 @@ import { type GameId, games } from '@/features/games/games'
 import { createReplayingEventChannel } from '@/helpers/event-channel'
 import { paintBrowserBarBehind } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
+import { Spinner } from '@/presentation/components/spinner'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import type { PlainTranslationKey } from '@/presentation/i18n/translation'
 
 import { RoomNotice } from './room-notice'
-import { Spinner } from './spinner'
 import { usePlayerSessionId } from './use-player-session-id'
 
 import './player-seat.sass'

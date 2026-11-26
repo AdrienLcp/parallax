@@ -1,4 +1,4 @@
-import type RAPIER from '@dimforge/rapier3d-compat'
+import type * as RAPIER from '@dimforge/rapier3d'
 
 import type { TowerBlock } from '@parallax/protocol/tower'
 
