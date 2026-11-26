@@ -1,6 +1,22 @@
 @use '../../../presentation/styles/typography'
 
 @layer components
+  // The pad is played in landscape: on a phone held upright (its rotation
+  // often locked) it turns a quarter clockwise, and the player turns the phone.
+  .tower-controller[data-turned]
+    --pad-unit: min(1dvw, 0.5dvh, 0.3rem)
+    --thumb-line: 54%
+
+    block-size: 100dvw
+    inline-size: 100dvh
+    inset: 0 auto auto 100%
+    rotate: 90deg
+    transform-origin: 0 0
+
+    .pad
+      column-gap: 0
+      grid-template-columns: 1fr 1fr
+
   .tower-controller
     .drop-button
       --drop-size: calc(var(--pad-unit) * 35)

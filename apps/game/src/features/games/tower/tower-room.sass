@@ -1,0 +1,55 @@
+// Side effect, loaded with the game registry: the room's screen while it
+// hosts the tower. The tower stands on the alcove's real floor, so its canvas
+// fills the whole window (the alcove camera frames the box that holds it) and
+// the head and the roster lie over it, at the top. While a game runs the
+// roster thins to one line of the seated players: the tower grows up into
+// the room it leaves.
+
+@layer components
+  :root:has([data-game='tower']) .screen-room
+    align-content: start
+    grid-template-rows: auto auto
+
+    .screen-head, .seat-roster
+      position: relative
+      z-index: 1
+
+    .arena
+      inset: 0
+      padding: 0
+      position: fixed
+
+    &:has(.play-header) .seat-roster
+      background: none
+      box-shadow: none
+      grid-template-rows: auto
+      margin-block-start: calc(var(--cu) * 1.2)
+      padding: 0
+
+      .seat-places
+        display: flex
+        flex-wrap: wrap
+        gap: calc(var(--cu) * 0.8) calc(var(--cu) * 2.4)
+
+      .seat-place
+        border-block-end: 0
+        grid-template-columns: calc(var(--cu) * 3.8) auto
+        padding-inline: 0
+
+        &.free
+          display: none
+
+      .seat-place-top
+        block-size: calc(var(--cu) * 3.6)
+        inline-size: calc(var(--cu) * 3.6)
+
+      .seat-name
+        --text-seat-name: calc(var(--cu) * 2.4)
+
+      .seat-foot
+        border-block-start: calc(var(--cu) * 0.15) solid var(--host-line-faint)
+        margin-block-start: calc(var(--cu) * 0.8)
+        padding-block-start: calc(var(--cu) * 0.6)
+
+      .seat-cue
+        font-size: calc(var(--cu) * 1.9)

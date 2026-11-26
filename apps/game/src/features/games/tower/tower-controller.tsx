@@ -30,6 +30,20 @@ const OUTCOME_BUZZ = {
   won: [30, 30, 30, 30, 30, 30, 240]
 } as const
 
+const UPRIGHT = '(orientation: portrait)'
+
+/** Whether the phone stands upright, its rotation locked or not turned yet. */
+const useUpright = (): boolean => {
+  const [isUpright, setUpright] = useState(() => matchMedia(UPRIGHT).matches)
+  useEffect(() => {
+    const query = matchMedia(UPRIGHT)
+    const follow = () => setUpright(query.matches)
+    query.addEventListener('change', follow)
+    return () => query.removeEventListener('change', follow)
+  }, [])
+  return isUpright
+}
+
 /** The last `tower.state` the screen sent, or `null` until the first one arrives. */
 const useTowerState = (
   events: EventSubscription<PlayerGameEvent>
@@ -87,6 +101,7 @@ export const TowerController: React.FC<GameControllerProps> = ({
 }) => {
   const translate = useTranslate()
   const state = useTowerState(events)
+  const isUpright = useUpright()
   const sendAim = usePacedStick(
     (stick) => send({ type: 'tower.aim', x: stick.x, z: stick.y }),
     room
@@ -128,6 +143,7 @@ export const TowerController: React.FC<GameControllerProps> = ({
     <div
       className='sumo-controller tower-controller'
       data-seat-slot={ownSeat.slot}
+      data-turned={(!isLobby && isUpright) || undefined}
       data-view={isLobby ? 'lobby' : 'pad'}
     >
       {isLobby && (

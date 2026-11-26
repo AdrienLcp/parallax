@@ -84,12 +84,19 @@ const StickPlan: React.FC = () => (
   </svg>
 )
 
+/**
+ * The thumb in the stick's own frame. A pad turned a quarter clockwise
+ * (`data-turned`, landscape on a phone held upright) has its x running down
+ * the screen and its y running leftwards.
+ */
 const pointIn = (
   zone: HTMLElement,
   event: React.PointerEvent<HTMLElement>
 ): PlanarVector => {
   const box = zone.getBoundingClientRect()
-  return { x: event.clientX - box.left, y: event.clientY - box.top }
+  return zone.closest('[data-turned]') === null
+    ? { x: event.clientX - box.left, y: event.clientY - box.top }
+    : { x: event.clientY - box.top, y: box.right - event.clientX }
 }
 
 type FloatingStickProps = {
