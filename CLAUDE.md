@@ -26,7 +26,8 @@ Every game stands its scene in the measured alcove through `features/alcove/`:
 room every object stays in: 25 px inside each edge on the display, the floor
 excepted) and `buildAlcoveStage` (invisible floor and back wall that only catch
 shadows). A new calibration replaces `measured-alcove.ts` and moves every game
-at once.
+at once. The rules a scene follows in it (margin, floor and roof exceptions,
+flat lettering, checks on the unit): `docs/alcove-rules.md`.
 
 ## Running it
 
