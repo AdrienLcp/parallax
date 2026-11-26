@@ -1,14 +1,7 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect } from 'react'
 
-import { resolveCssColor } from '@/infrastructure/css-color'
-
-import {
-  backdropColorOf,
-  type DisplayTuning,
-  hexOf,
-  relativeLuminanceOf,
-  toneOfBackdrop
-} from './display-tuning'
+import { backdropColorOf, type DisplayTuning } from './display-tuning'
+import { useBackdropTone } from './use-backdrop-tone'
 
 /**
  * Hands the page its tuned backdrop, the backdrop's tone (which turns the
@@ -18,36 +11,15 @@ import {
  * Returns the backdrop as `#rrggbb`.
  */
 export const useTunedPage = ({ backdrop, hud }: DisplayTuning): string => {
-  const [backdropHex, setBackdropHex] = useState('#000000')
   const color = backdropColorOf(backdrop)
+  const backdropHex = useBackdropTone(color)
 
   useLayoutEffect(() => {
     const root = document.documentElement
     root.style.setProperty('--backdrop', color)
-    let shownHex: string | null = null
-    /** Reads the backdrop as painted: the game's own changes with the game the page shows. */
-    const readBackdrop = () => {
-      // Probed under the root, outside the watched body: a probe in it would wake the watch again.
-      const resolved = resolveCssColor(color, root)
-      const hex = hexOf(resolved)
-      if (hex === shownHex) return
-      shownHex = hex
-      root.dataset.backdropTone = toneOfBackdrop(relativeLuminanceOf(resolved))
-      setBackdropHex(hex)
-    }
-    readBackdrop()
-    const games = new MutationObserver(readBackdrop)
-    games.observe(document.body, {
-      attributeFilter: ['data-game'],
-      attributes: true,
-      childList: true,
-      subtree: true
-    })
 
     return () => {
-      games.disconnect()
       root.style.removeProperty('--backdrop')
-      delete root.dataset.backdropTone
     }
   }, [color])
 

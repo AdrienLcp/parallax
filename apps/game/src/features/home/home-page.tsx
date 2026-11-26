@@ -3,6 +3,7 @@ import { Suspense, useState } from 'react'
 import { Link } from 'react-aria-components'
 import { useNavigate, useNavigation } from 'react-router'
 
+import { useBackdropTone } from '@/features/display-tuning/use-backdrop-tone'
 import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
 import { DEFAULT_GAME_ID, GAME_IDS, games } from '@/features/games/games'
 import { screenPathFor, useGameParam } from '@/infrastructure/router/navigation'
@@ -28,6 +29,8 @@ export const HomePage: React.FC = () => {
   const openRoom = () => void navigate(screenPathFor(gameId))
   // The room's page loads before it shows: the button turns as soon as it is pressed.
   const isOpening = useNavigation().state !== 'idle'
+  // Its lettering stands straight on the game's backdrop: dark on a light one.
+  useBackdropTone('var(--host-backdrop)')
 
   return (
     <Main className='home-page' data-game={gameId}>

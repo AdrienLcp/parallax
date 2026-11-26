@@ -22,6 +22,17 @@
     &[data-view='lobby'] .pad
       display: none
 
+    // Upright, the pad turns a quarter so the stick and the buttons sit under
+    // the thumbs of a phone held sideways.
+    &[data-turned]
+      --pad-unit: min(1dvw, 0.5dvh, 0.3rem)
+
+      block-size: 100dvw
+      inline-size: 100dvh
+      inset: 0 auto auto 100%
+      rotate: 90deg
+      transform-origin: 0 0
+
     .pad
       display: grid
       grid-template-columns: 1fr 1fr

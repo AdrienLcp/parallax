@@ -13,6 +13,10 @@
     --rule-strong: var(--host-accent-deep)
     --focus: var(--host-accent)
 
+  :root[data-backdrop-tone='light']:has(.home-page)
+    --host-ink: var(--host-ink-on-light)
+    --host-ink-soft: var(--host-ink-soft-on-light)
+
   .home-page
     @include display.units
 

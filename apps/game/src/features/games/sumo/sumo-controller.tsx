@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 
 import type { Seat } from '@parallax/protocol/room'
 
+import { useUpright } from '@/features/play/use-upright'
 import { LobbySheet } from '@/features/room/lobby-sheet'
 import { seatNameOf } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
@@ -58,9 +59,9 @@ const SeatBadge: React.FC<SeatBadgeProps> = ({ seat }) => {
 
 /**
  * The sumo in the player's hands, on their seat's lacquer. Before a match:
- * the seat's name and the ready toggle. Once a round is on, in whichever way
- * the phone is held: the floating stick under the left thumb, the dash and
- * the jump under the right.
+ * the seat's name and the ready toggle. Once a round is on, in landscape
+ * (turned a quarter while the phone stands upright): the floating stick under
+ * the left thumb, the dash and the jump under the right.
  */
 export const SumoController: React.FC<GameControllerProps> = ({
   events,
@@ -73,6 +74,7 @@ export const SumoController: React.FC<GameControllerProps> = ({
     room
   )
   const view = sumoControllerView({ seatId: room.youId, state })
+  const isUpright = useUpright()
 
   useOutcomeBuzz(view)
 
@@ -98,6 +100,8 @@ export const SumoController: React.FC<GameControllerProps> = ({
     <div
       className='sumo-controller'
       data-seat-slot={ownSeat.slot}
+      // The pad is played in landscape: upright, it turns itself a quarter.
+      data-turned={(view !== 'lobby' && isUpright) || undefined}
       data-view={view}
     >
       {view === 'lobby' && (
