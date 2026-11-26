@@ -34,6 +34,10 @@ clear of them is preferred. The rest (flat lettering, checks on the unit):
 - `corepack pnpm dev`: wrangler on `:8798` (about 30 s on first start, with an empty assets folder so a `vite build` does not reload it and drop the rooms; `:8798/` answers 404) and Vite on
   `:5560`, which proxies `/api` and `/ws` to it. Restart Vite after adding a
   dependency.
+- The design mocks' servers (`design-mocks-*` in `.claude/launch.json`,
+  `python -m http.server`) send no cache headers, so Adrien's browser keeps
+  the old CSS and JS: bump a `?v=` on the page's stylesheet and module import
+  after each change.
 - After any change to `apps/server/wrangler.jsonc`:
   `corepack pnpm --filter @parallax/server cf-typegen`. The server build runs
   `wrangler types --check` and fails otherwise.
