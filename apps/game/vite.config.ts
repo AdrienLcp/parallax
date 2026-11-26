@@ -50,7 +50,7 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
-        // `scripts/lighthouse.ts` weighs this chunk apart from the app's JS.
+        // three in a chunk of its own: only the games' scenes load it.
         codeSplitting: {
           groups: [{ name: 'three', test: /[\\/]node_modules[\\/]three[\\/]/ }]
         }

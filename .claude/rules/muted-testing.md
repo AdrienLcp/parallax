@@ -8,6 +8,5 @@ stays **muted** — you never unmute it.
   (`sound-muted-storage.ts`). Write it **before** the page loads — Playwright
   `addInitScript`, or set it then reload before the first click. Pressing the
   mute control after load is too late: the sound already played.
-- The Playwright MCP launches Chromium with `--mute-audio`, as does
-  `scripts/checks/muted-browser.ts`; the other browsers are only covered by
-  the stored flag.
+- The Playwright MCP launches Chromium with `--mute-audio`; the other
+  browsers are only covered by the stored flag.

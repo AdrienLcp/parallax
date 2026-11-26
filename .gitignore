@@ -1,6 +1,5 @@
 coverage
 dist
-lighthouse-reports
 node_modules
 
 *.tsbuildinfo
