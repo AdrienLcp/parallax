@@ -82,7 +82,7 @@ describe('createTowerMatch, shared', () => {
     expect(match.view().outcome).toBeNull()
   })
 
-  it('makes whoever drops a block beside the tower lose', () => {
+  it('takes a block dropped beside the tower away and passes the turn, nobody losing', () => {
     const match = matchOf('shared')
     match.advance(idle)
     dropBy(match, ANA)
@@ -90,7 +90,39 @@ describe('createTowerMatch, shared', () => {
     aimBy(match, BEN, { x: 1, z: 0 }, 1)
     dropBy(match, BEN)
 
-    expect(match.view().outcome).toEqual({ kind: 'toppled', seat: BEN })
+    expect(match.view().outcome).toBeNull()
+    expect(match.view().lanes[0]?.blocks).toHaveLength(1)
+    match.advance(idle)
+    expect(match.view().lanes[0]?.floating?.seat).toBe(ANA)
+  })
+
+  it('makes whoever knocks a standing block to the floor lose', () => {
+    const real = createTowerPhysics(RAPIER, INTERIOR)
+    const knocked = new Set<number>()
+    const match = createTowerMatch({
+      interior: INTERIOR,
+      physics: {
+        ...real,
+        reach: (handle) =>
+          knocked.has(handle)
+            ? { ...real.reach(handle), bottom: 0 }
+            : real.reach(handle)
+      },
+      random: CUBES,
+      rule: 'shared',
+      seats: [ANA, BEN]
+    })
+    match.advance(idle)
+    dropBy(match, ANA)
+    match.advance(idle)
+    dropBy(match, BEN)
+    match.advance(idle)
+    match.advance({ ...idle, drops: new Set([ANA]) })
+    const standing = match.view().lanes[0]?.blocks[1]
+    if (standing !== undefined) knocked.add(standing.handle)
+    run(match, 2)
+
+    expect(match.view().outcome).toEqual({ kind: 'toppled', seat: ANA })
   })
 
   it('skips an absent player and ends once fewer than two remain seated', () => {

@@ -155,7 +155,8 @@ export const laneLayout = ({
  * The tower game the screen runs on a physics world: blocks handed out at
  * random, aimed by each player's stick across and in depth, dropped by their
  * button. Under `shared` the room builds one tower in turns and whoever topples
- * it loses; under `race` each player builds their own, a fallen tower starts
+ * it loses; a block that misses the tower is taken away and the turn passes.
+ * Under `race` each player builds their own, a fallen tower starts
  * again from the floor, and the tallest when time is up wins.
  */
 export const createTowerMatch = ({
@@ -258,11 +259,20 @@ export const createTowerMatch = ({
     }
   }
 
-  /** A block other than the tower's first lies on the floor: the tower fell, or the block missed it. */
+  const liesOnFloor = (block: PlacedBlock): boolean =>
+    physics.reach(block.handle).bottom < block.u * 0.05
+
+  /** A block that stood on the tower before the last drop lies on the floor: the tower fell. */
   const hasFallen = (lane: Lane): boolean =>
-    lane.blocks
-      .slice(1)
-      .some((block) => physics.reach(block.handle).bottom < block.u * 0.05)
+    lane.blocks.slice(1, -1).some(liesOnFloor)
+
+  /** The block just dropped lies on the floor beside a tower still standing: it missed. */
+  const hasMissed = (lane: Lane): boolean => {
+    const dropped = lane.blocks.at(-1)
+    return (
+      lane.blocks.length > 1 && dropped !== undefined && liesOnFloor(dropped)
+    )
+  }
 
   const heightOf = (lane: Lane): number =>
     lane.blocks.reduce(
@@ -285,6 +295,19 @@ export const createTowerMatch = ({
         height: 0,
         settling: null,
         toppled: lane.toppled + 1
+      }
+    }
+    if (hasMissed(lane)) {
+      // Nobody toppled anything: the missed block goes, the turn passes.
+      const missed = lane.blocks.at(-1)
+      if (missed !== undefined) physics.remove(missed.handle)
+      const blocks = lane.blocks.slice(0, -1)
+      return {
+        ...lane,
+        blocks,
+        height: heightOf({ ...lane, blocks }),
+        settling: null,
+        turn: lane.turn + 1
       }
     }
     const height = heightOf(lane)
