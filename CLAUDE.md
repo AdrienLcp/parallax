@@ -73,6 +73,8 @@ alarm rings for it, so a release test waits a full minute.
 
 ## Editing files
 
+- Several sessions share this checkout and leave work in it, sometimes
+  staged: commit with `git commit -- <paths>`, never a bare `git commit`.
 - Python scripts writing files on Windows open them with `newline=''`, or they
   write CRLF; Biome does not reformat Sass.
 - cspell rejects unknown CSS words too: add real ones to `cspell.json`.
