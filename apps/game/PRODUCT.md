@@ -40,7 +40,7 @@ The game lives inside a physical holographic alcove (the HLD), so depth comes fr
 - **Seats:** a phone that goes silent for 12 s shows as absent. Its seat is released 60 s after it left; a phone back before then takes its seat again.
 - **Phone connection states:** connecting, open, reconnecting, refused.
 - **Sumo:** starts at 2 players, takes up to 6. Inputs: a stick (sent at 20 Hz) and a dash.
-- **Rendering on the display:** one perspective camera, a solid unlit backdrop, soft grounded shadows. The 3D scene rests on the alcove's floor and keeps at least 25 px (of 1920) inside its walls, roof and opening on the display, so nothing spills past an edge wherever the players stand; flat 2D content keeps a ~3 % safe area.
+- **Rendering on the display:** one perspective camera, a solid unlit backdrop, soft grounded shadows. No part of the 3D scene crosses the alcove's walls, roof or opening on the display; a part may touch them, and scenes that float clear of every edge are preferred, since they read right wherever the players stand; flat 2D content keeps a ~3 % safe area.
 - **QR:** plain 2D on a flat backdrop, inside the safe area, always visible since the display cannot be touched to reveal it; its contrast must be checked on the device (inverted is the fallback).
 - **Languages:** French and English. A phone follows its own language.
 

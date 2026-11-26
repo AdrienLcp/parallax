@@ -23,11 +23,11 @@ already translated.
 Every game stands its scene in the measured alcove through `features/alcove/`:
 `SHIPPED_ALCOVE` (the calibration solved as a box and an eye),
 `aimAlcoveCamera` (the camera at the players' eye), `alcoveInterior` (the
-room every object stays in: 25 px inside each edge on the display, the floor
-excepted) and `buildAlcoveStage` (invisible floor and back wall that only catch
+box 25 px inside each edge, for what must not touch) and `buildAlcoveStage` (invisible floor and back wall that only catch
 shadows). A new calibration replaces `measured-alcove.ts` and moves every game
-at once. The rules a scene follows in it (margin, floor and roof exceptions,
-flat lettering, checks on the unit): `docs/alcove-rules.md`.
+at once. Nothing crosses the alcove's edges; touching them is allowed, floating
+clear of them is preferred. The rest (flat lettering, checks on the unit):
+`docs/alcove-rules.md`.
 
 ## Running it
 

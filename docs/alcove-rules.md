@@ -26,25 +26,29 @@ The tower goes through `features/alcove`; the sumo was being moved onto it on
 `apps/game/.impeccable/mocks/pince/` do not: `engine.js` keeps its own copy
 (`ALCOVE`, `MARGIN_SCREEN`, `INNER`), updated by hand.
 
-## The margin: 25 px inside every edge
+## The rule: nothing crosses the alcove's edges
 
-Every object, its whole surface and not only its centre, stays at least 25 px
-(of 1920) inside each wall, the roof and the opening, as seen on the display.
-This covers the calibration's 0.5–1 % spread and a player standing a pace off
-the measured eye. Adrien picked it on the unit on 2026-11-25.
+The measured alcove is the limit: no object, its whole surface and not only its
+centre, crosses a wall, the roof, the back wall or the opening, as seen from the
+players' eye. Touching is allowed: a game that wants a part against a surface
+(a pile on the floor, rails on the roof, a box against a wall) puts it there.
+Adrien set this on 2026-11-26.
 
-`alcoveInterior` turns those 25 px into distances in the box. It applies the
-margin where it shows smallest on screen, which is the back of the box. Two
-surfaces are exceptions:
+**Prefer floating.** A part pressed against a surface shows every error of the
+calibration (0.5–1 % of the screen) and of a player standing a pace off the
+measured eye. A scene that floats in the middle of the box, clear of every edge,
+reads right from everywhere. New games are looked for that way.
 
-- **The floor keeps no margin.** Things rest on it. What stands on the floor
-  comes forward only to `floorFront`: the opening's floor edge is seen almost
-  edge-on, so the same 25 px take about five times more depth there.
-- **The roof holds its fixtures flush.** A part fixed to the roof (the claw's
-  rails) has its top on the real roof (`SHIPPED_ALCOVE.height`), and keeps the
-  margin across and in depth. Hung under the roof's inset instead, its far end
-  dropped about 50 px below the back wall's top edge on screen and seemed to go
-  through the wall (2026-11-26).
+`alcoveInterior` is the box for what must not touch: the alcove pulled in so
+each edge shows 25 px (of 1920) on the display, the margin Adrien picked on the
+unit on 2026-11-25. It applies the margin where it shows smallest on screen,
+which is the back of the box. The floor keeps none, and what stands on it comes
+forward only to `floorFront`: the opening's floor edge is seen almost edge-on,
+so the same 25 px take about five times more depth there.
+
+A part meant to touch a surface sits on the real one (`SHIPPED_ALCOVE`), not on
+the inset: rails hung under the inset roof dropped their far ends about 50 px
+below the back wall's top edge and seemed to go through it (2026-11-26).
 
 ## Why a part near the roof looks too deep
 
@@ -78,9 +82,9 @@ claw mocks).
 
 ## Checking on the unit
 
-- The claw mocks draw the measured alcove's edges in red and the margin box in
-  blue with `?grille`. Rails, the pile's sides and props meet the blue edges,
-  except the roof fixtures, whose top meets the red roof.
+- The claw mocks draw the measured alcove's edges in red and `alcoveInterior` in
+  blue with `?grille`. Red is the rule; blue only shows where 25 px of margin
+  would fall.
 - Look from the players' spot, in F11, then a pace left and right: nothing may
   cross a red edge.
 - Before handing over a URL, open it in a portrait 9:16 window and in a
