@@ -16,14 +16,16 @@
       font-variant-numeric: tabular-nums
       text-align: center
 
-    // The pit seen from above, in the top corner: a help, not the aim.
+    // The pit seen from above, at the top between the stick and the button:
+    // a help, not the aim.
     .pit-map
       block-size: var(--map-size)
       inline-size: var(--map-size)
       inset-block-start: max(var(--space-s), var(--safe-area-top))
-      inset-inline-end: var(--gutter-right)
+      inset-inline-start: 50%
       pointer-events: none
       position: absolute
+      translate: -50% 0
       z-index: 1
 
     .pit-floor
