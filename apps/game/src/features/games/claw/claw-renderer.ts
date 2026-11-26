@@ -32,6 +32,7 @@ import { buildAlcoveStage } from '@/features/alcove/alcove-stage'
 import { SHIPPED_ALCOVE } from '@/features/alcove/shipped-alcove'
 
 import { createSceneColors } from '../scene-colors'
+import { buildConfetti } from './claw-confetti'
 import { type ClawMatchView, PRIZE_TINTS, type Prize } from './claw-match'
 import {
   buildCapsule,
@@ -43,7 +44,7 @@ import {
   disposeSharedGeometries,
   furMaterial
 } from './claw-models'
-import { type ClawPit, RAIL_SIZE } from './claw-pit'
+import { CHUTE_SIZE, CLAW_REACH, type ClawPit, RAIL_SIZE } from './claw-pit'
 
 /** Where each claw's name tag sits on the canvas, in CSS pixels. */
 export type ClawAnchors = ReadonlyMap<
@@ -66,6 +67,10 @@ export type ClawRenderer = {
 const FUR = ['#c8935a', '#9c9ea3', '#ece6da', '#6e4a33', '#d9b98c', '#b48a6a']
 /** How long a new prize takes to grow in. */
 const GROW_SECONDS = 0.35
+/** Confetti pieces a prize thrown into a chute sets off: a capsule, worth more, sets off more. */
+const CONFETTI = { capsule: 100, plush: 55 } as const
+/** How long after a catch its scorer's colour still tints the confetti. */
+const CATCH_COLOUR_SECONDS = 2
 
 type ClawRig = {
   readonly bar: Mesh
@@ -241,7 +246,21 @@ export const createClawRenderer = (
   )
   const unpainted = new MeshPhysicalMaterial({ color: chrome, roughness: 0.3 })
 
+  const confetti = buildConfetti({
+    bounds: {
+      back: rail.back,
+      front: pit.reach.maxZ + CLAW_REACH,
+      halfX: rail.halfX,
+      roof: rail.y - RAIL_SIZE / 2
+    },
+    palette: [candy, cyan, lemon, chrome],
+    random: Math.random
+  })
+  scene.add(confetti.group)
+
   const shownPrizes = new Map<number, Group>()
+  /** The prizes last drawn: one gone from the view sank in a chute. */
+  const drawnPrizes = new Map<number, Prize>()
   const rigs = new Map<SeatId, ClawRig>()
 
   const rigOf = (seat: SeatId, slot: SeatSlot | undefined): ClawRig => {
@@ -319,6 +338,8 @@ export const createClawRenderer = (
       for (const [seat, rig] of rigs) dropRig(seat, rig)
       for (const group of shownPrizes.values()) group.removeFromParent()
       shownPrizes.clear()
+      drawnPrizes.clear()
+      confetti.dispose()
       disposeTree(scene)
       for (const material of [
         metal,
@@ -369,6 +390,25 @@ export const createClawRenderer = (
           shownPrizes.delete(id)
         }
       }
+      const { lastCatch } = view
+      const scorer =
+        lastCatch !== null && view.elapsed - lastCatch.at < CATCH_COLOUR_SECONDS
+          ? slotOf(lastCatch.seat)
+          : undefined
+      for (const [id, prize] of drawnPrizes) {
+        if (seen.has(id)) continue
+        drawnPrizes.delete(id)
+        if (!prize.intoChute) continue
+        confetti.launch({
+          count: CONFETTI[prize.kind === 'capsule' ? 'capsule' : 'plush'],
+          seat: scorer === undefined ? null : colors.readSeat(scorer),
+          x: prize.x,
+          y: CHUTE_SIZE.height,
+          z: prize.z
+        })
+      }
+      for (const prize of view.prizes) drawnPrizes.set(prize.id, prize)
+      confetti.step(seconds)
 
       const anchors = new Map<SeatId, { x: number; y: number }>()
       const playing = new Set<SeatId>()

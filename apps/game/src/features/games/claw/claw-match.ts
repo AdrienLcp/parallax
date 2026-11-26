@@ -209,12 +209,16 @@ export const createClawMatch = ({
 
   const isTimeUp = () => elapsed >= CLAW_TUNING.roundSeconds
 
-  /** Lets go of a claw's prize where it hangs: into the chute below it, or back onto the pile. */
-  const letGo = (claw: Claw) => {
+  /**
+   * Lets go of a claw's prize where it hangs: into the chute below it, or
+   * back onto the pile. A prize let go by force (the round decided, the
+   * player gone) never scores, so it always lands back on the pile.
+   */
+  const letGo = (claw: Claw, isForced = false) => {
     const prize = claw.carried
     if (prize === null) return
     prize.state = 'falling'
-    prize.intoChute = pit.inChute(claw.x, claw.z)
+    prize.intoChute = !isForced && pit.inChute(claw.x, claw.z)
     prize.vy = 0
     prize.x = claw.x
     prize.z = claw.z
@@ -378,7 +382,7 @@ export const createClawMatch = ({
           ? []
           : claws.filter((claw) => claw.score === best).map((claw) => claw.seat)
     }
-    for (const claw of claws) letGo(claw)
+    for (const claw of claws) letGo(claw, true)
   }
 
   return {
@@ -389,7 +393,7 @@ export const createClawMatch = ({
         return decidedFor >= CLAW_TUNING.decidedPauseSeconds
       }
       for (const claw of claws) {
-        if (!step.seated.has(claw.seat)) letGo(claw)
+        if (!step.seated.has(claw.seat)) letGo(claw, true)
       }
       claws = claws.filter((claw) => step.seated.has(claw.seat))
       if (claws.length === 0) return true
