@@ -90,8 +90,9 @@ const PitMap: React.FC<PitMapProps> = ({ seats, state, youId }) => {
 /**
  * The claw in the player's hands, on their seat's colour. In the lobby: the
  * seat. In play: the stick steers the claw (the player watches it on the
- * display), the button drops it, and a small map of the pit helps. The pad
- * rests while the claw is down.
+ * display), the button sends it down for a prize, and once it holds one,
+ * lets go of it over a chute. A small map of the pit helps. The pad rests
+ * while the claw is down.
  */
 export const ClawController: React.FC<GameControllerProps> = ({
   events,
@@ -109,7 +110,11 @@ export const ClawController: React.FC<GameControllerProps> = ({
   const isLobby =
     room.phase === 'lobby' || state === null || state.phase === 'lobby'
   const isDecided = state?.phase === 'decided'
-  const canAim = !isLobby && !isDecided && own?.activity === 'aiming'
+  const isHolding = own?.activity === 'holding'
+  const canAim =
+    !isLobby &&
+    !isDecided &&
+    (isHolding || (own?.activity === 'aiming' && state.secondsLeft > 0))
   const outcome =
     !isDecided || own === undefined
       ? null
@@ -182,7 +187,9 @@ export const ClawController: React.FC<GameControllerProps> = ({
                 strokeWidth='4'
               />
             </svg>
-            <span className='dash-label'>{translate('claw.drop')}</span>
+            <span className='dash-label'>
+              {translate(isHolding ? 'claw.drop' : 'claw.grab')}
+            </span>
           </Button>
         </div>
       </section>

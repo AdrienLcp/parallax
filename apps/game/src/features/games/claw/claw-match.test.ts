@@ -112,8 +112,21 @@ describe('a claw', () => {
     expect(after.x).toBeCloseTo(before.x, 5)
   })
 
-  it('drops, grips what lies under it, and scores it in a chute', () => {
-    // A random that never makes a prize slip: every grip holds.
+  it('creeps on a slight stick and crosses fast on a full one', () => {
+    const match = createClawMatch({
+      pit: PIT,
+      random: seeded(1),
+      seats: [ANA, BEN]
+    })
+    const before = clawOf(match, ANA).z
+    runFor(match, 0.5, stepOf({ sticks: new Map([[ANA, { x: 0, z: -0.3 }]]) }))
+    const crept = before - clawOf(match, ANA).z
+    expect(crept).toBeGreaterThan(0)
+    expect(crept).toBeLessThan(0.3 * CLAW_TUNING.aimSpeed * 0.5 * 0.5)
+  })
+
+  /** A claw sent down on the highest prize in reach, back up holding it: no grip ever slips. */
+  const holdingClaw = () => {
     let calls = 0
     const deal = seeded(9)
     const random = () => {
@@ -137,10 +150,56 @@ describe('a claw', () => {
     claw.z = target.z
     match.advance(stepOf({ drops: new Set([ANA]) }))
     expect(claw.phase).toBe('drop')
-    runFor(match, 12)
+    runFor(match, 6)
+    return { claw, match }
+  }
+
+  /** Hangs a claw over the right chute, as far in as it reaches. */
+  const overChute = (claw: { x: number; z: number }) => {
+    const chute = PIT.chutes[1]
+    claw.x = Math.min(PIT.reach.maxX, chute.x)
+    claw.z = Math.min(PIT.reach.maxZ, chute.z)
+    expect(PIT.inChute(claw.x, claw.z)).toBe(true)
+  }
+
+  it('grabs what lies under it and holds it without scoring', () => {
+    const { claw } = holdingClaw()
     expect(claw.phase).toBe('aim')
-    expect(claw.score).toBeGreaterThan(0)
+    expect(claw.carried?.state).toBe('carried')
+    expect(claw.score).toBe(0)
+  })
+
+  it('scores a prize let go over a chute', () => {
+    const { claw, match } = holdingClaw()
+    const value =
+      claw.carried?.kind === 'capsule' ? CLAW_TUNING.capsuleValue : 1
+    overChute(claw)
+    match.advance(stepOf({ drops: new Set([ANA]) }))
+    expect(claw.carried).toBeNull()
+    expect(claw.score).toBe(value)
     expect(match.view().lastCatch?.seat).toBe(ANA)
+  })
+
+  it('lets a prize fall back onto the pile away from a chute', () => {
+    const { claw, match } = holdingClaw()
+    const prize = claw.carried
+    claw.x = 0
+    match.advance(stepOf({ drops: new Set([ANA]) }))
+    expect(claw.carried).toBeNull()
+    expect(claw.score).toBe(0)
+    runFor(match, 3)
+    expect(prize?.state).toBe('resting')
+  })
+
+  it('lets a claw holding a prize score once time is up', () => {
+    const { claw, match } = holdingClaw()
+    runFor(match, CLAW_TUNING.roundSeconds - match.view().elapsed + 0.1)
+    expect(match.view().outcome).toBeNull()
+    overChute(claw)
+    match.advance(stepOf({ drops: new Set([ANA]) }))
+    expect(claw.score).toBeGreaterThan(0)
+    runFor(match, 0.1)
+    expect(match.view().outcome?.winners).toEqual([ANA])
   })
 
   it('ignores a drop once time is up', () => {

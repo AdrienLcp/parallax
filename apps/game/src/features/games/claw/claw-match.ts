@@ -36,7 +36,11 @@ export type Prize = {
   z: number
 }
 
-export type ClawPhase = 'aim' | 'drop' | 'grip' | 'lift' | 'carry'
+/**
+ * `aim`: hanging at roaming height, steered by its player, empty or holding a
+ * prize. `drop`, `grip`, `lift`: down for a prize and back up, out of hand.
+ */
+export type ClawPhase = 'aim' | 'drop' | 'grip' | 'lift'
 
 export type Claw = {
   /** The prize under it, `null` while empty. */
@@ -90,17 +94,27 @@ export type ClawMatch = {
 export const prizeValue = (kind: PrizeKind): number =>
   kind === 'capsule' ? CLAW_TUNING.capsuleValue : 1
 
+/** How open shut prongs stay, around a prize or on nothing. */
+const GRIP_SHUT = 0.15
+
+/**
+ * The stick's response: a claw's speed grows with the square of the stick's
+ * tilt, so a slight push creeps for a fine aim and a full one crosses fast.
+ */
+const AIM_CURVE = 2
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
 
 /**
  * The claw game the screen runs: a pile of plush and capsules from wall to
  * wall, one claw a player on cables from the roof's rails. A player steers
- * their claw across and in depth while watching it, then drops it: it goes
- * down, grips whatever lies under it, comes back up (a prize may slip out),
- * and carries a catch to the nearest chute by itself. A plush is worth 1, a
- * capsule more; when time is up the claws already down finish, and the best
- * score wins.
+ * their claw across and in depth while watching it, then sends it down: it
+ * grips whatever lies under it and comes back up (a prize may slip out). The
+ * player then steers the catch to a chute and lets go: over a chute it
+ * scores, anywhere else it falls back onto the pile. A plush is worth 1, a
+ * capsule more. When time is up the empty claws stop, the ones down or
+ * holding a prize get a last few seconds to finish, and the best score wins.
  */
 export const createClawMatch = ({
   pit,
@@ -195,12 +209,12 @@ export const createClawMatch = ({
 
   const isTimeUp = () => elapsed >= CLAW_TUNING.roundSeconds
 
-  /** Lets go of a claw's prize where it hangs: back onto the pile, or into the chute below. */
-  const letGo = (claw: Claw, intoChute: boolean) => {
+  /** Lets go of a claw's prize where it hangs: into the chute below it, or back onto the pile. */
+  const letGo = (claw: Claw) => {
     const prize = claw.carried
     if (prize === null) return
     prize.state = 'falling'
-    prize.intoChute = intoChute
+    prize.intoChute = pit.inChute(claw.x, claw.z)
     prize.vy = 0
     prize.x = claw.x
     prize.z = claw.z
@@ -212,22 +226,36 @@ export const createClawMatch = ({
     const dt = CLAW_STEP_SECONDS
     switch (claw.phase) {
       case 'aim': {
-        claw.open = 1
+        const prize = claw.carried
+        claw.open = prize === null ? 1 : GRIP_SHUT
         claw.y += clamp(
           pit.roamY - claw.y,
           -CLAW_TUNING.liftSpeed * dt,
           CLAW_TUNING.liftSpeed * dt
         )
-        if (isTimeUp()) return
+        if (isTimeUp() && prize === null) return
         const stick = step.sticks.get(claw.seat)
         if (stick !== undefined) {
-          const length = Math.hypot(stick.x, stick.z)
-          const scale = length > 1 ? 1 / length : 1
-          const reachNow = CLAW_TUNING.aimSpeed * dt * scale
-          claw.x = clamp(claw.x + stick.x * reachNow, reach.minX, reach.maxX)
-          claw.z = clamp(claw.z + stick.z * reachNow, reach.minZ, reach.maxZ)
+          const length = Math.min(1, Math.hypot(stick.x, stick.z))
+          if (length > 0) {
+            const speed = CLAW_TUNING.aimSpeed * length ** AIM_CURVE
+            const stride = (speed * dt) / length
+            claw.x = clamp(claw.x + stick.x * stride, reach.minX, reach.maxX)
+            claw.z = clamp(claw.z + stick.z * stride, reach.minZ, reach.maxZ)
+          }
         }
-        if (step.drops.has(claw.seat)) claw.phase = 'drop'
+        if (!step.drops.has(claw.seat)) return
+        if (prize === null) {
+          claw.phase = 'drop'
+          return
+        }
+        if (pit.inChute(claw.x, claw.z)) {
+          const value = prizeValue(prize.kind)
+          claw.score += value
+          lastCatch = { at: elapsed, kind: prize.kind, seat: claw.seat, value }
+        }
+        letGo(claw)
+        claw.open = 1
         return
       }
       case 'drop': {
@@ -244,7 +272,7 @@ export const createClawMatch = ({
       }
       case 'grip': {
         claw.timer -= dt
-        claw.open = Math.max(0.15, claw.timer / CLAW_TUNING.gripSeconds)
+        claw.open = Math.max(GRIP_SHUT, claw.timer / CLAW_TUNING.gripSeconds)
         if (claw.timer > 0) return
         const caught = topPrizeNear(claw.x, claw.z, CLAW_TUNING.catchRadius)
         if (caught !== null) {
@@ -269,35 +297,9 @@ export const createClawMatch = ({
           claw.slipAt !== null &&
           claw.y >= claw.slipAt
         ) {
-          letGo(claw, false)
+          letGo(claw)
         }
-        if (claw.y >= pit.roamY) {
-          claw.phase = claw.carried === null ? 'aim' : 'carry'
-        }
-        return
-      }
-      case 'carry': {
-        const [left, right] = pit.chutes
-        const chute =
-          Math.abs(left.x - claw.x) < Math.abs(right.x - claw.x) ? left : right
-        const dx = clamp(chute.x, reach.minX, reach.maxX) - claw.x
-        const dz = clamp(chute.z, reach.minZ, reach.maxZ) - claw.z
-        const distance = Math.hypot(dx, dz)
-        const stride = Math.min(distance, CLAW_TUNING.carrySpeed * dt)
-        if (distance > 0.003) {
-          claw.x += (dx / distance) * stride
-          claw.z += (dz / distance) * stride
-          return
-        }
-        const prize = claw.carried
-        if (prize !== null) {
-          const value = prizeValue(prize.kind)
-          claw.score += value
-          lastCatch = { at: elapsed, kind: prize.kind, seat: claw.seat, value }
-          letGo(claw, true)
-        }
-        claw.open = 1
-        claw.phase = 'aim'
+        if (claw.y >= pit.roamY) claw.phase = 'aim'
         return
       }
       default:
@@ -307,8 +309,7 @@ export const createClawMatch = ({
 
   /** Claws on the move push each other apart, so their prongs never cross. */
   const separate = () => {
-    const movable = (claw: Claw) =>
-      claw.phase === 'aim' || claw.phase === 'carry'
+    const movable = (claw: Claw) => claw.phase === 'aim'
     for (let i = 0; i < claws.length; i += 1) {
       for (let j = i + 1; j < claws.length; j += 1) {
         const a = claws[i]
@@ -377,7 +378,7 @@ export const createClawMatch = ({
           ? []
           : claws.filter((claw) => claw.score === best).map((claw) => claw.seat)
     }
-    for (const claw of claws) letGo(claw, false)
+    for (const claw of claws) letGo(claw)
   }
 
   return {
@@ -388,7 +389,7 @@ export const createClawMatch = ({
         return decidedFor >= CLAW_TUNING.decidedPauseSeconds
       }
       for (const claw of claws) {
-        if (!step.seated.has(claw.seat)) letGo(claw, false)
+        if (!step.seated.has(claw.seat)) letGo(claw)
       }
       claws = claws.filter((claw) => step.seated.has(claw.seat))
       if (claws.length === 0) return true
@@ -400,7 +401,9 @@ export const createClawMatch = ({
 
       if (isTimeUp()) {
         finishing += CLAW_STEP_SECONDS
-        const isSettled = claws.every((claw) => claw.phase === 'aim')
+        const isSettled = claws.every(
+          (claw) => claw.phase === 'aim' && claw.carried === null
+        )
         if (isSettled || finishing >= CLAW_TUNING.longestFinishSeconds) {
           decide()
         }

@@ -11,14 +11,12 @@ export const LONGEST_FRAME_SECONDS = 0.25
 export const CLAW_STATE_REPORT_SECONDS = 0.2
 
 export const CLAW_TUNING = {
-  /** How fast a full stick moves a claw, in alcove units a second. */
-  aimSpeed: 0.45,
+  /** How fast a full stick moves a claw, in alcove units a second; a slighter tilt is much slower (`AIM_CURVE`). */
+  aimSpeed: 0.6,
   /** Share of the pile that are capsules. */
   capsuleShare: 0.15,
   /** What a capsule is worth; a plush is worth 1. */
   capsuleValue: 3,
-  /** How fast a claw carries its prize to the chute, in alcove units a second. */
-  carrySpeed: 0.55,
   /** A claw grips a prize whose centre lies this close to its axis, across and in depth. */
   catchRadius: 0.07,
   /** Two claws keep this far apart, axis to axis: their open prongs never cross. */

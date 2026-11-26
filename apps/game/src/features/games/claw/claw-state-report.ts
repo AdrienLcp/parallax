@@ -31,7 +31,12 @@ export const reportedState = ({
   return {
     phase: view.outcome === null ? 'playing' : 'decided',
     seats: view.claws.map((claw) => ({
-      activity: claw.phase === 'aim' ? 'aiming' : 'busy',
+      activity:
+        claw.phase !== 'aim'
+          ? 'busy'
+          : claw.carried === null
+            ? 'aiming'
+            : 'holding',
       score: claw.score,
       seatId: claw.seat,
       x: shareOf(claw.x, reach.minX, reach.maxX),

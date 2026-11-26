@@ -4,4 +4,4 @@
  * left open across a deploy: `hello` carries the client's version, and the
  * server refuses it rather than let a stale screen misread the room.
  */
-export const PROTOCOL_VERSION = 6
+export const PROTOCOL_VERSION = 7

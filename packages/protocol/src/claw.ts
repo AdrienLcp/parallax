@@ -22,7 +22,11 @@ export const clawStickSchema = z.object({
   z: axisSchema
 })
 
-/** Lowers the claw where it hangs; it grips, lifts and carries by itself. */
+/**
+ * The claw's one button. Empty, it lowers the claw where it hangs: it grips
+ * and comes back up by itself. Holding a prize, it lets go: into a chute if
+ * the claw hangs over one, back onto the pile otherwise.
+ */
 export const clawDropSchema = z.object({ type: z.literal('claw.drop') })
 
 export const clawSeatStickSchema = clawStickSchema.extend({
@@ -34,10 +38,11 @@ export const clawSeatDropSchema = clawDropSchema.extend({
 })
 
 /**
- * What a claw is doing: `aiming` while its player steers it, `busy` from the
- * drop until it comes back up (or empties a prize into its chute).
+ * What a claw is doing: `aiming` while its player steers it empty, `busy`
+ * from the drop until it comes back up, `holding` while its player steers it
+ * with a prize towards a chute.
  */
-export const clawActivitySchema = z.enum(['aiming', 'busy'])
+export const clawActivitySchema = z.enum(['aiming', 'busy', 'holding'])
 
 /**
  * What the screen, which runs the game, tells the phones: a few times a

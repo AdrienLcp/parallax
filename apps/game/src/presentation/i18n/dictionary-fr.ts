@@ -4,9 +4,11 @@ export default defineDictionary({
   claw: {
     cue: {
       aim: 'Guidez la pince',
-      drop: 'Lâchez sur un lot'
+      chute: 'Lâchez-le dans un trou',
+      grab: 'Attrapez un lot'
     },
     drop: 'Lâcher',
+    grab: 'Attraper',
     map: 'Plan de la fosse, vue de dessus',
     outcome: {
       lost: 'Perdu',

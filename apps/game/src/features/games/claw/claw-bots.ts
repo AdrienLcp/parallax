@@ -14,7 +14,8 @@ type BotAim = {
 /**
  * Bots playing the claw by themselves, for the showcase: each picks one of
  * the prizes nearest its claw, steers over it a little off, lingers, and
- * drops. Off by enough that a grip misses now and then.
+ * grabs; off by enough that a grip misses now and then. Holding a prize, it
+ * steers to the nearest chute and lets go.
  */
 export const createClawBots = (random: () => number, pit: ClawPit) => {
   const aims = new Map<SeatId, BotAim>()
@@ -48,6 +49,21 @@ export const createClawBots = (random: () => number, pit: ClawPit) => {
     }
   }
 
+  /** Over the nearest chute, as far in as the claw reaches. */
+  const toChute = (x: number): BotAim => {
+    const [left, right] = pit.chutes
+    const chute = Math.abs(left.x - x) < Math.abs(right.x - x) ? left : right
+    const { reach } = pit
+    return {
+      patience: 6,
+      target: {
+        x: Math.min(reach.maxX, Math.max(reach.minX, chute.x)),
+        z: Math.min(reach.maxZ, Math.max(reach.minZ, chute.z))
+      },
+      wait: 0.2 + random() * 0.4
+    }
+  }
+
   return (
     match: ClawMatch,
     seconds: number
@@ -62,7 +78,8 @@ export const createClawBots = (random: () => number, pit: ClawPit) => {
       }
       let aim = aims.get(claw.seat)
       if (aim === undefined) {
-        aim = pick(claw.x, claw.z, prizes)
+        aim =
+          claw.carried === null ? pick(claw.x, claw.z, prizes) : toChute(claw.x)
         aims.set(claw.seat, aim)
       }
       aim.patience -= seconds
@@ -72,10 +89,13 @@ export const createClawBots = (random: () => number, pit: ClawPit) => {
       }
       const dx = aim.target.x - claw.x
       const dz = aim.target.z - claw.z
-      if (Math.hypot(dx, dz) > 0.008) {
+      const distance = Math.hypot(dx, dz)
+      if (distance > 0.008) {
+        // The claw's speed grows with the square of the tilt: a root keeps the approach brisk.
+        const tilt = Math.sqrt(Math.min(1, distance / 0.06))
         sticks.set(claw.seat, {
-          x: Math.max(-1, Math.min(1, dx / 0.06)),
-          z: Math.max(-1, Math.min(1, dz / 0.06))
+          x: (dx / distance) * tilt,
+          z: (dz / distance) * tilt
         })
         continue
       }

@@ -4,9 +4,11 @@ export const EN_DICTIONARY = defineDictionary({
   claw: {
     cue: {
       aim: 'Steer the claw',
-      drop: 'Drop on a prize'
+      chute: 'Drop it in a chute',
+      grab: 'Grab a prize'
     },
     drop: 'Drop',
+    grab: 'Grab',
     map: 'Map of the pit, seen from above',
     outcome: {
       lost: 'Lost',
