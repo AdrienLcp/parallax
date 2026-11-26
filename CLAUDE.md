@@ -58,7 +58,7 @@ clear of them is preferred. The rest (flat lettering, checks on the unit):
 
 A Node script stands in for players: one `WebSocket` per `sessionId`
 (`/^[\w-]{16,64}$/`) on `ws://127.0.0.1:8798/ws/rooms/<CODE>` (wrangler listens on IPv4 only), sends
-`hello` `{ protocolVersion: 5, credentials: { role: 'player', sessionId } }`,
+`hello` `{ protocolVersion: 6, credentials: { role: 'player', sessionId } }`,
 then `seat.ready` `{ name: null }` (a match starts once every present seat is
 ready, and each match spends the marks: ready again for the next one), `ping`
 every 4 s, `sumo.stick` every 50 ms at 0.45 magnitude (at 1 almost every

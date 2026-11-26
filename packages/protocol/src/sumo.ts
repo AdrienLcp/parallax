@@ -19,12 +19,19 @@ export const sumoStickSchema = z.object({
 
 export const sumoDashSchema = z.object({ type: z.literal('sumo.dash') })
 
+/** The top hops: in the air, a dash passes under it. */
+export const sumoJumpSchema = z.object({ type: z.literal('sumo.jump') })
+
 /** The stick as the screen hears it, stamped with the seat that sent it. */
 export const sumoSeatStickSchema = sumoStickSchema.extend({
   seatId: seatIdSchema
 })
 
 export const sumoSeatDashSchema = sumoDashSchema.extend({
+  seatId: seatIdSchema
+})
+
+export const sumoSeatJumpSchema = sumoJumpSchema.extend({
   seatId: seatIdSchema
 })
 
@@ -38,7 +45,7 @@ export const sumoStateSchema = z.object({
   phase: z.enum(['lobby', 'countdown', 'fighting', 'decided']),
   tops: z.array(
     z.object({
-      /** Who pushed this top into the gutter: `null` while it spins, or when it drove itself off. */
+      /** Who pushed this top off the table: `null` while it spins, or when it drove itself off. */
       outBy: seatIdSchema.nullable(),
       roundsWon: z.number().int().nonnegative(),
       seatId: seatIdSchema,
@@ -51,4 +58,5 @@ export const sumoStateSchema = z.object({
 export type SumoStick = z.infer<typeof sumoStickSchema>
 export type SumoSeatStick = z.infer<typeof sumoSeatStickSchema>
 export type SumoSeatDash = z.infer<typeof sumoSeatDashSchema>
+export type SumoSeatJump = z.infer<typeof sumoSeatJumpSchema>
 export type SumoState = z.infer<typeof sumoStateSchema>

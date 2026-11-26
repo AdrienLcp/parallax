@@ -11,7 +11,12 @@ import {
   seatReadySchema,
   seatUnreadySchema
 } from './lobby'
-import { sumoDashSchema, sumoStateSchema, sumoStickSchema } from './sumo'
+import {
+  sumoDashSchema,
+  sumoJumpSchema,
+  sumoStateSchema,
+  sumoStickSchema
+} from './sumo'
 import {
   towerAimSchema,
   towerDropSchema,
@@ -57,6 +62,7 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   seatLeaveSchema,
   sumoStickSchema,
   sumoDashSchema,
+  sumoJumpSchema,
   sumoStateSchema,
   towerAimSchema,
   towerDropSchema,

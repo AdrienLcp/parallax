@@ -313,6 +313,19 @@ describe('handleFrame', () => {
     })
   })
 
+  it('passes a jump to the screen stamped with the seat that sent it', () => {
+    const outcome = sendFrame({
+      admission: PLAYER,
+      frame: '{"type":"sumo.jump"}',
+      store: openedStore()
+    })
+
+    expect(outcome.event).toEqual({
+      kind: 'to_screen',
+      message: { seatId: 'seat-1', type: 'sumo.jump' }
+    })
+  })
+
   it('passes the screen state to the phones', () => {
     const state = { phase: 'fighting', tops: [], type: 'sumo.state' }
 

@@ -14,6 +14,7 @@ import type { SeatId } from '@parallax/protocol/identifiers'
 import type { ReplyMessage } from '@parallax/protocol/server-message'
 import type {
   SumoSeatDash,
+  SumoSeatJump,
   SumoSeatStick,
   SumoState
 } from '@parallax/protocol/sumo'
@@ -41,6 +42,7 @@ export type SessionEvent =
       kind: 'to_screen'
       message:
         | SumoSeatDash
+        | SumoSeatJump
         | SumoSeatStick
         | TowerSeatAim
         | TowerSeatDrop
@@ -172,6 +174,7 @@ const play = ({
         shouldClose: true
       }
     case 'sumo.dash':
+    case 'sumo.jump':
     case 'sumo.stick':
     case 'tower.aim':
     case 'tower.drop':

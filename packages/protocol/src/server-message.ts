@@ -11,6 +11,7 @@ import { roomCodeSchema, seatIdSchema } from './identifiers'
 import { seatSchema } from './room'
 import {
   sumoSeatDashSchema,
+  sumoSeatJumpSchema,
   sumoSeatStickSchema,
   sumoStateSchema
 } from './sumo'
@@ -55,6 +56,7 @@ export const screenEventSchema = z.discriminatedUnion('type', [
   screenRoomMessageSchema,
   sumoSeatStickSchema,
   sumoSeatDashSchema,
+  sumoSeatJumpSchema,
   towerSeatAimSchema,
   towerSeatDropSchema,
   towerSeatRuleChoiceSchema,
