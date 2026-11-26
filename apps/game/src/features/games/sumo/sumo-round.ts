@@ -32,6 +32,8 @@ export const startRound = (seats: readonly SeatId[]): SumoRound => {
     remaining: SUMO_TUNING.countdownSeconds,
     tops: seats.map((seat, index) => ({
       dashCooldown: 0,
+      jumpCooldown: 0,
+      jumpElapsed: null,
       lastContact: null,
       position: marks[index] ?? ORIGIN,
       seat,

@@ -7,6 +7,8 @@ import { SUMO_TUNING } from './sumo-tuning'
 
 const spinning = (seat: string): SpinningTop => ({
   dashCooldown: 0,
+  jumpCooldown: 0,
+  jumpElapsed: null,
   lastContact: null,
   position: { x: 0, y: 0 },
   seat,

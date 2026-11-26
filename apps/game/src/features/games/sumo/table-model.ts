@@ -16,11 +16,10 @@ import {
   Vector2
 } from 'three'
 
-import { ARENA_DRUM, DITCH_FLOOR, DRUM_LIP_TOP } from './arena-drum'
 import { ARENA_PLAN, FILET_WIDTHS } from './arena-plan'
+import { ARENA_TABLE } from './arena-table'
 import { SHIPPED_LIGHTING } from './arena-tuning'
 import { laidFlat } from './laid-flat'
-import { SUMO_TUNING } from './sumo-tuning'
 
 const ROUND_SEGMENTS = 200
 /** A filet's lift over the surface it is drawn on, enough to win the depth test. */
@@ -78,7 +77,7 @@ const shadowCatcher = (
 
 /** The plan's markings on the felt: rim, centre ring, centre spot and ticks, in unlit brass. */
 const buildMarkings = (brass: Color): Group => {
-  const y = ARENA_DRUM.surfaceHeight + FILET_LIFT
+  const y = ARENA_TABLE.thickness + FILET_LIFT
   const markings = new Group()
   markings.add(
     filet({
@@ -146,138 +145,96 @@ const openCylinder = ({
   return cylinder
 }
 
+/** Where the slab's walnut underside narrows to the column's capital. */
+export const SLAB_FOOT_RADIUS = 0.2
+
 /**
- * The arena as an object on the alcove's floor: a low walnut drum whose felt
- * platform is raised inside a ditch, ringed by a walnut lip with a brass filet
- * and a brass band. The felt and its markings stay unlit, as the plan draws
- * them; the wood and brass take the light, and catchers lay the tops' and the
- * drum's soft shadows on the felt, in the ditch and on the floor.
+ * The arena's guéridon top, its underside at its origin: felt running out to
+ * a brass edge with no lip, over a walnut slab that narrows to the column's
+ * capital. The felt and its markings stay unlit, as the plan draws them; the
+ * wood and brass take the light, and a catcher lays the tops' soft shadows on
+ * the felt. The column and the floor are the renderer's.
  */
-export const buildDrum = (read: ReadColor): Group => {
+export const buildTable = (read: ReadColor): Group => {
   const brass = read('var(--brass)')
   const ink = read('var(--lacquer-ink)')
   const walnut = read('var(--walnut)')
   const walnutDark = read(
     'color-mix(in oklab, var(--walnut) 70%, var(--lacquer-ink))'
   )
-  const feltDeep = read('var(--felt-deep)')
-  const { arenaRadius } = SUMO_TUNING
-  const {
-    baseRadius,
-    bandHeight,
-    ditchDepth,
-    lipFiletWidth,
-    lipHeight,
-    lipInnerRadius,
-    lipOuterRadius,
-    surfaceHeight
-  } = ARENA_DRUM
+  const { bandHeight, edgeRadius, thickness } = ARENA_TABLE
 
-  const platform = laidFlat(
+  const felt = laidFlat(
     new Mesh(
-      new CircleGeometry(arenaRadius, ROUND_SEGMENTS),
+      new CircleGeometry(edgeRadius, ROUND_SEGMENTS),
       new MeshBasicMaterial({
         color: read('color-mix(in oklab, var(--felt) 94%, var(--chalk))')
       })
     ),
-    surfaceHeight
+    thickness
   )
 
-  const ditchFloor = laidFlat(
-    new Mesh(
-      new RingGeometry(arenaRadius, lipInnerRadius, ROUND_SEGMENTS),
-      new MeshBasicMaterial({ color: feltDeep })
-    ),
-    DITCH_FLOOR
-  )
-  const innerWall = openCylinder({
-    height: ditchDepth,
-    material: lit(feltDeep, { side: DoubleSide }),
-    radius: arenaRadius,
-    y: surfaceHeight - ditchDepth / 2
-  })
-  innerWall.receiveShadow = true
-  const outerWall = openCylinder({
-    height: ditchDepth + lipHeight,
-    material: lit(walnutDark, { side: DoubleSide }),
-    radius: lipInnerRadius,
-    y: DITCH_FLOOR + (ditchDepth + lipHeight) / 2
-  })
-  outerWall.receiveShadow = true
-
-  const lipTop = laidFlat(
-    new Mesh(
-      new RingGeometry(lipInnerRadius, lipOuterRadius, ROUND_SEGMENTS),
-      lit(walnut)
-    ),
-    DRUM_LIP_TOP
-  )
-  lipTop.castShadow = true
-  lipTop.receiveShadow = true
-
-  const band = openCylinder({
+  const edge = openCylinder({
     height: bandHeight,
     material: new MeshStandardMaterial({
       color: brass,
       metalness: 0.85,
       roughness: 0.3
     }),
-    radius: lipOuterRadius + 0.004,
-    y: DRUM_LIP_TOP - bandHeight / 2
+    radius: edgeRadius + 0.004,
+    y: thickness - bandHeight / 2
   })
-  band.castShadow = true
+  edge.castShadow = true
 
-  const sideProfile = [
-    [baseRadius, 0],
-    [baseRadius, 0.025],
-    [lipOuterRadius + 0.012, 0.04],
-    [lipOuterRadius, 0.05],
-    [lipOuterRadius, DRUM_LIP_TOP - bandHeight]
+  const slabProfile = [
+    [SLAB_FOOT_RADIUS, 0],
+    [0.3, 0.02],
+    [edgeRadius - 0.05, thickness - 0.11],
+    [edgeRadius, thickness - 0.085],
+    [edgeRadius, thickness - bandHeight]
   ].map(([x = 0, y = 0]) => new Vector2(x, y))
-  const side = new Mesh(
-    new LatheGeometry(sideProfile, ROUND_SEGMENTS),
+  const slab = new Mesh(
+    new LatheGeometry(slabProfile, ROUND_SEGMENTS),
     lit(walnut)
   )
-  side.castShadow = true
-  side.receiveShadow = true
+  slab.castShadow = true
+  slab.receiveShadow = true
 
+  const underside = laidFlat(
+    new Mesh(
+      new CircleGeometry(SLAB_FOOT_RADIUS, 48),
+      lit(walnutDark, { side: DoubleSide })
+    ),
+    0
+  )
+
+  /** A flat disc only casts from its back face: both sides, or the slab casts a ring. */
   const shadowCaster = laidFlat(
     new Mesh(
-      new CircleGeometry(lipOuterRadius, 96),
-      new MeshBasicMaterial({ colorWrite: false, depthWrite: false })
+      new CircleGeometry(edgeRadius, 96),
+      new MeshBasicMaterial({
+        colorWrite: false,
+        depthWrite: false,
+        side: DoubleSide
+      })
     ),
-    surfaceHeight / 2
+    thickness / 2
   )
   shadowCaster.castShadow = true
 
-  const drum = new Group()
-  drum.add(
-    platform,
+  const table = new Group()
+  table.add(
+    felt,
     buildMarkings(brass),
-    ditchFloor,
-    innerWall,
-    outerWall,
-    lipTop,
-    filet({
-      color: brass,
-      radius: lipInnerRadius + lipFiletWidth / 2,
-      width: lipFiletWidth,
-      y: DRUM_LIP_TOP + FILET_LIFT
-    }),
-    band,
-    side,
+    edge,
+    slab,
+    underside,
     shadowCaster,
     shadowCatcher(
-      new CircleGeometry(arenaRadius, ROUND_SEGMENTS),
-      surfaceHeight,
+      new CircleGeometry(edgeRadius, ROUND_SEGMENTS),
+      thickness,
       ink
-    ),
-    shadowCatcher(
-      new RingGeometry(arenaRadius, lipInnerRadius, ROUND_SEGMENTS),
-      DITCH_FLOOR,
-      ink
-    ),
-    shadowCatcher(new PlaneGeometry(9, 9), 0, ink)
+    )
   )
-  return drum
+  return table
 }

@@ -1,12 +1,12 @@
-import { ARENA_DRUM, DITCH_FLOOR, DRUM_LIP_TOP } from './arena-drum'
+import { ARENA_TABLE } from './arena-table'
 import { SUMO_TUNING } from './sumo-tuning'
 
 /** How much taller than the physics' disc the modelled top stands, so it reads from across the room. */
 const TOP_SCALE = 2
 
-/** How tall the arena's objects stand, as multiples of the shipped drum and tops. */
+/** How tall the arena's objects stand, as multiples of the shipped table and tops. */
 export type ArenaShape = {
-  /** Stretches the drum upward from the alcove's floor: its felt, ditch and lip rise with it. */
+  /** Thickens the table's slab upward from its underside: the felt rises with it, the column stays. */
   readonly drumHeightScale: number
   readonly topHeightScale: number
 }
@@ -18,8 +18,7 @@ export const SHIPPED_SHAPE: ArenaShape = {
 
 /** The heights the scene stands the tops on and frames, in arena units from the alcove's floor. */
 export type ArenaHeights = {
-  readonly ditchFloor: number
-  readonly lipTop: number
+  /** The felt, where a standing top's point rests. */
   readonly surfaceHeight: number
   readonly topHeight: number
 }
@@ -28,9 +27,7 @@ export const heightsOf = ({
   drumHeightScale,
   topHeightScale
 }: ArenaShape): ArenaHeights => ({
-  ditchFloor: DITCH_FLOOR * drumHeightScale,
-  lipTop: DRUM_LIP_TOP * drumHeightScale,
-  surfaceHeight: ARENA_DRUM.surfaceHeight * drumHeightScale,
+  surfaceHeight: ARENA_TABLE.rise + ARENA_TABLE.thickness * drumHeightScale,
   topHeight: SUMO_TUNING.topRadius * 1.2 * TOP_SCALE * topHeightScale
 })
 

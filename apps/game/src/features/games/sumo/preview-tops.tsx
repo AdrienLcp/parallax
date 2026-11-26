@@ -11,7 +11,7 @@ import {
   type TablePoint,
   TOP_HEIGHT
 } from './arena-camera'
-import { ARENA_DRUM } from './arena-drum'
+import { SHIPPED_HEIGHTS } from './arena-shape'
 import { roundMarksOf } from './round-marks'
 import { SHOWCASE_SLOTS } from './showcase-slots'
 import { SUMO_TUNING } from './sumo-tuning'
@@ -19,7 +19,7 @@ import { TOP_PROFILE } from './top-profile'
 
 const TOP_RADIUS = SUMO_TUNING.topRadius
 
-const FELT = ARENA_DRUM.surfaceHeight
+const FELT = SHIPPED_HEIGHTS.surfaceHeight
 
 /** The heights above the alcove's floor and the radii the scene's top model is built from, in arena units. */
 const TOP_MODEL = {

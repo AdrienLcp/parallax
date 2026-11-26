@@ -28,6 +28,8 @@ const step = (
 
 const spinningAt = (seat: string, x: number, speed = 0): SpinningTop => ({
   dashCooldown: 0,
+  jumpCooldown: 0,
+  jumpElapsed: null,
   lastContact: null,
   position: { x, y: 0 },
   seat,

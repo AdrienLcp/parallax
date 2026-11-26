@@ -71,8 +71,8 @@ describe('parseTuning', () => {
 
   it('takes a picked colour in lower case, and refuses one that is not #rrggbb', () => {
     expect(parseTuning({ backdrop: '#ABCDEF' }).backdrop).toBe('#abcdef')
-    expect(parseTuning({ backdrop: 'red' }).backdrop).toBe('lacquer-ink')
-    expect(parseTuning({ backdrop: '#fff' }).backdrop).toBe('lacquer-ink')
+    expect(parseTuning({ backdrop: 'red' }).backdrop).toBe('game')
+    expect(parseTuning({ backdrop: '#fff' }).backdrop).toBe('game')
   })
 
   it('reads a downloaded file through its tuning', () => {

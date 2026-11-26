@@ -8,18 +8,20 @@ import { SUMO_TUNING } from './sumo-tuning'
 
 /** One top as the arena draws it, in arena units. */
 export type DrawnTop = {
-  /** 0 while it stands on the platform, rising to 1 as it comes to lie in the ditch, and 1 once out. */
+  /** 0 while it stands on the table, rising to 1 as it falls to the floor, and 1 once out: it has burst. */
   readonly fall: number
   /** Its phone went silent: the top stays on the board with nobody driving it. */
   readonly isAbsent: boolean
   /** It dashed less than a cooldown ago and cannot dash again yet. */
   readonly isDashRecharging: boolean
+  /** The share of its airtime a jumping top has spent, 0 on the felt. */
+  readonly jump: number
   readonly position: PlanarVector
   readonly slot: SeatSlot
   readonly velocity: PlanarVector
 }
 
-/** What the arena shows at one instant: the tops on the felt, on their way down, or lying in the ditch. */
+/** What the arena shows at one instant: the tops on the felt or in the air, on their way down, or burst on the floor. */
 export type ArenaFrame = {
   readonly tops: readonly DrawnTop[]
 }
@@ -28,7 +30,7 @@ const EMPTY_ARENA: ArenaFrame = { tops: [] }
 
 const STILL = { x: 0, y: 0 }
 
-/** How the arena draws one top of a round: once out, it lies in the ditch until the next round. */
+/** How the arena draws one top of a round: once out, it has burst on the floor and is gone until the next round. */
 export const drawnTopOf = ({
   isAbsent,
   slot,
@@ -43,6 +45,7 @@ export const drawnTopOf = ({
         fall: 1,
         isAbsent,
         isDashRecharging: false,
+        jump: 0,
         position: top.position,
         slot,
         velocity: STILL
@@ -54,6 +57,10 @@ export const drawnTopOf = ({
             : 0,
         isAbsent,
         isDashRecharging: top.status === 'spinning' && top.dashCooldown > 0,
+        jump:
+          top.status === 'spinning' && top.jumpElapsed !== null
+            ? top.jumpElapsed / SUMO_TUNING.jumpAirSeconds
+            : 0,
         position: top.position,
         slot,
         velocity: top.velocity

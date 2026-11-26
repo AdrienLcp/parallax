@@ -58,37 +58,58 @@ const dash: SoundCue = (target) => {
   })
 }
 
-/** A top sliding over the rim, then dropping into the gutter with a soft thud. */
+/** A top tipping off the table's edge: a falling whistle while it drops. */
 const fall: SoundCue = (target) => {
-  const at = target.context.currentTime
   playTone({
     ...target,
-    at,
+    at: target.context.currentTime,
     attack: 0.01,
-    decay: 0.45,
-    frequency: 520,
-    glideTo: 120,
+    decay: 0.75,
+    frequency: 620,
+    glideTo: 140,
     lowpass: 1800,
     peak: 0.12,
     type: 'triangle'
   })
-  playTone({
-    ...target,
-    at: at + 0.42,
-    attack: 0.003,
-    decay: 0.18,
-    frequency: 140,
-    glideTo: 70,
-    peak: 0.35
-  })
+}
+
+/** A top bursting on the floor: a lacquer crack over a dull thud. */
+const burst: SoundCue = (target) => {
+  const at = target.context.currentTime
   playNoise({
     ...target,
-    at: at + 0.42,
-    attack: 0.002,
-    decay: 0.08,
-    filter: 'lowpass',
-    frequency: 500,
-    peak: 0.2
+    at,
+    attack: 0.001,
+    decay: 0.22,
+    filter: 'bandpass',
+    frequency: 2400,
+    frequencyTo: 700,
+    peak: 0.3,
+    q: 0.8
+  })
+  playTone({
+    ...target,
+    at,
+    attack: 0.003,
+    decay: 0.22,
+    frequency: 130,
+    glideTo: 55,
+    peak: 0.4
+  })
+}
+
+/** A short springy hop. */
+const jump: SoundCue = (target) => {
+  playTone({
+    ...target,
+    at: target.context.currentTime,
+    attack: 0.005,
+    decay: 0.18,
+    frequency: 300,
+    glideTo: 760,
+    lowpass: 2400,
+    peak: 0.14,
+    type: 'triangle'
   })
 }
 
@@ -146,6 +167,8 @@ const draw: SoundCue = (target) => {
 /** How each of the sumo's cues sounds. */
 export const voiceOf = (cue: SumoSoundCue): SoundCue => {
   switch (cue.kind) {
+    case 'burst':
+      return burst
     case 'clack':
       return clack(cue.strength)
     case 'countdown':
@@ -158,6 +181,8 @@ export const voiceOf = (cue: SumoSoundCue): SoundCue => {
       return fall
     case 'fight':
       return fight
+    case 'jump':
+      return jump
     case 'matchWon':
       return matchWon
     case 'roundWon':

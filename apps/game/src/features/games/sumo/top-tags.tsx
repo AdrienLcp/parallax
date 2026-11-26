@@ -13,7 +13,7 @@ import { liftTagsApart, type TagBox } from './tag-placement'
 
 import './top-tags.sass'
 
-/** A falling top's tag is gone by the time the top is halfway into the ditch. */
+/** A falling top's tag fades as it leaves the felt; the renderer drops its anchor past the edge. */
 const TAG_FADE_PER_FALL = 2
 /** The room kept between two stacked plates, as a share of a plate's height. */
 const TAG_GAP_PER_PLATE_HEIGHT = 0.12

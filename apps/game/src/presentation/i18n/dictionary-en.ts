@@ -172,16 +172,20 @@ export const EN_DICTIONARY = defineDictionary({
   },
   sumo: {
     cue: {
-      knockOut: 'Knock them into the gutter',
+      dodge: 'Jump to dodge',
+      knockOut: 'Knock them off the table',
       steer: 'Steer with your thumb'
     },
     dash: 'Dash',
+    jump: 'Jump',
     out: {
       pushedBy: 'by <seat>{name}</seat>',
-      title: 'In the gutter'
+      title: 'Fallen off'
     },
     standings: {
-      ejected: '{seats:list} in the gutter',
+      ejected: defineTranslation('{seats:list} {count:plural}', {
+        plural: { count: { one: 'fell off', other: 'fell off' } }
+      }),
       firstTo: defineTranslation('First to {rounds:plural}', {
         plural: { rounds: { one: '{?} round', other: '{?} rounds' } }
       }),
@@ -250,6 +254,7 @@ export const EN_DICTIONARY = defineDictionary({
     backdrops: {
       custom: 'Colour',
       felt: 'Felt',
+      game: 'The game’s own',
       grey: 'Grey',
       ivory: 'Ivory',
       'lacquer-ink': 'Ink',

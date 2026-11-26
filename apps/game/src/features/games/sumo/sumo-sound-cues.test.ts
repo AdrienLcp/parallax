@@ -35,6 +35,8 @@ const top = (
   overrides: Partial<SpinningTop> = {}
 ): SpinningTop => ({
   dashCooldown: 0,
+  jumpCooldown: 0,
+  jumpElapsed: null,
   lastContact: null,
   position: { x, y: 0 },
   seat,
@@ -110,6 +112,26 @@ describe('sumo sound cues', () => {
       'dash',
       'fall'
     ])
+  })
+
+  it('[sumo] a jump hops, and a falling top bursts as it hits the floor', () => {
+    const before = fighting([top('red', 0, 0), top('blue', 0.5, 0)])
+    const after = advanceRound(before, { ...idle, jumps: new Set(['red']) })
+    expect(kindsOf(playing(before), playing(after))).toEqual(['jump'])
+
+    const falling = advanceRound(
+      fighting([
+        top('red', 0, 0),
+        top('blue', SUMO_TUNING.arenaRadius - 0.001, 1)
+      ]),
+      idle
+    )
+    const fallSteps = Math.ceil(SUMO_TUNING.fallSeconds / idle.seconds) + 1
+    let landed = falling
+    for (let step = 0; step < fallSteps; step++) {
+      landed = advanceRound(landed, idle)
+    }
+    expect(kindsOf(playing(falling), playing(landed))).toContain('burst')
   })
 
   it('[sumo] a decided round tells a win, a draw and the match apart', () => {

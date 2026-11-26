@@ -4,7 +4,7 @@ import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import './sumo-cues.sass'
 
-/** How the sumo plays, in two pictograms read from across the room: steer by thumb, knock the others into the gutter. */
+/** How the sumo plays, in three pictograms read from across the room: steer by thumb, knock the others off the table, jump to dodge. */
 export const SumoCues: React.FC = () => {
   const translate = useTranslate()
 
@@ -25,6 +25,13 @@ export const SumoCues: React.FC = () => {
           <path className='cue-line' d='M30 30 L36 34' />
         </svg>
         {translate('sumo.cue.knockOut')}
+      </li>
+      <li>
+        <svg aria-hidden='true' className='cue-icon' viewBox='0 0 48 48'>
+          <path className='cue-line' d='M8 42 Q24 2 40 42' />
+          <circle className='cue-fill' cx='24' cy='20' r='6' />
+        </svg>
+        {translate('sumo.cue.dodge')}
       </li>
     </ul>
   )

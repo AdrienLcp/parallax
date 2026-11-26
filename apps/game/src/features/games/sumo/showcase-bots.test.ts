@@ -19,6 +19,8 @@ const spinningTop = (
   dashCooldown = 0
 ): SpinningTop => ({
   dashCooldown,
+  jumpCooldown: 0,
+  jumpElapsed: null,
   lastContact: null,
   position,
   seat,

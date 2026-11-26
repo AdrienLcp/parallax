@@ -12,7 +12,8 @@ import {
 
 /**
  * Hands the page its tuned backdrop, the backdrop's tone (which turns the
- * lettering on it dark on a light backdrop), the HUD's scale and what of the
+ * lettering on it dark on a light backdrop, and follows the game shown when
+ * the backdrop is the game's own), the HUD's scale and what of the
  * HUD is hidden, on the root, for as long as a display surface is shown.
  * Returns the backdrop as `#rrggbb`.
  */
@@ -22,12 +23,29 @@ export const useTunedPage = ({ backdrop, hud }: DisplayTuning): string => {
 
   useLayoutEffect(() => {
     const root = document.documentElement
-    const resolved = resolveCssColor(color)
     root.style.setProperty('--backdrop', color)
-    root.dataset.backdropTone = toneOfBackdrop(relativeLuminanceOf(resolved))
-    setBackdropHex(hexOf(resolved))
+    let shownHex: string | null = null
+    /** Reads the backdrop as painted: the game's own changes with the game the page shows. */
+    const readBackdrop = () => {
+      // Probed under the root, outside the watched body: a probe in it would wake the watch again.
+      const resolved = resolveCssColor(color, root)
+      const hex = hexOf(resolved)
+      if (hex === shownHex) return
+      shownHex = hex
+      root.dataset.backdropTone = toneOfBackdrop(relativeLuminanceOf(resolved))
+      setBackdropHex(hex)
+    }
+    readBackdrop()
+    const games = new MutationObserver(readBackdrop)
+    games.observe(document.body, {
+      attributeFilter: ['data-game'],
+      attributes: true,
+      childList: true,
+      subtree: true
+    })
 
     return () => {
+      games.disconnect()
       root.style.removeProperty('--backdrop')
       delete root.dataset.backdropTone
     }

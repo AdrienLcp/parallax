@@ -46,6 +46,8 @@ describe('sumo round', () => {
         tops: [
           {
             dashCooldown: 0,
+            jumpCooldown: 0,
+            jumpElapsed: null,
             lastContact: null,
             position: { x: 0, y: 0 },
             seat: 'red',
@@ -67,6 +69,8 @@ describe('sumo round', () => {
         tops: [
           {
             dashCooldown: 0,
+            jumpCooldown: 0,
+            jumpElapsed: null,
             lastContact: null,
             position: { x: 0, y: 0 },
             seat: 'red',

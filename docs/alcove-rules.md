@@ -68,8 +68,8 @@ by where its top touches, never by its inset outline.
 - Shadows soften with distance, like under a real lamp: a piece on the floor
   casts a crisp one, a lifted piece a wide, faint one. A renderer calls
   `enableSoftShadows` and passes each shadow-casting directional light through
-  `softenShadow` (`features/alcove/alcove-soft-shadows.ts`). The tower does;
-  the sumo is still on three's own soft shadows.
+  `softenShadow` (`features/alcove/alcove-soft-shadows.ts`): the tower and the sumo
+  both do.
 
 ## Flat lettering
 

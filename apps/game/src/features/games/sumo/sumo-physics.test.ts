@@ -7,6 +7,8 @@ import { SUMO_STEP_SECONDS, SUMO_TUNING } from './sumo-tuning'
 
 const spinningTop = (overrides: Partial<SpinningTop> = {}): SpinningTop => ({
   dashCooldown: 0,
+  jumpCooldown: 0,
+  jumpElapsed: null,
   lastContact: null,
   position: ORIGIN,
   seat: 'red',
@@ -18,6 +20,7 @@ const spinningTop = (overrides: Partial<SpinningTop> = {}): SpinningTop => ({
 const idle = {
   controls: new Map(),
   dashes: new Set<string>(),
+  jumps: new Set<string>(),
   seconds: SUMO_STEP_SECONDS
 }
 
@@ -158,5 +161,50 @@ describe('sumo physics', () => {
       })
     ])
     expect(falling).toMatchObject({ outBy: null, status: 'falling' })
+  })
+
+  it('[sumo] a jumping top passes over a dashing rival untouched', () => {
+    const tops = [
+      spinningTop({ position: { x: -0.3, y: 0 }, seat: 'red' }),
+      spinningTop({ position: { x: 0, y: 0 }, seat: 'blue' })
+    ]
+    const afterJump = stepped(tops, {
+      controls: new Map([['red', { stick: { x: 1, y: 0 } }]]),
+      dashes: new Set(['red']),
+      jumps: new Set(['blue'])
+    })
+    const [, blue] = stepped(afterJump, {}, 12)
+    expect(blue?.status).toBe('spinning')
+    if (blue?.status !== 'spinning') return
+    expect(blue.position.x).toBeCloseTo(0)
+    expect(blue.lastContact).toBeNull()
+    expect(blue.jumpElapsed).not.toBeNull()
+  })
+
+  it('[sumo] a jumping top lands after its airtime and cannot jump again while it cools down', () => {
+    const airSteps = Math.ceil(SUMO_TUNING.jumpAirSeconds / SUMO_STEP_SECONDS)
+    const [landed] = stepped(
+      stepped([spinningTop()], { jumps: new Set(['red']) }),
+      {},
+      airSteps
+    )
+    expect(landed?.status === 'spinning' && landed.jumpElapsed).toBeNull()
+    if (landed === undefined) return
+    const [again] = stepped([landed], { jumps: new Set(['red']) })
+    expect(again?.status === 'spinning' && again.jumpElapsed).toBeNull()
+  })
+
+  it('[sumo] a top in the air over the edge falls once it lands', () => {
+    const tops = [
+      spinningTop({
+        jumpElapsed: SUMO_TUNING.jumpAirSeconds / 2,
+        position: { x: SUMO_TUNING.arenaRadius + 0.05, y: 0 }
+      })
+    ]
+    expect(stepped(tops)[0]?.status).toBe('spinning')
+    const airSteps = Math.ceil(
+      SUMO_TUNING.jumpAirSeconds / 2 / SUMO_STEP_SECONDS
+    )
+    expect(stepped(tops, {}, airSteps + 1)[0]?.status).toBe('falling')
   })
 })

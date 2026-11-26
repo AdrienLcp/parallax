@@ -10,8 +10,9 @@ import {
 } from '@/features/games/sumo/arena-tuning'
 import type { SrgbColor } from '@/infrastructure/css-color'
 
-/** The backdrops offered at a click, darkest first. */
+/** The backdrops offered at a click: the game's own first, then darkest first. */
 export const BACKDROP_PRESETS = [
+  'game',
   'lacquer-ink',
   'slate',
   'felt',
@@ -27,6 +28,8 @@ export type Backdrop = BackdropPreset | `#${string}`
 
 const PRESET_COLORS: Record<BackdropPreset, string> = {
   felt: 'var(--felt)',
+  /** Each game's world sets its own: light for the sumo, the tower and the claw. */
+  game: 'var(--host-backdrop)',
   grey: 'oklch(62% 0 0)',
   ivory: 'var(--ivory)',
   'lacquer-ink': 'var(--lacquer-ink)',
@@ -75,7 +78,7 @@ export type DisplayTuning = {
 
 export const SHIPPED_TUNING: DisplayTuning = {
   arena: SHIPPED_ARENA_TUNING,
-  backdrop: 'lacquer-ink',
+  backdrop: 'game',
   hud: { scale: 1, showHeader: true, showQr: true, showRoster: true }
 }
 

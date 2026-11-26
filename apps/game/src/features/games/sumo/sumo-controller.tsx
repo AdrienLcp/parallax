@@ -10,7 +10,7 @@ import { vibrate } from '@/infrastructure/browser'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import type { GameControllerProps } from '../game-definition'
-import { DashButton } from './dash-button'
+import { DashButton, JumpButton } from './dash-button'
 import { FloatingStick } from './floating-stick'
 import { SumoBand } from './sumo-band'
 import {
@@ -59,8 +59,8 @@ const SeatBadge: React.FC<SeatBadgeProps> = ({ seat }) => {
 /**
  * The sumo in the player's hands, on their seat's lacquer. Before a match:
  * the seat's name and the ready toggle. Once a round is on, in whichever way
- * the phone is held: the floating stick under the left thumb, the dash under
- * the right.
+ * the phone is held: the floating stick under the left thumb, the dash and
+ * the jump under the right.
  */
 export const SumoController: React.FC<GameControllerProps> = ({
   events,
@@ -84,6 +84,9 @@ export const SumoController: React.FC<GameControllerProps> = ({
 
   const dash = () => {
     send({ type: 'sumo.dash' })
+  }
+  const jump = () => {
+    send({ type: 'sumo.jump' })
   }
 
   const isRoundOver = isOutcome(view)
@@ -110,6 +113,7 @@ export const SumoController: React.FC<GameControllerProps> = ({
         <SeatBadge seat={ownSeat} />
         <FloatingStick onStick={sendStick} slot={ownSeat.slot} />
         <div className='dash-side'>
+          <JumpButton onJump={jump} />
           <DashButton onDash={dash} />
         </div>
       </section>

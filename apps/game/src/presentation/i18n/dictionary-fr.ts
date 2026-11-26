@@ -170,16 +170,20 @@ export default defineDictionary({
   },
   sumo: {
     cue: {
-      knockOut: 'Faites-les tomber dans la rigole',
+      dodge: 'Sautez pour esquiver',
+      knockOut: 'Faites-les tomber de la table',
       steer: 'Pilotez au pouce'
     },
     dash: 'Foncer',
+    jump: 'Sauter',
     out: {
       pushedBy: 'par <seat>{name}</seat>',
-      title: 'À la rigole'
+      title: 'Tombée'
     },
     standings: {
-      ejected: '{seats:list} à la rigole',
+      ejected: defineTranslation('{seats:list} {count:plural}', {
+        plural: { count: { one: 'est tombé', other: 'sont tombés' } }
+      }),
       firstTo: defineTranslation('Premier à {rounds:plural}', {
         plural: { rounds: { one: '{?} manche', other: '{?} manches' } }
       }),
@@ -248,6 +252,7 @@ export default defineDictionary({
     backdrops: {
       custom: 'Couleur',
       felt: 'Feutre',
+      game: 'Celui du jeu',
       grey: 'Gris',
       ivory: 'Ivoire',
       'lacquer-ink': 'Encre',

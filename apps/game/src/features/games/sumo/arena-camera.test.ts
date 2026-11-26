@@ -12,7 +12,10 @@ import {
   projectOnCanvas,
   SHIPPED_LENS
 } from './arena-camera'
-import { ARENA_DRUM, DITCH_FLOOR, DRUM_LIP_TOP } from './arena-drum'
+import { SHIPPED_HEIGHTS } from './arena-shape'
+import { ARENA_TABLE, FLOOR_REACH } from './arena-table'
+
+const FELT = SHIPPED_HEIGHTS.surfaceHeight
 
 const PORTRAIT_ROW = { height: 520, width: 506 }
 const TALL_ROW = { height: 2000, width: 1944 }
@@ -60,7 +63,7 @@ describe('projectOnCanvas', () => {
         [0, CAMERA_TARGET_HEIGHT, 0],
         [0.7, 0.3, -0.9],
         [-1.2, 0, 1.2],
-        [1.07, DITCH_FLOOR, 0.2]
+        [1.07, FELT, 0.2]
       ] as const) {
         const ndc = new Vector3(x, y, z).project(camera)
         const projected = projectOnCanvas(framing, { x, z }, y)
@@ -70,11 +73,11 @@ describe('projectOnCanvas', () => {
     }
   )
 
-  it('draws the drum nearer the room lower and larger, and a raised point higher', () => {
+  it('draws the table nearer the room lower and larger, and a raised point higher', () => {
     const framing = frameTheTable(PORTRAIT_ROW)
-    const near = projectOnCanvas(framing, { x: 0.5, z: 1 }, DRUM_LIP_TOP)
-    const far = projectOnCanvas(framing, { x: 0.5, z: -1 }, DRUM_LIP_TOP)
-    const raised = projectOnCanvas(framing, { x: 0.5, z: -1 }, 0.5)
+    const near = projectOnCanvas(framing, { x: 0.5, z: 1 }, FELT)
+    const far = projectOnCanvas(framing, { x: 0.5, z: -1 }, FELT)
+    const raised = projectOnCanvas(framing, { x: 0.5, z: -1 }, FELT + 0.5)
     expect(near.y).toBeGreaterThan(far.y)
     expect(near.x).toBeGreaterThan(far.x)
     expect(raised.y).toBeLessThan(far.y)
@@ -82,15 +85,16 @@ describe('projectOnCanvas', () => {
 })
 
 describe('frameTheTable', () => {
-  it('frames the drum foot and lip, a standing top and a fallen one', () => {
+  it('frames the floor a fallen top bursts on, the table edge and a hopping top', () => {
     const radii = FRAMED_RINGS.map(({ radius }) => radius)
-    expect(Math.max(...radii)).toBe(ARENA_DRUM.baseRadius)
+    expect(Math.max(...radii)).toBe(FLOOR_REACH)
+    expect(FRAMED_RINGS).toContainEqual({ radius: FLOOR_REACH, y: 0 })
     expect(FRAMED_RINGS).toContainEqual({
-      radius: ARENA_DRUM.lipOuterRadius,
-      y: DRUM_LIP_TOP
+      radius: ARENA_TABLE.edgeRadius,
+      y: FELT
     })
     expect(Math.max(...FRAMED_RINGS.map(({ y }) => y))).toBeGreaterThan(
-      ARENA_DRUM.surfaceHeight
+      FELT + SHIPPED_HEIGHTS.topHeight
     )
   })
 
@@ -118,17 +122,13 @@ describe('frameTheTable', () => {
     expect(drum.left).toBeCloseTo(canvas.width - drum.right, 1)
   })
 
-  it('keeps the drum the same size and seen from the same place in a shorter row', () => {
-    const tall = frameTheTable(PORTRAIT_ROW)
-    const short = frameTheTable({ ...PORTRAIT_ROW, height: 380 })
-    expect(short.distance).toBeCloseTo(tall.distance)
-    expect(short.halfHorizontal).toBeCloseTo(tall.halfHorizontal)
-  })
-
-  it('binds on the width in the display row, the drum being wider than tall', () => {
+  it('binds on the height in the display row, the table on its column being taller than wide', () => {
     const drum = extentOf(drumOutlineOf(frameTheTable(TALL_ROW)))
-    expect((drum.right - drum.left) / TALL_ROW.width).toBeCloseTo(FRAME_FILL, 2)
-    expect((drum.bottom - drum.top) / TALL_ROW.height).toBeLessThan(FRAME_FILL)
+    expect((drum.bottom - drum.top) / TALL_ROW.height).toBeCloseTo(
+      FRAME_FILL,
+      2
+    )
+    expect((drum.right - drum.left) / TALL_ROW.width).toBeLessThan(FRAME_FILL)
   })
 
   it('places the drum at the lens’s vertical centre', () => {
@@ -140,7 +140,7 @@ describe('frameTheTable', () => {
   it('fills the binding axis to the lens’s fill', () => {
     const lens = { ...SHIPPED_LENS, frameFill: 0.6 }
     const drum = extentOf(drumOutlineOf(frameTheTable(TALL_ROW, lens)))
-    expect((drum.right - drum.left) / TALL_ROW.width).toBeCloseTo(0.6, 2)
+    expect((drum.bottom - drum.top) / TALL_ROW.height).toBeCloseTo(0.6, 2)
   })
 
   it('frames a taller drum and taller tops whole, at the same fill', () => {

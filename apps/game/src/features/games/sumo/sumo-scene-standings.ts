@@ -32,6 +32,7 @@ const announced = ({
     case 'ejected':
       return {
         message: translate('sumo.standings.ejected', {
+          count: announcement.seats.length,
           seats: announcement.seats.map(nameOf)
         }),
         slots: slotsOf(announcement.seats)

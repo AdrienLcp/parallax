@@ -10,6 +10,11 @@ export const SUMO_TUNING = {
   driveAcceleration: 2.4,
   fallSeconds: 0.9,
   friction: 1.6,
+  /** How long a top stays in the air when it jumps: a dash passes under it. */
+  jumpAirSeconds: 0.55,
+  jumpCooldownSeconds: 1.4,
+  /** How high a jumping top rises at the top of its hop. */
+  jumpHeight: 0.45,
   /** How long the match's winner stays on the arena before the room gathers again. */
   matchPauseSeconds: 6,
   maximumDriveSpeed: 0.9,

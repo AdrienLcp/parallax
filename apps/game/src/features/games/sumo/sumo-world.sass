@@ -18,16 +18,18 @@
     --brass-deep: oklch(54.3% 0.095 83.4)
     --enamel: oklch(37.6% 0.105 261)
     --walnut: oklch(38% 0.058 56.8)
+    --sumo-paper: oklch(96% 0.01 85)
 
     // The brass ring round every top on the display, flat or modelled.
     --seat-top-ring: var(--brass)
 
-    --host-backdrop: var(--lacquer-ink)
+    // A light backdrop, so the alcove's depth reads (Adrien, mock E, 2026-11-26).
+    --host-backdrop: var(--sumo-paper)
     --host-ground: var(--felt)
     --host-ink: var(--chalk)
     --host-ink-soft: var(--chalk-soft)
     --host-ink-on-light: var(--lacquer-ink)
-    --host-ink-soft-on-light: color-mix(in oklab, var(--lacquer-ink) 74%, var(--ivory))
+    --host-ink-soft-on-light: oklch(36% 0.012 70)
     --host-line: var(--brass)
     --host-line-faint: var(--slate-line)
     --host-accent: var(--brass)

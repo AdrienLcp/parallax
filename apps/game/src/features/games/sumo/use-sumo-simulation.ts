@@ -65,7 +65,7 @@ const controlsOnArena = (
       )
 
 /**
- * Runs the sumo on the screen: hears the phones' sticks and dashes, starts a
+ * Runs the sumo on the screen: hears the phones' sticks, dashes and jumps, starts a
  * match once every present player is ready and tells the room their marks are
  * spent, steps the match at a fixed rate whatever the display's refresh, tells
  * the phones when its state changes, and keeps the standings the room reads
@@ -82,6 +82,7 @@ export const useSumoSimulation = ({
   const [standings, setStandings] = useState<SumoStandings | null>(null)
   const controls = useRef(new Map<SeatId, SumoControl>())
   const dashes = useRef(new Set<SeatId>())
+  const jumps = useRef(new Set<SeatId>())
   const present = useRef<readonly SeatId[]>([])
   const ready = useRef<ReadonlySet<SeatId>>(new Set())
   const seated = useRef<ReadonlySet<SeatId>>(new Set())
@@ -119,6 +120,8 @@ export const useSumoSimulation = ({
           })
         } else if (event.type === 'sumo.dash') {
           dashes.current.add(event.seatId)
+        } else if (event.type === 'sumo.jump') {
+          jumps.current.add(event.seatId)
         }
       }),
     [events]
@@ -153,6 +156,7 @@ export const useSumoSimulation = ({
         match = advanceMatch(match, {
           controls: controlsOnArena(controls.current, orbit.azimuth),
           dashes: dashes.current,
+          jumps: jumps.current,
           present: present.current,
           ready: ready.current,
           seated: seated.current,
@@ -166,6 +170,7 @@ export const useSumoSimulation = ({
           isEndUntold = true
         }
         dashes.current = new Set()
+        jumps.current = new Set()
         ejection = withEjected({
           ejected: ejectedBetween({ next: match, previous }),
           shown: agedEjection({ seconds: SUMO_STEP_SECONDS, shown: ejection })

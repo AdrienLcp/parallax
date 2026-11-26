@@ -10,10 +10,11 @@ import {
   projectOnCanvas,
   type TablePoint
 } from './arena-camera'
-import { ARENA_DRUM, DITCH_FLOOR, DRUM_LIP_TOP } from './arena-drum'
 import { ARENA_PLAN, FILET_WIDTHS } from './arena-plan'
+import { SHIPPED_HEIGHTS } from './arena-shape'
+import { ARENA_TABLE } from './arena-table'
+import { columnProfile } from './column-model'
 import { PreviewTops } from './preview-tops'
-import { SUMO_TUNING } from './sumo-tuning'
 
 import './sumo-preview.sass'
 
@@ -69,15 +70,35 @@ const bandPath = (
     ...pointsOn({ radius, y: bottom }, NEAR_HALF_BACK)
   ])
 
-/** The drum's walnut side as the room sees it: the lip's far half over the foot's near half. */
-const sidePath = (framing: ArenaFraming) =>
+const FELT = SHIPPED_HEIGHTS.surfaceHeight
+const UNDERSIDE = ARENA_TABLE.rise
+/** Where the slab's walnut underside narrows to the column's capital, as `table-model.ts` turns it. */
+const SLAB_FOOT_RADIUS = 0.2
+
+/** The slab's walnut side as the room sees it: the edge's far half over the underside's near half. */
+const slabPath = (framing: ArenaFraming) =>
   pathThrough(framing, [
     ...pointsOn(
-      { radius: ARENA_DRUM.lipOuterRadius, y: DRUM_LIP_TOP },
+      { radius: ARENA_TABLE.edgeRadius, y: FELT - ARENA_TABLE.bandHeight },
       FAR_HALF
     ),
-    ...pointsOn({ radius: ARENA_DRUM.baseRadius, y: 0 }, NEAR_HALF)
+    ...pointsOn({ radius: SLAB_FOOT_RADIUS, y: UNDERSIDE }, NEAR_HALF)
   ])
+
+/** The column's silhouette, its profile mirrored across the axis on the table's plane. */
+const columnPath = (framing: ArenaFraming) => {
+  const profile = columnProfile(UNDERSIDE)
+  return pathThrough(framing, [
+    ...profile.map(([radius, y]) => ({ point: { x: radius, z: 0 }, y })),
+    ...profile
+      .toReversed()
+      .map(([radius, y]) => ({ point: { x: -radius, z: 0 }, y }))
+  ])
+}
+
+/** The column's round foot, seen on the floor. */
+const footPath = (framing: ArenaFraming) =>
+  discPath(framing, { radius: columnProfile(UNDERSIDE)[1]?.[0] ?? 0, y: 0 })
 
 const tickSquareOf = (tick: number) => {
   const angle = (tick * 2 * Math.PI) / ARENA_PLAN.ticks
@@ -96,7 +117,7 @@ const tickSquareOf = (tick: number) => {
       x: centre.x + across * Math.cos(angle) - along * Math.sin(angle),
       z: centre.z + across * Math.sin(angle) + along * Math.cos(angle)
     },
-    y: ARENA_DRUM.surfaceHeight
+    y: FELT
   }))
 }
 
@@ -111,93 +132,48 @@ const TICKS = Array.from({ length: ARENA_PLAN.ticks }, (_, tick) => ({
   tick
 }))
 
-const HOLE_ID = 'sumo-preview-hole'
-
-const DrumDrawing: React.FC<{
+const TableDrawing: React.FC<{
   framing: ArenaFraming
   isShowcase: boolean
-}> = ({ framing, isShowcase }) => {
-  const hole = discPath(framing, {
-    radius: ARENA_DRUM.lipInnerRadius,
-    y: DRUM_LIP_TOP
-  })
-  return (
-    <svg aria-hidden='true' viewBox={`0 0 ${framing.width} ${framing.height}`}>
-      <clipPath id={HOLE_ID}>
-        <path d={hole} />
-      </clipPath>
-      <path className='drum-side' d={sidePath(framing)} />
+}> = ({ framing, isShowcase }) => (
+  <svg aria-hidden='true' viewBox={`0 0 ${framing.width} ${framing.height}`}>
+    <path className='column' d={footPath(framing)} />
+    <path className='column' d={columnPath(framing)} />
+    <path className='slab' d={slabPath(framing)} />
+    <path
+      className='table-band'
+      d={bandPath(framing, {
+        bottom: FELT - ARENA_TABLE.bandHeight,
+        radius: ARENA_TABLE.edgeRadius,
+        top: FELT
+      })}
+    />
+    <path
+      className='platform'
+      d={discPath(framing, { radius: ARENA_TABLE.edgeRadius, y: FELT })}
+    />
+    {MARKINGS.map(({ className, name }) => (
       <path
-        className='drum-band'
-        d={bandPath(framing, {
-          bottom: DRUM_LIP_TOP - ARENA_DRUM.bandHeight,
-          radius: ARENA_DRUM.lipOuterRadius,
-          top: DRUM_LIP_TOP
-        })}
-      />
-      <path
-        className='drum-lip'
-        d={discPath(framing, {
-          radius: ARENA_DRUM.lipOuterRadius,
-          y: DRUM_LIP_TOP
-        })}
-      />
-      <path className='ditch-wall' d={hole} />
-      <g clipPath={`url(#${HOLE_ID})`}>
-        <path
-          className='ditch'
-          d={discPath(framing, {
-            radius: ARENA_DRUM.lipInnerRadius,
-            y: DITCH_FLOOR
-          })}
-        />
-        <path
-          className='ditch'
-          d={bandPath(framing, {
-            bottom: DITCH_FLOOR,
-            radius: SUMO_TUNING.arenaRadius,
-            top: ARENA_DRUM.surfaceHeight
-          })}
-        />
-        <path
-          className='platform'
-          d={discPath(framing, {
-            radius: SUMO_TUNING.arenaRadius,
-            y: ARENA_DRUM.surfaceHeight
-          })}
-        />
-      </g>
-      {MARKINGS.map(({ className, name }) => (
-        <path
-          className={`filet ${className}`}
-          d={filetPath(framing, {
-            radius: ARENA_PLAN[name],
-            width: FILET_WIDTHS[name],
-            y: ARENA_DRUM.surfaceHeight
-          })}
-          key={name}
-        />
-      ))}
-      {TICKS.map(({ square, tick }) => (
-        <path className='tick' d={pathThrough(framing, square)} key={tick} />
-      ))}
-      <path
-        className='filet'
+        className={`filet ${className}`}
         d={filetPath(framing, {
-          radius: ARENA_DRUM.lipInnerRadius + ARENA_DRUM.lipFiletWidth / 2,
-          width: ARENA_DRUM.lipFiletWidth,
-          y: DRUM_LIP_TOP
+          radius: ARENA_PLAN[name],
+          width: FILET_WIDTHS[name],
+          y: FELT
         })}
+        key={name}
       />
-      {isShowcase && <PreviewTops framing={framing} />}
-    </svg>
-  )
-}
+    ))}
+    {TICKS.map(({ square, tick }) => (
+      <path className='tick' d={pathThrough(framing, square)} key={tick} />
+    ))}
+    {isShowcase && <PreviewTops framing={framing} />}
+  </svg>
+)
 
 /**
- * The sumo's arena before its scene exists: the walnut drum, its felt, ditch,
- * filets and ticks drawn flat through the very camera the scene frames the
- * drum with, sized to its host, so the scene appears over it without a jump. Standing in for the showcase,
+ * The sumo's arena before its scene exists: the table on its column, its
+ * felt, filets and ticks drawn flat through the very camera the scene frames the
+ * table with, sized to its host, so the scene appears over it without a jump. Standing in for the showcase,
  * it also draws the demo tops on the marks the showcase starts from.
  */
 export const SumoPreview: React.FC<GamePreviewProps> = ({
@@ -231,7 +207,7 @@ export const SumoPreview: React.FC<GamePreviewProps> = ({
   return (
     <div className='sumo-preview' ref={host}>
       {framing !== null && (
-        <DrumDrawing framing={framing} isShowcase={isShowcase} />
+        <TableDrawing framing={framing} isShowcase={isShowcase} />
       )}
     </div>
   )

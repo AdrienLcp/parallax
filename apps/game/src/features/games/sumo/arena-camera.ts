@@ -1,29 +1,29 @@
 import { DISPLAY_ASPECT } from '@/features/alcove/display-aspect'
 
-import { ARENA_DRUM, DITCH_REST_RADIUS } from './arena-drum'
 import {
   type ArenaShape,
   heightsOf,
   SHIPPED_HEIGHTS,
   SHIPPED_SHAPE
 } from './arena-shape'
+import { ARENA_TABLE, FLOOR_REACH } from './arena-table'
 import { SUMO_TUNING } from './sumo-tuning'
 
-/** How the camera sees the drum: tuned on the unit, shipped at `SHIPPED_LENS`. */
+/** How the camera sees the table: tuned on the unit, shipped at `SHIPPED_LENS`. */
 export type ArenaLens = {
   /** The vertical field of view over the display's whole 9:16 portrait. */
   readonly fieldOfViewDegrees: number
-  /** The share of the canvas's binding axis the drum spans, tops and fallen tops included. */
+  /** The share of the canvas's binding axis the table spans, tops and fallen tops included. */
   readonly frameFill: number
-  /** How far the camera looks down from level: a visitor standing in front of the drum. */
+  /** How far the camera looks down from level: a visitor standing in front of the table. */
   readonly pitchDegrees: number
-  /** Where the drum's extent is centred, as a share of the canvas's height from its top. */
+  /** Where the table's extent is centred, as a share of the canvas's height from its top. */
   readonly verticalCentre: number
 }
 
 /**
  * The lens keeps the horizontal field matching its vertical one over the
- * display's 9:16 portrait in any canvas, so the drum keeps its size and
+ * display's 9:16 portrait in any canvas, so the table keeps its size and
  * perspective whatever height its row takes.
  */
 export const SHIPPED_LENS: ArenaLens = {
@@ -44,7 +44,7 @@ export type TablePoint = { readonly x: number; readonly z: number }
 /** A point on the canvas, in CSS pixels from its top-left corner. */
 export type CanvasPoint = { readonly x: number; readonly y: number }
 
-/** How the camera frames the drum in one canvas. */
+/** How the camera frames the table in one canvas. */
 export type ArenaFraming = {
   /** From the camera to the felt's centre, in arena units. */
   readonly distance: number
@@ -55,27 +55,22 @@ export type ArenaFraming = {
   readonly pitch: number
   /** The height of the felt's centre, where the camera looks. */
   readonly targetHeight: number
-  /** How far the view slides down the canvas, in CSS pixels, to place the drum: Three's view offset. */
+  /** How far the view slides down the canvas, in CSS pixels, to place the table: Three's view offset. */
   readonly viewOffsetY: number
   readonly width: number
 }
 
 type ExtentRing = { readonly radius: number; readonly y: number }
 
-/** The outlines the frame holds: the drum's foot and lip, a top's crown standing at the rim, a fallen top lying along the ditch. */
+/** The outlines the frame holds: the floor a fallen top bursts on, the table's edge, a top's crown at the rim, and its highest hop. */
 export const framedRingsOf = (shape: ArenaShape): readonly ExtentRing[] => {
-  const { ditchFloor, lipTop, surfaceHeight, topHeight } = heightsOf(shape)
+  const { surfaceHeight, topHeight } = heightsOf(shape)
+  const rimReach = SUMO_TUNING.arenaRadius + SUMO_TUNING.topRadius
   return [
-    { radius: ARENA_DRUM.baseRadius, y: 0 },
-    { radius: ARENA_DRUM.lipOuterRadius, y: lipTop },
-    {
-      radius: SUMO_TUNING.arenaRadius + SUMO_TUNING.topRadius,
-      y: surfaceHeight + topHeight
-    },
-    {
-      radius: Math.hypot(DITCH_REST_RADIUS, topHeight),
-      y: ditchFloor + 2 * SUMO_TUNING.topRadius
-    }
+    { radius: FLOOR_REACH, y: 0 },
+    { radius: ARENA_TABLE.edgeRadius, y: surfaceHeight },
+    { radius: rimReach, y: surfaceHeight + topHeight },
+    { radius: rimReach, y: surfaceHeight + topHeight + SUMO_TUNING.jumpHeight }
   ]
 }
 
@@ -144,11 +139,11 @@ const FARTHEST_DISTANCE = 200
 const FRAMING_STEPS = 48
 
 /**
- * Backs the camera off until the drum's extent (its foot and lip, a top
- * standing at the rim, a fallen one in the ditch) spans the lens's fill of
+ * Backs the camera off until the arena's extent (the floor a fallen top
+ * bursts on, the table's edge, a top standing or hopping at the rim) spans the lens's fill of
  * the canvas's binding axis, then slides the view so that extent is centred
  * at the lens's vertical centre. The camera looks at the felt's centre from
- * the room's side, the lens's pitch above level. The drum is round, so the
+ * the room's side, the lens's pitch above level. The table is round, so the
  * framing holds whatever the camera's azimuth.
  */
 export const frameTheTable = (
@@ -201,7 +196,7 @@ export const frameTheTable = (
 
 /**
  * Where the camera stands, in the scene's axes (y up from the alcove's floor,
- * z toward the room), once it has orbited `azimuth` radians around the drum's
+ * z toward the room), once it has orbited `azimuth` radians around the table's
  * axis from the room's side, toward the room's right.
  */
 export const cameraPositionOf = (

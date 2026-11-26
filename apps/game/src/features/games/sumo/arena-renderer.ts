@@ -17,7 +17,7 @@ export type TagAnchor = {
 export type ArenaRenderer = {
   /**
    * Draws `frame` seen from the camera orbited `azimuth` radians around the
-   * drum; `seconds` is the wall time since the previous call, for what only
+   * table; `seconds` is the wall time since the previous call, for what only
    * moves to look alive. Returns where each drawn top's name tag hangs, or
    * nothing when the renderer labels the tops itself.
    */
@@ -31,8 +31,17 @@ export type ArenaRenderer = {
   tune: (tuning: ArenaTuning) => void
 }
 
+/**
+ * How the arena is seen. `alcove`: the table's column stands on the measured
+ * alcove's floor, seen from the players' eye, and the canvas must be the whole display.
+ * `framed`: the tuned lens frames the table in whatever box holds the canvas,
+ * for a thumbnail off the unit's alcove.
+ */
+export type ArenaView = 'alcove' | 'framed'
+
 /** Builds a renderer that fills `host`, follows its size, and starts from `tuning`. */
 export type CreateArenaRenderer = (
   host: HTMLElement,
-  tuning: ArenaTuning
+  tuning: ArenaTuning,
+  view: ArenaView
 ) => ArenaRenderer

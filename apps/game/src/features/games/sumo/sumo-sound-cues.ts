@@ -10,10 +10,12 @@ export type SumoSoundCue =
   | { readonly kind: 'countdown'; readonly remaining: number }
   | {
       readonly kind:
+        | 'burst'
         | 'dash'
         | 'draw'
         | 'fall'
         | 'fight'
+        | 'jump'
         | 'matchWon'
         | 'roundWon'
     }
@@ -87,6 +89,36 @@ const dashesBetween = (
     })
     .map(() => ({ kind: 'dash' }))
 
+const jumpsBetween = (
+  previous: Map<Top['seat'], SpinningTop>,
+  next: Map<Top['seat'], SpinningTop>
+): SumoSoundCue[] =>
+  [...next.values()]
+    .filter((top) => {
+      const before = previous.get(top.seat)
+      return (
+        before !== undefined &&
+        before.jumpElapsed === null &&
+        top.jumpElapsed !== null
+      )
+    })
+    .map(() => ({ kind: 'jump' }))
+
+/** A falling top that hits the floor this frame. */
+const burstsBetween = (
+  previous: SumoMatch,
+  next: SumoMatch
+): SumoSoundCue[] => {
+  const fallingBefore = new Set(
+    topsOf(previous)
+      .filter((top) => top.status === 'falling')
+      .map((top) => top.seat)
+  )
+  return topsOf(next)
+    .filter((top) => top.status === 'out' && fallingBefore.has(top.seat))
+    .map(() => ({ kind: 'burst' }))
+}
+
 const fallsBetween = (
   previous: Map<Top['seat'], SpinningTop>,
   next: SumoMatch
@@ -129,7 +161,8 @@ const outcomeBetween = (
 
 /**
  * The cues to play for what changed between two frames of the match: the
- * countdown's beats, tops clacking, dashing and falling, and how the round
+ * countdown's beats, tops clacking, dashing, jumping, falling and bursting
+ * on the floor, and how the round
  * ended. Read from the tops themselves, so the rules never know about sound.
  */
 export const soundCuesBetween = ({
@@ -145,7 +178,9 @@ export const soundCuesBetween = ({
     ...countdownBetween(previous, next),
     ...clacksBetween(spinningBefore, spinningNow),
     ...dashesBetween(spinningBefore, spinningNow),
+    ...jumpsBetween(spinningBefore, spinningNow),
     ...fallsBetween(spinningBefore, next),
+    ...burstsBetween(previous, next),
     ...outcomeBetween(previous, next)
   ]
 }

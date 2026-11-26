@@ -41,7 +41,8 @@ export const SumoScene: React.FC<GameSceneProps> = ({
 
     const created = createFlatPortraitRenderer(
       host.current,
-      startingArena.current
+      startingArena.current,
+      'alcove'
     )
     renderer.current = created
 

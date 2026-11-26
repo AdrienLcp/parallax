@@ -48,7 +48,13 @@
       justify-items: end
 
       .dash-button
+        grid-area: 1 / 1
         translate: 0 50%
+
+      // Up the thumb's arc from the dash, clear of its gauge.
+      .jump-button
+        grid-area: 1 / 1
+        translate: calc(var(--pad-unit) * -26) calc(var(--pad-unit) * -24)
 
     .seat-badge
       align-items: center

@@ -83,7 +83,11 @@ export const SumoShowcase: React.FC = () => {
       return
     }
 
-    const created = createFlatPortraitRenderer(element, currentArena.current)
+    const created = createFlatPortraitRenderer(
+      element,
+      currentArena.current,
+      'framed'
+    )
     renderer.current = created
     const stop = prefersReducedMotion()
       ? standStill(element, created)

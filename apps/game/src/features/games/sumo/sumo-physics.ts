@@ -24,6 +24,9 @@ export type TopContact = {
 export type Top =
   | {
       readonly dashCooldown: number
+      /** How long ago it left the felt, while it is in the air; `null` on the felt. */
+      readonly jumpElapsed: number | null
+      readonly jumpCooldown: number
       readonly lastContact: TopContact | null
       readonly position: PlanarVector
       readonly seat: SeatId
@@ -56,6 +59,8 @@ export type SumoControl = {
 export type SumoStep = {
   /** Seats whose dash arrived since the previous step. */
   readonly dashes: ReadonlySet<SeatId>
+  /** Seats whose jump arrived since the previous step; none when left out. */
+  readonly jumps?: ReadonlySet<SeatId>
   readonly controls: ReadonlyMap<SeatId, SumoControl>
   readonly seconds: number
   readonly tops: readonly Top[]
@@ -66,10 +71,43 @@ const dashDirection = (top: SpinningTop, stick: PlanarVector): PlanarVector => {
   return aimed === ORIGIN ? normalized(top.velocity) : aimed
 }
 
+const NO_JUMPS: ReadonlySet<SeatId> = new Set()
+
+/** Whether a top is in the air: it neither collides nor drives, and the edge waits for its landing. */
+export const isAirborne = (top: SpinningTop): boolean =>
+  top.jumpElapsed !== null
+
+/** A top in the air keeps its course untouched, until its airtime ends and it lands. */
+const flown = (top: SpinningTop, seconds: number): SpinningTop => {
+  const jumpElapsed = (top.jumpElapsed ?? 0) + seconds
+  return {
+    ...top,
+    dashCooldown: Math.max(0, top.dashCooldown - seconds),
+    jumpElapsed: jumpElapsed >= SUMO_TUNING.jumpAirSeconds ? null : jumpElapsed,
+    lastContact:
+      top.lastContact === null
+        ? null
+        : { ...top.lastContact, since: top.lastContact.since + seconds },
+    position: added(top.position, scaled(top.velocity, seconds))
+  }
+}
+
 const driven = (
   top: SpinningTop,
-  { controls, dashes, seconds }: Omit<SumoStep, 'tops'>
+  { controls, dashes, jumps = NO_JUMPS, seconds }: Omit<SumoStep, 'tops'>
 ): SpinningTop => {
+  if (isAirborne(top)) return flown(top, seconds)
+  const jumpCooldown = Math.max(0, top.jumpCooldown - seconds)
+  if (jumps.has(top.seat) && jumpCooldown === 0) {
+    return flown(
+      {
+        ...top,
+        jumpCooldown: SUMO_TUNING.jumpCooldownSeconds,
+        jumpElapsed: 0
+      },
+      seconds
+    )
+  }
   const stick = clampedLength(controls.get(top.seat)?.stick ?? ORIGIN, 1)
   const canDrive = lengthOf(top.velocity) < SUMO_TUNING.maximumDriveSpeed
   const accelerated = canDrive
@@ -88,6 +126,7 @@ const driven = (
   return {
     ...top,
     dashCooldown: isDashing ? SUMO_TUNING.dashCooldownSeconds : cooldown,
+    jumpCooldown,
     lastContact:
       top.lastContact === null
         ? null
@@ -149,6 +188,7 @@ const withCollisions = (tops: readonly SpinningTop[]): SpinningTop[] => {
       const first = resolved[firstIndex]
       const second = resolved[secondIndex]
       if (first === undefined || second === undefined) continue
+      if (isAirborne(first) || isAirborne(second)) continue
       const [movedFirst, movedSecond] = collided({ first, second })
       resolved[firstIndex] = movedFirst
       resolved[secondIndex] = movedSecond
@@ -167,7 +207,7 @@ const pusherOf = (top: SpinningTop): SeatId | null =>
     : null
 
 const settled = (top: SpinningTop): Top =>
-  isOverTheEdge(top.position)
+  !isAirborne(top) && isOverTheEdge(top.position)
     ? {
         fallElapsed: 0,
         outBy: pusherOf(top),
@@ -196,7 +236,7 @@ const fallen = (top: Top, seconds: number): Top => {
   }
 }
 
-/** Advances every top by `seconds`: drive, dash, collide, then fall off the edge. */
+/** Advances every top by `seconds`: drive, dash or jump, collide, then fall off the edge, once on the felt again. */
 export const stepTops = ({ tops, ...input }: SumoStep): Top[] => {
   const spinning = withCollisions(
     tops

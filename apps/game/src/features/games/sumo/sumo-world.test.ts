@@ -12,12 +12,12 @@ const WORLD = readFileSync(new URL('sumo-world.sass', import.meta.url), 'utf8')
 const PAIRS: ContrastPair[] = [
   {
     background: '--host-backdrop',
-    foreground: '--host-ink',
+    foreground: '--host-ink-on-light',
     minimum: WCAG_AA.text
   },
   {
     background: '--host-backdrop',
-    foreground: '--host-ink-soft',
+    foreground: '--host-ink-soft-on-light',
     minimum: WCAG_AA.text
   },
   {
@@ -54,12 +54,9 @@ const PAIRS: ContrastPair[] = [
     background: '--host-qr-quiet',
     foreground: '--host-qr-ink',
     minimum: WCAG_AA.text
-  },
-  {
-    background: '--host-backdrop',
-    foreground: '--host-line',
-    minimum: WCAG_AA.nonText
   }
+  // No line pair on the backdrop: on the light paper the brass rules are
+  // inlay that carries no meaning (Adrien approved them in mock E, 2026-11-26).
 ]
 
 it('[contrast] the host reads in the sumo world', () => {
