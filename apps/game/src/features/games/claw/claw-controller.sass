@@ -1,0 +1,44 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .claw-controller
+    --map-size: calc(var(--pad-unit) * 26)
+
+    .seat-badge
+      flex-wrap: wrap
+      justify-content: center
+
+    .badge-points
+      @include typography.display
+
+      flex-basis: 100%
+      font-size: var(--text-seat-name)
+      font-variant-numeric: tabular-nums
+      text-align: center
+
+    // The pit seen from above, in the top corner: a help, not the aim.
+    .pit-map
+      block-size: var(--map-size)
+      inline-size: var(--map-size)
+      inset-block-start: max(var(--space-s), var(--safe-area-top))
+      inset-inline-end: var(--gutter-right)
+      pointer-events: none
+      position: absolute
+      z-index: 1
+
+    .pit-floor
+      fill: color-mix(in oklab, var(--seat-cap) 14%, transparent)
+      stroke: var(--seat-cap)
+      stroke-width: 3
+
+    .pit-chute
+      fill: var(--seat-cap)
+      opacity: 0.45
+
+    .pit-claw
+      fill: var(--seat)
+      stroke: var(--seat-cap)
+      stroke-width: 2
+
+      &.own
+        stroke-width: 4

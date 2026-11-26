@@ -2,6 +2,9 @@ import { lazy } from 'react'
 
 import type { GameId } from '@parallax/protocol/games'
 
+import { ClawCues } from './claw/claw-cues'
+import { ClawPreview } from './claw/claw-preview'
+import { CLAW_PLAYERS } from './claw/claw-tuning'
 import type { GameDefinition } from './game-definition'
 import { SumoCues } from './sumo/sumo-cues'
 import { SumoPreview } from './sumo/sumo-preview'
@@ -10,6 +13,7 @@ import { TowerCues } from './tower/tower-cues'
 import { TowerPreview } from './tower/tower-preview'
 import { TOWER_PLAYERS } from './tower/tower-tuning'
 
+import './claw/claw-world.sass'
 import './sumo/sumo-world.sass'
 import './tower/tower-world.sass'
 import './tower/tower-room.sass'
@@ -22,6 +26,21 @@ export {
 
 /** Every game the app hosts. Each one's scene, controller and showcase load only when shown. */
 export const games = {
+  claw: {
+    Controller: lazy(async () => ({
+      default: (await import('./claw/claw-controller')).ClawController
+    })),
+    Cues: ClawCues,
+    name: 'games.claw.name',
+    Preview: ClawPreview,
+    players: CLAW_PLAYERS,
+    Scene: lazy(async () => ({
+      default: (await import('./claw/claw-scene')).ClawScene
+    })),
+    Showcase: lazy(async () => ({
+      default: (await import('./claw/claw-showcase')).ClawShowcase
+    }))
+  },
   sumo: {
     Controller: lazy(async () => ({
       default: (await import('./sumo/sumo-controller')).SumoController

@@ -1,0 +1,52 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  .claw-scene
+    display: grid
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr)
+    min-block-size: 0
+    position: relative
+
+    .claw-view
+      min-block-size: 0
+      position: relative
+
+    .scene-canvas
+      block-size: 100%
+      display: block
+      inline-size: 100%
+      max-inline-size: none
+
+    .claw-tags
+      inset: 0
+      pointer-events: none
+      position: absolute
+
+    // A name over each claw, its seat's colour in the dot.
+    .claw-tag
+      background: var(--arcade-ink)
+      border-radius: calc(var(--cu) * 1)
+      color: var(--arcade-paper)
+      inset: 0 auto auto 0
+      padding: calc(var(--cu) * 0.4) calc(var(--cu) * 1.2)
+      position: absolute
+      transform: translate(-50%, -100%)
+
+      &[hidden]
+        display: none
+
+      &::before
+        background: var(--seat)
+        block-size: calc(var(--cu) * 1.6)
+        border-radius: 50%
+        content: ''
+        display: inline-block
+        inline-size: calc(var(--cu) * 1.6)
+        margin-inline-end: calc(var(--cu) * 0.6)
+        vertical-align: -0.15em
+
+    .claw-name
+      @include typography.display
+
+      font-size: calc(var(--cu) * 2.2)
+      white-space: nowrap

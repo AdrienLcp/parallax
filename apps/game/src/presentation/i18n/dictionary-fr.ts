@@ -1,7 +1,41 @@
 import { defineDictionary, defineTranslation } from '@adrienlcp/i18n'
 
 export default defineDictionary({
+  claw: {
+    cue: {
+      aim: 'Guidez la pince',
+      drop: 'Lâchez sur un lot'
+    },
+    drop: 'Lâcher',
+    map: 'Plan de la fosse, vue de dessus',
+    outcome: {
+      lost: 'Perdu',
+      tie: 'Égalité',
+      won: 'Gagné'
+    },
+    points: defineTranslation('{points:plural}', {
+      plural: { points: { one: '{?} point', other: '{?} points' } }
+    }),
+    prize: {
+      bear: 'l’ours',
+      bunny: 'le lapin',
+      capsule: 'une capsule',
+      duck: 'le canard',
+      octopus: 'la pieuvre'
+    },
+    standings: {
+      caught: '{seat} décroche {prize}',
+      cue: 'Le plus de points en 1 min · capsule = 3',
+      noWinner: 'Personne n’a rien attrapé',
+      tie: 'Égalité : {seats:list}',
+      timeLeft: 'Encore {seconds:number} s',
+      timeUp: 'Temps écoulé',
+      title: 'La pince',
+      won: '{seat} gagne · {points}'
+    }
+  },
   games: {
+    claw: { name: 'La pince' },
     sumo: { name: 'Sumo' },
     tower: { name: 'La tour' }
   },

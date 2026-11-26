@@ -128,9 +128,12 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({
                   )
                 ) : (
                   standing !== undefined &&
-                  standings !== null && (
+                  standings !== null &&
+                  (standing.points === undefined ? (
                     <ScorePips goal={standings.goal} score={standing.score} />
-                  )
+                  ) : (
+                    <small className='seat-points'>{standing.points}</small>
+                  ))
                 )}
               </span>
             </li>

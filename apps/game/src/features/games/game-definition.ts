@@ -26,6 +26,11 @@ export type SeatStanding = {
   readonly isOut: boolean
   /** Won the match: its place is ringed in brass. */
   readonly isWinner: boolean
+  /**
+   * A game that counts points instead of rounds words them here ("5 points"):
+   * the roster shows it in place of the `goal`'s pips.
+   */
+  readonly points?: string
   /** Rounds won so far, out of the game's `goal`. */
   readonly score: number
 }

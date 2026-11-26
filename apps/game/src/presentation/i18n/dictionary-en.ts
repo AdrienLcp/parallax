@@ -1,7 +1,41 @@
 import { defineDictionary, defineTranslation } from '@adrienlcp/i18n'
 
 export const EN_DICTIONARY = defineDictionary({
+  claw: {
+    cue: {
+      aim: 'Steer the claw',
+      drop: 'Drop on a prize'
+    },
+    drop: 'Drop',
+    map: 'Map of the pit, seen from above',
+    outcome: {
+      lost: 'Lost',
+      tie: 'Tie',
+      won: 'Won'
+    },
+    points: defineTranslation('{points:plural}', {
+      plural: { points: { one: '{?} point', other: '{?} points' } }
+    }),
+    prize: {
+      bear: 'the bear',
+      bunny: 'the bunny',
+      capsule: 'a capsule',
+      duck: 'the duck',
+      octopus: 'the octopus'
+    },
+    standings: {
+      caught: '{seat} grabs {prize}',
+      cue: 'Most points in 1 min · capsule = 3',
+      noWinner: 'Nobody caught anything',
+      tie: 'Tie: {seats:list}',
+      timeLeft: '{seconds:number} s left',
+      timeUp: 'Time’s up',
+      title: 'The claw',
+      won: '{seat} wins · {points}'
+    }
+  },
   games: {
+    claw: { name: 'Claw' },
     sumo: { name: 'Sumo' },
     tower: { name: 'Tower' }
   },

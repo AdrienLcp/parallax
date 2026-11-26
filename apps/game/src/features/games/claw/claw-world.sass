@@ -1,0 +1,44 @@
+// Side effect: the claw's world, loaded with the game registry so it is there
+// before any of the claw's own pieces load. While a page shows the claw
+// (`data-game='claw'` on its landmark), the arcade cabinet's palette under
+// shop lights is declared and the host's roles take its values.
+
+@layer tokens
+  :root:has([data-game='claw'])
+    // A crane cabinet in candy colours, lit bright, the same whatever the
+    // system theme.
+    --cabinet-lavender: oklch(94.1% 0.018 296)
+    --arcade-ink: oklch(22.4% 0.06 290)
+    --arcade-ink-soft: oklch(43.5% 0.075 289)
+    --arcade-candy: oklch(56.5% 0.2 357)
+    --arcade-candy-deep: oklch(48% 0.18 357)
+    --arcade-cyan: oklch(52% 0.1 203)
+    --arcade-cyan-deep: oklch(44% 0.09 203)
+    // The 3D cabinet's own paint, brighter than the lettering's: rails and capsule shells.
+    --arcade-candy-lit: oklch(68.5% 0.22 357)
+    --arcade-cyan-lit: oklch(80% 0.12 203)
+    --arcade-lemon: oklch(95.6% 0.1 104)
+    --arcade-chrome: oklch(84.9% 0.012 258)
+    --arcade-paper: oklch(99% 0.004 296)
+    --cabinet-shadow: oklch(26.5% 0.08 289)
+
+    --host-backdrop: var(--cabinet-lavender)
+    --host-ground: var(--cabinet-lavender)
+    --host-ink: var(--arcade-ink)
+    --host-ink-soft: var(--arcade-ink-soft)
+    --host-ink-on-light: var(--arcade-ink)
+    --host-ink-soft-on-light: var(--arcade-ink-soft)
+    --host-line: var(--arcade-candy)
+    --host-line-faint: color-mix(in oklab, var(--arcade-candy) 30%, var(--cabinet-lavender))
+    --host-accent: var(--arcade-cyan)
+    --host-accent-deep: var(--arcade-cyan-deep)
+    --host-accent-hover: color-mix(in oklab, var(--arcade-cyan), var(--arcade-paper) 14%)
+    --host-accent-ink: var(--arcade-paper)
+    --host-panel: var(--arcade-paper)
+    --host-panel-frame: var(--arcade-cyan)
+    --host-panel-frame-deep: var(--arcade-cyan-deep)
+    --host-plaque: var(--arcade-candy)
+    --host-plaque-ink: var(--arcade-paper)
+    --host-qr-quiet: var(--arcade-paper)
+    --host-qr-ink: var(--arcade-ink)
+    --host-shadow: var(--cabinet-shadow)

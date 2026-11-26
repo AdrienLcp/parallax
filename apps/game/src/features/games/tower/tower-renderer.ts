@@ -2,7 +2,7 @@ import {
   AmbientLight,
   type BufferGeometry,
   CanvasTexture,
-  Color,
+  type Color,
   CylinderGeometry,
   DirectionalLight,
   EdgesGeometry,
@@ -39,6 +39,7 @@ import {
 import { buildAlcoveStage } from '@/features/alcove/alcove-stage'
 import { SHIPPED_ALCOVE } from '@/features/alcove/shipped-alcove'
 
+import { createSceneColors } from '../scene-colors'
 import {
   ARCH_LEG,
   ARCH_LINTEL,
@@ -69,39 +70,6 @@ export type TowerRenderer = {
   dispose: () => void
   /** Draws the frame, `seconds` after the last; answers each lane's anchors for the DOM over the canvas. */
   draw: (frame: TowerFrame, seconds: number) => readonly LaneAnchors[]
-}
-
-/** Resolves any CSS colour the page knows, tokens and `color-mix` included, to sRGB. */
-const createColorReader = (host: HTMLElement) => {
-  const probe = document.createElement('span')
-  probe.hidden = true
-  host.append(probe)
-  const pixel = document
-    .createElement('canvas')
-    .getContext('2d', { willReadFrequently: true })
-  // The page resolves to `oklch(…)`, which three cannot parse: a canvas pixel turns it into sRGB.
-  const read = (cssColor: string): Color => {
-    probe.style.color = cssColor
-    const resolved = getComputedStyle(probe).color
-    if (pixel === null) return new Color(resolved)
-    pixel.clearRect(0, 0, 1, 1)
-    pixel.fillStyle = resolved
-    pixel.fillRect(0, 0, 1, 1)
-    const [red = 0, green = 0, blue = 0] = pixel.getImageData(0, 0, 1, 1).data
-    return new Color().setRGB(
-      red / 255,
-      green / 255,
-      blue / 255,
-      SRGBColorSpace
-    )
-  }
-  const readSeat = (slot: SeatSlot): Color => {
-    probe.dataset.seatSlot = String(slot)
-    const color = read(getComputedStyle(probe).getPropertyValue('--seat'))
-    delete probe.dataset.seatSlot
-    return color
-  }
-  return { dispose: () => probe.remove(), read, readSeat }
 }
 
 /**
@@ -242,7 +210,7 @@ export const createTowerRenderer = (
   host: HTMLElement,
   interior: AlcoveInterior
 ): TowerRenderer => {
-  const colors = createColorReader(host)
+  const colors = createSceneColors(host)
   const renderer = new WebGLRenderer({ alpha: true, antialias: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.outputColorSpace = SRGBColorSpace
