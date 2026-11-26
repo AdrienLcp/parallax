@@ -1,6 +1,6 @@
 import type { SeatId } from '@parallax/protocol/identifiers'
 
-import type { Lane, TowerAim, TowerMatch } from './tower-match'
+import type { Lane, OfferChoice, TowerAim, TowerMatch } from './tower-match'
 
 /** How long a bot takes over its aim before dropping, at least. */
 const BOT_THINK_SECONDS = 1.1
@@ -28,9 +28,15 @@ export const createTowerBots = (random: () => number) => {
 
   return (
     match: TowerMatch
-  ): { aims: Map<SeatId, TowerAim>; drops: Set<SeatId> } => {
+  ): {
+    aims: Map<SeatId, TowerAim>
+    drops: Set<SeatId>
+    picks: Map<SeatId, OfferChoice>
+    spins: Map<SeatId, number>
+  } => {
     const sticks = new Map<SeatId, TowerAim>()
     const drops = new Set<SeatId>()
+    const picks = new Map<SeatId, OfferChoice>()
     for (const lane of match.view().lanes) {
       const { floating } = lane
       if (floating === null) {
@@ -40,6 +46,11 @@ export const createTowerBots = (random: () => number) => {
       if (aim === undefined || floating.since === 0) {
         aim = { target: targetOf(lane, match) }
         aims.set(floating.seat, aim)
+        // A bot builds: it takes the plank or the cube when one is on offer.
+        const builder = floating.offer.findIndex(
+          (kind) => kind === 'plank' || kind === 'cube'
+        )
+        if (builder === 1) picks.set(floating.seat, 1)
       }
       const dx = aim.target.x - floating.x
       const dz = aim.target.z - floating.z
@@ -53,6 +64,6 @@ export const createTowerBots = (random: () => number) => {
         aims.delete(floating.seat)
       }
     }
-    return { aims: sticks, drops }
+    return { aims: sticks, drops, picks, spins: new Map() }
   }
 }

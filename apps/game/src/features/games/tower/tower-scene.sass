@@ -70,3 +70,17 @@
 
       font-size: calc(var(--cu) * 2.2)
       white-space: nowrap
+
+    // The points a fall cost, written beside the tower's top for a moment.
+    .fall-toast
+      @include typography.display
+
+      color: var(--graphite)
+      font-size: calc(var(--cu) * 6)
+      inset: 0 auto auto 0
+      position: absolute
+      rotate: -4deg
+      transform: translate(calc(var(--cu) * 2), -120%)
+
+      &[hidden]
+        display: none

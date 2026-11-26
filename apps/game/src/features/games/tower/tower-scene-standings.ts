@@ -9,7 +9,12 @@ import type {
   SceneStandings,
   SeatStanding
 } from '../game-definition'
-import { heightCm, type TowerMatchView } from './tower-match'
+import {
+  heightCm,
+  scoreOf,
+  secondsLeftOf,
+  type TowerMatchView
+} from './tower-match'
 import { TOWER_TUNING } from './tower-tuning'
 
 /** A height as the chart reads it: "84 cm", then "1 m 04". */
@@ -43,23 +48,27 @@ export const sceneStandingsOf = ({
     ids.flatMap((seat) => seatOf(seat)?.slot ?? [])
   const { outcome } = view
   const tallest = Math.max(0, ...view.lanes.map((lane) => lane.height))
+  const shared = view.rule === 'shared' ? view.lanes[0] : undefined
 
   const announcement = ((): SceneAnnouncement | null => {
     switch (outcome?.kind) {
       case undefined:
         return null
-      case 'toppled':
-        return {
-          message: translate('tower.standings.toppled', {
-            seat: nameOf(outcome.seat)
-          }),
-          slots: slotsOf([outcome.seat])
-        }
       case 'ceiling':
         return {
           message: translate('tower.standings.ceiling'),
           slots: slotsOf(outcome.seats)
         }
+      case 'scored':
+        return outcome.seat === null || shared === undefined
+          ? { message: translate('tower.standings.tie'), slots: [] }
+          : {
+              message: translate('tower.standings.wonOnPoints', {
+                score: scoreOf(shared, outcome.seat),
+                seat: nameOf(outcome.seat)
+              }),
+              slots: slotsOf([outcome.seat])
+            }
       case 'tallest':
         return outcome.seat === null
           ? { message: translate('tower.standings.tie'), slots: [] }
@@ -76,14 +85,28 @@ export const sceneStandingsOf = ({
   })()
 
   const isWinner = (seat: SeatId) =>
-    (outcome?.kind === 'tallest' && outcome.seat === seat) ||
-    (outcome?.kind === 'ceiling' && outcome.seats.includes(seat))
+    outcome?.kind === 'ceiling'
+      ? outcome.seats.includes(seat)
+      : outcome != null && outcome.seat === seat
 
-  const shared = view.rule === 'shared' ? view.lanes[0] : undefined
-  const left = Math.max(0, Math.ceil(TOWER_TUNING.raceSeconds - view.elapsed))
+  const floating = shared?.floating ?? null
+  const turnSlot = floating === null ? undefined : seatOf(floating.seat)?.slot
+  const raceLeft = Math.max(
+    0,
+    Math.ceil(TOWER_TUNING.raceSeconds - view.elapsed)
+  )
+  // The round in progress: the turn of whoever holds the block.
+  const round =
+    floating === null
+      ? Math.max(1, ...(shared?.played.values() ?? []))
+      : (shared?.played.get(floating.seat) ?? 0) + 1
 
   return {
     announcement,
+    countdown:
+      floating === null
+        ? undefined
+        : secondsLeftOf(floating) / TOWER_TUNING.turnSeconds,
     cue: translate(
       shared === undefined
         ? 'tower.standings.raceCue'
@@ -92,26 +115,40 @@ export const sceneStandingsOf = ({
     goal: 0,
     seats: new Map(
       view.lanes.flatMap((lane) =>
-        lane.seats.map((seat): [SeatId, SeatStanding] => [
-          seat,
-          {
-            isOut: outcome?.kind === 'toppled' && outcome.seat === seat,
-            isWinner: isWinner(seat),
-            score: 0
-          }
-        ])
+        lane.seats.map((seat): [SeatId, SeatStanding] => {
+          const score = scoreOf(lane, seat)
+          return [
+            seat,
+            {
+              isOut: false,
+              isWinner: isWinner(seat),
+              points:
+                shared === undefined
+                  ? undefined
+                  : score < 0
+                    ? `−${-score}`
+                    : String(score),
+              score: 0
+            }
+          ]
+        })
       )
     ),
     subtitle:
       shared === undefined
-        ? translate('tower.standings.timeLeft', { seconds: left })
-        : shared.floating === null
-          ? formatHeight(shared.height, translate)
-          : translate('tower.standings.turnOf', {
-              seat: nameOf(shared.floating.seat)
-            }),
-    title: translate(
-      shared === undefined ? 'tower.standings.race' : 'tower.standings.shared'
-    )
+        ? translate('tower.standings.timeLeft', { seconds: raceLeft })
+        : translate('tower.standings.turns', {
+            of: TOWER_TUNING.blocksEach,
+            played: Math.min(round, TOWER_TUNING.blocksEach)
+          }),
+    title:
+      floating === null
+        ? translate(
+            shared === undefined
+              ? 'tower.standings.race'
+              : 'tower.standings.shared'
+          )
+        : nameOf(floating.seat),
+    titleSlot: turnSlot
   }
 }

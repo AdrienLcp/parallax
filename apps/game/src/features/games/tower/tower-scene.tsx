@@ -25,6 +25,8 @@ const INTERIOR = alcoveInterior(SHIPPED_ALCOVE)
 /** One pencil mark and one name tag per lane, at most one lane a seat. */
 const LANES = ['a', 'b', 'c', 'd', 'e', 'f'] as const
 const MOST_LANES = LANES.length
+/** How long a fall's lost points stay written beside the tower. */
+const FALL_SHOWN_SECONDS = 2.4
 
 /** The pencil marks and name tags over the canvas, moved every frame without React. */
 const placeMarks = ({
@@ -65,7 +67,7 @@ const placeMarks = ({
   }
 }
 
-/** The tower on the display: blocks standing in the alcove, a pencil mark at each tower's top, the name of whoever holds the floating block; the standings go up to the room. */
+/** The tower on the display: blocks standing in the alcove, a pencil mark at each tower's top, the name of whoever holds the floating block, the points a fall cost; the standings go up to the room. */
 export const TowerScene: React.FC<GameSceneProps> = ({
   events,
   onStandings,
@@ -77,6 +79,7 @@ export const TowerScene: React.FC<GameSceneProps> = ({
   const renderer = useRef<TowerRenderer | null>(null)
   const marks = useRef<(HTMLElement | null)[]>([])
   const tags = useRef<(HTMLElement | null)[]>([])
+  const toasts = useRef<(HTMLElement | null)[]>([])
   const seatsRef = useRef(room.seats)
 
   useEffect(() => {
@@ -110,10 +113,6 @@ export const TowerScene: React.FC<GameSceneProps> = ({
       }
       const anchors = drawn.draw(
         {
-          landings:
-            match === null
-              ? []
-              : view.lanes.map((lane) => match.landingOf(lane)),
           poseOf: (handle) =>
             match?.poseOf(handle) ?? {
               position: { x: 0, y: 0, z: 0 },
@@ -135,6 +134,22 @@ export const TowerScene: React.FC<GameSceneProps> = ({
         ),
         tags: tags.current
       })
+      for (const [index, toast] of toasts.current.entries()) {
+        const lane = view.lanes[index]
+        const fall = lane?.fall ?? null
+        const anchor = anchors[index]
+        const isShown =
+          fall !== null &&
+          anchor !== undefined &&
+          view.elapsed - fall.at < FALL_SHOWN_SECONDS
+        if (toast == null) continue
+        toast.hidden = !isShown
+        if (isShown) {
+          toast.style.translate = `${anchor.height.x}px ${anchor.height.y}px`
+          const text = `−${fall.count}`
+          if (toast.textContent !== text) toast.textContent = text
+        }
+      }
       for (const [index, tag] of tags.current.entries()) {
         const seatId = view.lanes[index]?.floating?.seat
         const seat = seatId === undefined ? undefined : seatOf(seatId)
@@ -190,6 +205,16 @@ export const TowerScene: React.FC<GameSceneProps> = ({
             >
               <span className='float-name' />
             </div>
+          ))}
+          {LANES.map((lane, index) => (
+            <div
+              className='fall-toast'
+              hidden
+              key={`fall-${lane}`}
+              ref={(element) => {
+                toasts.current[index] = element
+              }}
+            />
           ))}
         </div>
       </div>

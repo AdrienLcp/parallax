@@ -20,7 +20,9 @@ import {
 import {
   towerAimSchema,
   towerDropSchema,
+  towerPickSchema,
   towerRuleChoiceSchema,
+  towerSpinSchema,
   towerStateSchema
 } from './tower'
 
@@ -66,8 +68,10 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   sumoStateSchema,
   towerAimSchema,
   towerDropSchema,
+  towerPickSchema,
   towerRuleChoiceSchema,
   towerStateSchema,
+  towerSpinSchema,
   clawStickSchema,
   clawDropSchema,
   clawStateSchema

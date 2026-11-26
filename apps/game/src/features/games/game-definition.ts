@@ -48,6 +48,8 @@ export type SceneAnnouncement = {
  */
 export type SceneStandings = {
   readonly announcement: SceneAnnouncement | null
+  /** A turn on the clock: the share of its time left, from 1 to 0, drawn as a ring before the title. */
+  readonly countdown?: number
   /** The roster's line while the game runs, e.g. "First to 3 rounds". */
   readonly cue: string
   /** The score that wins, one pip each on the roster. */
@@ -58,6 +60,8 @@ export type SceneStandings = {
   readonly subtitle: string
   /** The play header's title, e.g. "Round 2". */
   readonly title: string
+  /** The seat the title names, its top drawn before it. */
+  readonly titleSlot?: SeatSlot
 }
 
 /** A cue a game synthesises, given where it sounds. */

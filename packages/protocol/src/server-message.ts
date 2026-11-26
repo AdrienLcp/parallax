@@ -18,7 +18,9 @@ import {
 import {
   towerSeatAimSchema,
   towerSeatDropSchema,
+  towerSeatPickSchema,
   towerSeatRuleChoiceSchema,
+  towerSeatSpinSchema,
   towerStateSchema
 } from './tower'
 
@@ -59,7 +61,9 @@ export const screenEventSchema = z.discriminatedUnion('type', [
   sumoSeatJumpSchema,
   towerSeatAimSchema,
   towerSeatDropSchema,
+  towerSeatPickSchema,
   towerSeatRuleChoiceSchema,
+  towerSeatSpinSchema,
   clawSeatStickSchema,
   clawSeatDropSchema
 ])

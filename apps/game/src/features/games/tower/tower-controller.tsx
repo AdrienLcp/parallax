@@ -7,6 +7,7 @@ import {
   towerRuleSchema
 } from '@parallax/protocol/tower'
 
+import { useUpright } from '@/features/play/use-upright'
 import { LobbySheet } from '@/features/room/lobby-sheet'
 import { seatNameOf } from '@/features/room/seat-name'
 import { SeatTop } from '@/features/room/seat-top'
@@ -19,7 +20,8 @@ import { useTranslate } from '@/presentation/i18n/i18n-provider'
 import type { GameControllerProps, PlayerGameEvent } from '../game-definition'
 import { FloatingStick } from '../sumo/floating-stick'
 import { usePacedStick } from '../sumo/use-paced-stick'
-import { TOWER_PLAYERS } from './tower-tuning'
+import { BlockGlyph } from './block-glyph'
+import { TOWER_PLAYERS, TOWER_TUNING } from './tower-tuning'
 
 import '../sumo/sumo-controller.sass'
 import './tower-controller.sass'
@@ -29,20 +31,6 @@ const OUTCOME_BUZZ = {
   lost: [60, 40, 60],
   won: [30, 30, 30, 30, 30, 30, 240]
 } as const
-
-const UPRIGHT = '(orientation: portrait)'
-
-/** Whether the phone stands upright, its rotation locked or not turned yet. */
-const useUpright = (): boolean => {
-  const [isUpright, setUpright] = useState(() => matchMedia(UPRIGHT).matches)
-  useEffect(() => {
-    const query = matchMedia(UPRIGHT)
-    const follow = () => setUpright(query.matches)
-    query.addEventListener('change', follow)
-    return () => query.removeEventListener('change', follow)
-  }, [])
-  return isUpright
-}
 
 /** The last `tower.state` the screen sent, or `null` until the first one arrives. */
 const useTowerState = (
@@ -90,9 +78,12 @@ const RuleChoice: React.FC<RuleChoiceProps> = ({ rule, send }) => {
 
 /**
  * The tower in the player's hands, on their seat's colour. In the lobby: the
- * seat and the rule. While they hold the floating block: the stick moves it
- * across and in depth, the button drops it. Otherwise the pad rests and names
- * whose turn it is.
+ * seat and the rule. While they hold the floating block, laid out like a
+ * game console's pad: the two blocks on offer to pick from at the top, the
+ * left stick to move it across and in depth, the right stick, lower and
+ * further in, to turn it on itself, and the button to drop it up on the
+ * right, ringed by the time left before it drops by itself. Otherwise the pad
+ * rests and names whose turn it is.
  */
 export const TowerController: React.FC<GameControllerProps> = ({
   events,
@@ -106,26 +97,19 @@ export const TowerController: React.FC<GameControllerProps> = ({
     (stick) => send({ type: 'tower.aim', x: stick.x, z: stick.y }),
     room
   )
+  const sendSpin = usePacedStick(
+    (stick) => send({ rate: stick.x, type: 'tower.spin' }),
+    room
+  )
   const ownSeat = room.seats.find((seat) => seat.seatId === room.youId)
   const own = state?.seats.find((seat) => seat.seatId === room.youId)
   const isLobby =
     room.phase === 'lobby' || state === null || state.phase === 'lobby'
   const isDecided = state?.phase === 'decided'
-  const holds =
-    !isLobby &&
-    !isDecided &&
-    own?.nextBlock != null &&
-    (state.rule === 'race' || state.turnSeatId === room.youId)
-  const hasWon =
-    isDecided && own !== undefined && !own.toppled && state.rule === 'shared'
+  const offer = isLobby || isDecided ? null : (own?.offer ?? null)
+  const holds = offer !== null
   const outcome =
-    !isDecided || own === undefined
-      ? null
-      : own.toppled && state.rule === 'shared'
-        ? 'lost'
-        : hasWon
-          ? 'won'
-          : null
+    !isDecided || own === undefined ? null : own.won ? 'won' : 'lost'
 
   useEffect(() => {
     if (outcome !== null) vibrate(OUTCOME_BUZZ[outcome])
@@ -138,6 +122,8 @@ export const TowerController: React.FC<GameControllerProps> = ({
     send({ type: 'tower.drop' })
     vibrate(DROP_BUZZ_MS)
   }
+  const left =
+    own?.secondsLeft == null ? 1 : own.secondsLeft / TOWER_TUNING.turnSeconds
 
   return (
     <div
@@ -161,10 +147,39 @@ export const TowerController: React.FC<GameControllerProps> = ({
         <header className='seat-badge'>
           <SeatTop className='badge-top' slot={ownSeat.slot} />
           <h1 className='badge-name'>{seatNameOf(ownSeat, translate)}</h1>
+          {state?.rule === 'shared' && own !== undefined && (
+            <span className='badge-score'>
+              {translate('tower.score', { score: own.score })}
+            </span>
+          )}
         </header>
+        {offer !== null && (
+          <div className='block-offer'>
+            {offer.blocks.map((kind, index) => {
+              const choice = index === 0 ? 0 : 1
+              return (
+                <Button
+                  aria-label={translate(`tower.block.${kind}`)}
+                  aria-pressed={choice === offer.choice}
+                  className='offer-button'
+                  key={kind}
+                  onPress={() => send({ choice, type: 'tower.pick' })}
+                >
+                  <BlockGlyph className='offer-glyph' kind={kind} />
+                </Button>
+              )
+            })}
+          </div>
+        )}
         <FloatingStick onStick={sendAim} slot={ownSeat.slot} />
-        <div className='dash-side'>
-          <Button className='drop-button' onPressStart={drop}>
+        <div className='spin-side'>
+          <RotateArrows />
+          <FloatingStick onStick={sendSpin} slot={ownSeat.slot} />
+          <Button
+            className='drop-button'
+            onPressStart={drop}
+            style={{ '--left': left }}
+          >
             <svg aria-hidden='true' className='drop-arrow' viewBox='0 0 48 48'>
               <rect
                 fill='currentColor'
@@ -201,3 +216,22 @@ export const TowerController: React.FC<GameControllerProps> = ({
     </div>
   )
 }
+
+/** Two arrows round the second stick's resting place: it turns the block. */
+const RotateArrows: React.FC = () => (
+  <svg
+    aria-hidden='true'
+    className='rotate-arrows'
+    fill='none'
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    strokeWidth='3'
+    viewBox='0 0 100 100'
+  >
+    <path d='M22 38 A30 30 0 0 1 72 24' />
+    <path d='M64 16 L73 24 L62 30' />
+    <path d='M78 62 A30 30 0 0 1 28 76' />
+    <path d='M36 84 L27 76 L38 70' />
+  </svg>
+)

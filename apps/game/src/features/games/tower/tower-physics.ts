@@ -8,9 +8,11 @@ import {
   ARCH_LEG,
   ARCH_LINTEL,
   blockHull,
+  blockProfile,
   blockSize,
-  type Point,
-  triangleSpan
+  ELL_FOOT,
+  ELL_POST,
+  type Point
 } from './tower-blocks'
 import { TOWER_STEP_SECONDS, TOWER_TUNING } from './tower-tuning'
 
@@ -113,20 +115,37 @@ const colliders = (
         )
       ]
     }
-    case 'triangle': {
-      const { apex, base } = triangleSpan(h)
+    case 'trapezoid': {
       const hull = rapier.ColliderDesc.convexHull(
         new Float32Array(
-          (
-            [
-              [-w / 2, base],
-              [w / 2, base],
-              [0, apex]
-            ] as const
-          ).flatMap(([x, y]) => [x, y, -d / 2, x, y, d / 2])
+          (blockProfile(kind, u) ?? []).flatMap(({ x, y }) => [
+            x,
+            y,
+            -d / 2,
+            x,
+            y,
+            d / 2
+          ])
         )
       )
       return hull === null ? [] : [hull]
+    }
+    case 'ell': {
+      const foot = ELL_FOOT * u
+      const post = ELL_POST * u
+      const postHeight = h - foot
+      return [
+        rapier.ColliderDesc.cuboid(w / 2, foot / 2, d / 2).setTranslation(
+          0,
+          -h / 2 + foot / 2,
+          0
+        ),
+        rapier.ColliderDesc.cuboid(
+          post / 2,
+          postHeight / 2,
+          d / 2
+        ).setTranslation(-w / 2 + post / 2, h / 2 - postHeight / 2, 0)
+      ]
     }
     default:
       return kind satisfies never

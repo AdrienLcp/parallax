@@ -60,8 +60,17 @@ export const TowerShowcase: React.FC = () => {
         pending += seconds
         while (pending >= TOWER_STEP_SECONDS) {
           pending -= TOWER_STEP_SECONDS
-          const { aims, drops } = bots(match)
-          if (match.advance({ aims, drops, present: ALL, seated: ALL })) {
+          const { aims, drops, picks, spins } = bots(match)
+          if (
+            match.advance({
+              aims,
+              drops,
+              picks,
+              present: ALL,
+              seated: ALL,
+              spins
+            })
+          ) {
             physics.dispose()
             physics = createTowerPhysics(rapier, INTERIOR)
             match = start()
@@ -71,7 +80,6 @@ export const TowerShowcase: React.FC = () => {
         const view = match.view()
         renderer.draw(
           {
-            landings: view.lanes.map((lane) => match.landingOf(lane)),
             poseOf: match.poseOf,
             slotOf: (seat) => SLOTS.get(seat),
             view
@@ -87,7 +95,6 @@ export const TowerShowcase: React.FC = () => {
     if (prefersReducedMotion()) {
       renderer.draw(
         {
-          landings: [],
           poseOf: () => ({
             position: { x: 0, y: 0, z: 0 },
             quaternion: { w: 1, x: 0, y: 0, z: 0 }

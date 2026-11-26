@@ -30,3 +30,31 @@
       display: grid
       gap: calc(var(--cu) * 1.4)
       grid-template-columns: auto calc(var(--cu) * 12.5)
+
+    .play-title
+      align-items: center
+      display: flex
+      gap: calc(var(--cu) * 1.6)
+
+    // The seat whose turn it is; with a clock, a ring around it empties as the turn runs out.
+    .play-turn
+      --ring: calc(var(--cu) * 0.55)
+
+      block-size: 0.85em
+      display: grid
+      flex: none
+      inline-size: 0.85em
+      place-items: center
+      position: relative
+
+      &[data-clock]::before
+        background: conic-gradient(var(--host-line) calc(var(--left) * 360deg), var(--host-line-faint) 0)
+        border-radius: 50%
+        content: ''
+        inset: 0
+        mask: radial-gradient(closest-side, transparent calc(100% - var(--ring)), #000 calc(100% - var(--ring) + 1px))
+        position: absolute
+
+    .play-turn-top
+      block-size: calc(100% - var(--ring) * 3.4)
+      inline-size: calc(100% - var(--ring) * 3.4)

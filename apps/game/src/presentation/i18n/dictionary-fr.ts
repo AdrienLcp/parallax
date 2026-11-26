@@ -207,8 +207,9 @@ export default defineDictionary({
       arch: 'Arche',
       cube: 'Cube',
       cylinder: 'Cylindre',
+      ell: 'Équerre',
       plank: 'Planche',
-      triangle: 'Triangle'
+      trapezoid: 'Trapèze'
     },
     cue: {
       aim: 'Visez en largeur et en profondeur',
@@ -219,11 +220,8 @@ export default defineDictionary({
       centimetres: '{cm:number} cm',
       metres: '{metres:number} m {cm}'
     },
-    next: 'Ensuite',
     outcome: {
-      ceiling: 'Jusqu’au plafond',
       lost: 'Perdu',
-      toppled: 'Tu l’as fait tomber',
       won: 'Gagné'
     },
     rule: {
@@ -231,22 +229,21 @@ export default defineDictionary({
       race: 'Course à la hauteur',
       shared: 'Tour commune'
     },
+    score: '{score:number} points',
     standings: {
       ceiling: 'La tour touche le plafond',
       race: 'Course',
       raceCue: 'La plus haute gagne',
       shared: 'La tour',
-      sharedCue: 'Qui la fait tomber perd',
+      sharedCue: 'Debout +1 · Fait tomber −1',
       tie: 'Égalité',
       timeLeft: 'Encore {seconds:number} s',
-      toppled: '{seat} a tout fait tomber',
-      turnOf: '{seat} vise',
-      won: '{seat} gagne · {height}'
+      turns: 'Tour {played:number} / {of:number}',
+      won: '{seat} gagne · {height}',
+      wonOnPoints: '{seat} gagne · {score:number} points'
     },
     turn: {
-      settling: 'On retient son souffle…',
-      theirs: '{seat} vise',
-      yours: 'À toi'
+      theirs: '{seat} vise'
     }
   },
   tuning: {

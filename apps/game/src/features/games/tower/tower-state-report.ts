@@ -1,8 +1,14 @@
 import type { TowerRule, TowerState } from '@parallax/protocol/tower'
 
-import { heightCm, type TowerMatchView } from './tower-match'
+import {
+  heightCm,
+  scoreOf,
+  secondsLeftOf,
+  type TowerMatchView
+} from './tower-match'
+import { TOWER_TUNING } from './tower-tuning'
 
-/** What the phones are told of the game: whose turn, each seat's block and height, who toppled what. */
+/** What the phones are told of the game: whose turn, each seat's blocks on offer, its score and height, who won. */
 export const reportedState = ({
   rule,
   view
@@ -16,6 +22,7 @@ export const reportedState = ({
       rule,
       seats: [],
       turnSeatId: null,
+      turns: { of: TOWER_TUNING.blocksEach, played: 0 },
       type: 'tower.state'
     }
   }
@@ -26,6 +33,10 @@ export const reportedState = ({
     shared === undefined || outcome !== null
       ? null
       : (shared.floating?.seat ?? null)
+  const hasWon = (seatId: string): boolean =>
+    outcome?.kind === 'ceiling'
+      ? outcome.seats.includes(seatId)
+      : outcome != null && outcome.seat === seatId
 
   return {
     phase:
@@ -36,24 +47,33 @@ export const reportedState = ({
           : 'aiming',
     rule: view.rule,
     seats: lanes.flatMap((lane) =>
-      lane.seats.map((seatId) => ({
-        heightCm: heightCm(lane.height),
-        nextBlock:
-          outcome !== null
-            ? null
-            : lane.floating?.seat === seatId
-              ? lane.floating.kind
-              : view.rule === 'race'
-                ? lane.next
-                : null,
-        seatId,
-        toppled:
-          view.rule === 'shared'
-            ? outcome?.kind === 'toppled' && outcome.seat === seatId
-            : lane.toppled > 0
-      }))
+      lane.seats.map((seatId) => {
+        const floating =
+          outcome === null && lane.floating?.seat === seatId
+            ? lane.floating
+            : null
+        return {
+          heightCm: heightCm(lane.height),
+          offer:
+            floating === null
+              ? null
+              : {
+                  blocks: [floating.offer[0], floating.offer[1]],
+                  choice: floating.choice
+                },
+          score: view.rule === 'shared' ? scoreOf(lane, seatId) : 0,
+          seatId,
+          secondsLeft:
+            floating === null ? null : Math.ceil(secondsLeftOf(floating)),
+          won: hasWon(seatId)
+        }
+      })
     ),
     turnSeatId,
+    turns: {
+      of: TOWER_TUNING.blocksEach,
+      played: Math.max(0, ...(shared?.played.values() ?? []))
+    },
     type: 'tower.state'
   }
 }

@@ -3,20 +3,30 @@ import type { TowerBlock, TowerRule } from '@parallax/protocol/tower'
 
 import type { AlcoveInterior } from '@/features/alcove/alcove-bounds'
 
-import { blockExtent, drawBlock, drawYaw } from './tower-blocks'
+import { blockExtent, drawOffer } from './tower-blocks'
 import type { BlockPose, TowerPhysics } from './tower-physics'
 import { TOWER_STEP_SECONDS, TOWER_TUNING } from './tower-tuning'
 
 /** A stick on the phone: `x` across, `z` towards the players, each from -1 to 1. */
 export type TowerAim = { readonly x: number; readonly z: number }
 
+/** Which of the two blocks on offer the player holds. */
+export type OfferChoice = 0 | 1
+
+/** Two blocks to pick from, never the same. */
+export type TowerOffer = readonly [TowerBlock, TowerBlock]
+
 /** The block a lane's player holds over the tower, before it is dropped. */
 export type FloatingBlock = {
+  readonly choice: OfferChoice
+  /** The block held: `offer[choice]`. */
   readonly kind: TowerBlock
+  readonly offer: TowerOffer
   readonly seat: SeatId
   /** Seconds it has floated: past `turnSeconds` it drops by itself. */
   readonly since: number
   readonly x: number
+  /** How the block is turned on itself, in radians, the player's to change. */
   readonly yaw: number
   readonly z: number
 }
@@ -34,17 +44,29 @@ export type Lane = {
   readonly blocks: readonly PlacedBlock[]
   /** Where the tower stands, and how far its floating block may stray across. */
   readonly centre: { readonly x: number; readonly z: number }
+  /** Under `shared`: the blocks that last came down, whose drop brought them down, and when. */
+  readonly fall: {
+    readonly at: number
+    readonly count: number
+    readonly seat: SeatId
+  } | null
   readonly floating: FloatingBlock | null
   readonly halfWidth: number
   /** The lane's tallest standing point once it settled, in alcove units. */
   readonly height: number
-  /** The block the lane's player is handed next. */
-  readonly next: TowerBlock
+  /** The blocks the lane's next player picks from. */
+  readonly offer: TowerOffer
+  /** Under `shared`: blocks each seat brought down, taken off its score. */
+  readonly penalties: ReadonlyMap<SeatId, number>
+  /** Under `shared`: blocks each seat dropped so far, out of `blocksEach`. */
+  readonly played: ReadonlyMap<SeatId, number>
+  /** How low each block reached when the tower last settled: one that sank well below has fallen. */
+  readonly rests: ReadonlyMap<number, number>
   readonly seats: readonly SeatId[]
-  /** The dropped block still moving, and since when. */
+  /** The tower still moving, and since when: after a drop (`dropper` set), or after fallen blocks were taken away. */
   readonly settling: {
+    readonly dropper: SeatId | null
     readonly for: number
-    readonly handle: number
     readonly stillFor: number
   } | null
   /** Under `race`: how often this tower fell. */
@@ -55,9 +77,9 @@ export type Lane = {
 }
 
 export type TowerOutcome =
-  /** The shared tower fell: `seat` dropped the block that toppled it. */
-  | { readonly kind: 'toppled'; readonly seat: SeatId }
-  /** A tower reached the alcove's roof: everyone who built it wins. */
+  /** The shared game's blocks are all played, or its tower reached the roof: the best score wins, `null` on a tie. */
+  | { readonly kind: 'scored'; readonly seat: SeatId | null }
+  /** A race tower reached the alcove's roof: whoever built it wins. */
   | { readonly kind: 'ceiling'; readonly seats: readonly SeatId[] }
   /** The race's time is up: the tallest tower wins, `null` on a tie. */
   | { readonly kind: 'tallest'; readonly seat: SeatId | null }
@@ -73,17 +95,19 @@ export type TowerMatchView = {
 export type TowerMatchStep = {
   readonly aims: ReadonlyMap<SeatId, TowerAim>
   readonly drops: ReadonlySet<SeatId>
+  /** The block each player asked to hold, since the last step. */
+  readonly picks: ReadonlyMap<SeatId, OfferChoice>
   /** Seats whose phone is connected: an absent player's turn is skipped. */
   readonly present: ReadonlySet<SeatId>
   /** Every seat the room still holds: a player whose seat is gone leaves the game. */
   readonly seated: ReadonlySet<SeatId>
+  /** Each player's second stick: how fast their block turns, from -1 to 1, clockwise positive. */
+  readonly spins: ReadonlyMap<SeatId, number>
 }
 
 export type TowerMatch = {
   /** Steps the game by one fixed step; answers whether the match is over (its result shown long enough, or too few players left). */
   advance: (step: TowerMatchStep) => boolean
-  /** The height of the first surface under a lane's floating block. */
-  landingOf: (lane: Lane) => number
   poseOf: (handle: number) => BlockPose
   view: () => TowerMatchView
 }
@@ -151,13 +175,35 @@ export const laneLayout = ({
   }))
 }
 
+/** A shared lane's score for one seat: its blocks standing, less those it brought down. */
+export const scoreOf = (lane: Lane, seat: SeatId): number =>
+  lane.blocks.filter((block) => block.seat === seat).length -
+  (lane.penalties.get(seat) ?? 0)
+
+/** The best score of a shared lane, `null` on a tie at the top. */
+const bestOf = (lane: Lane): SeatId | null => {
+  const ranked = [...lane.seats].sort(
+    (a, b) => scoreOf(lane, b) - scoreOf(lane, a)
+  )
+  const [first, second] = ranked
+  if (first === undefined) return null
+  return second !== undefined && scoreOf(lane, second) === scoreOf(lane, first)
+    ? null
+    : first
+}
+
+const FULL_TURN = 2 * Math.PI
+
 /**
- * The tower game the screen runs on a physics world: blocks handed out at
- * random, aimed by each player's stick across and in depth, dropped by their
- * button. Under `shared` the room builds one tower in turns and whoever topples
- * it loses; a block that misses the tower is taken away and the turn passes.
- * Under `race` each player builds their own, a fallen tower starts
- * again from the floor, and the tallest when time is up wins.
+ * The tower game the screen runs on a physics world: each player picks one of
+ * two blocks drawn at random, aims it across and in depth with one stick,
+ * turns it on itself with the other and drops it with their button. Under `shared` the
+ * room builds one tower in turns, `blocksEach` blocks a player: a block
+ * standing is a point for whoever laid it, and the blocks a drop brings down
+ * are taken away and off the dropper's score; the tower stands again on what
+ * is left. A block that misses the tower is taken away and the turn passes.
+ * Under `race` each player builds their own, a fallen tower starts again from
+ * the floor, and the tallest when time is up wins.
  */
 export const createTowerMatch = ({
   interior,
@@ -179,13 +225,20 @@ export const createTowerMatch = ({
   let lanes: Lane[] = laneLayout({ interior, rule, seats }).map((layout) => ({
     ...layout,
     blocks: [],
+    fall: null,
     floating: null,
     height: 0,
-    next: drawBlock(random),
+    offer: drawOffer(random),
+    penalties: new Map(),
+    played: new Map(),
+    rests: new Map(),
     settling: null,
     toppled: 0,
     turn: 0
   }))
+
+  const hasTurnsLeft = (lane: Lane, seat: SeatId): boolean =>
+    rule === 'race' || (lane.played.get(seat) ?? 0) < TOWER_TUNING.blocksEach
 
   const playerOf = (
     lane: Lane,
@@ -193,7 +246,7 @@ export const createTowerMatch = ({
   ): SeatId | null => {
     for (let offset = 0; offset < lane.seats.length; offset += 1) {
       const seat = lane.seats[(lane.turn + offset) % lane.seats.length]
-      if (seat !== undefined && present.has(seat)) {
+      if (seat !== undefined && present.has(seat) && hasTurnsLeft(lane, seat)) {
         return seat
       }
     }
@@ -203,15 +256,39 @@ export const createTowerMatch = ({
   const handOut = (lane: Lane, seat: SeatId): Lane => ({
     ...lane,
     floating: {
-      kind: lane.next,
+      choice: 0,
+      kind: lane.offer[0],
+      offer: lane.offer,
       seat,
       since: 0,
       x: lane.centre.x,
-      yaw: drawYaw(lane.next, random),
+      yaw: 0,
       z: lane.centre.z
     },
-    next: drawBlock(random)
+    offer: drawOffer(random)
   })
+
+  /** The block the player holds and how it is turned, as their pick and second stick ask. */
+  const handled = (
+    floating: FloatingBlock,
+    step: TowerMatchStep
+  ): FloatingBlock => {
+    const choice = step.picks.get(floating.seat) ?? floating.choice
+    const rate = clamp(step.spins.get(floating.seat) ?? 0, -1, 1)
+    if (choice === floating.choice && rate === 0) {
+      return floating
+    }
+    // A positive yaw turns anticlockwise seen from above: turning clockwise takes it down.
+    const yaw =
+      (floating.yaw - rate * TOWER_TUNING.spinSpeed * TOWER_STEP_SECONDS) %
+      FULL_TURN
+    return {
+      ...floating,
+      choice,
+      kind: floating.offer[choice],
+      yaw: yaw < 0 ? yaw + FULL_TURN : yaw
+    }
+  }
 
   /** The block's centre kept so its surface stays in the lane and the interior. */
   const aimed = (
@@ -255,66 +332,105 @@ export const createTowerMatch = ({
         { handle, kind: floating.kind, seat: floating.seat, u: lane.u }
       ],
       floating: null,
-      settling: { for: 0, handle, stillFor: 0 }
+      played: new Map(lane.played).set(
+        floating.seat,
+        (lane.played.get(floating.seat) ?? 0) + 1
+      ),
+      settling: { dropper: floating.seat, for: 0, stillFor: 0 }
     }
   }
 
   const liesOnFloor = (block: PlacedBlock): boolean =>
     physics.reach(block.handle).bottom < block.u * 0.05
 
-  /** A block that stood on the tower before the last drop lies on the floor: the tower fell. */
-  const hasFallen = (lane: Lane): boolean =>
-    lane.blocks.slice(1, -1).some(liesOnFloor)
+  /** Blocks that had settled and have since sunk by half a unit or more: they came down. */
+  const fallenOf = (lane: Lane): PlacedBlock[] =>
+    lane.blocks.filter((block) => {
+      const rest = lane.rests.get(block.handle)
+      return (
+        rest !== undefined &&
+        physics.reach(block.handle).bottom < rest - block.u * 0.5
+      )
+    })
 
-  /** The block just dropped lies on the floor beside a tower still standing: it missed. */
-  const hasMissed = (lane: Lane): boolean => {
-    const dropped = lane.blocks.at(-1)
-    return (
-      lane.blocks.length > 1 && dropped !== undefined && liesOnFloor(dropped)
-    )
-  }
-
-  const heightOf = (lane: Lane): number =>
-    lane.blocks.reduce(
+  const heightOf = (blocks: readonly PlacedBlock[]): number =>
+    blocks.reduce(
       (top, block) => Math.max(top, physics.reach(block.handle).top),
       0
     )
 
-  const settle = (lane: Lane, dropper: SeatId): Lane => {
-    if (hasFallen(lane)) {
-      if (rule === 'shared') {
-        outcome = { kind: 'toppled', seat: dropper }
-        return { ...lane, settling: null }
-      }
-      for (const block of lane.blocks) {
-        physics.remove(block.handle)
-      }
-      return {
-        ...lane,
-        blocks: [],
-        height: 0,
-        settling: null,
-        toppled: lane.toppled + 1
-      }
+  /** The lane once its blocks lie still: how low each reaches noted, its height read. */
+  const rested = (lane: Lane, blocks: readonly PlacedBlock[]): Lane => ({
+    ...lane,
+    blocks,
+    height: heightOf(blocks),
+    rests: new Map(
+      blocks.map((block) => [block.handle, physics.reach(block.handle).bottom])
+    ),
+    settling: null
+  })
+
+  const without = (
+    blocks: readonly PlacedBlock[],
+    gone: readonly PlacedBlock[]
+  ): PlacedBlock[] => {
+    for (const block of gone) physics.remove(block.handle)
+    return blocks.filter((block) => !gone.includes(block))
+  }
+
+  const settle = (lane: Lane, dropper: SeatId | null): Lane => {
+    const fallen = fallenOf(lane)
+    const dropped = dropper === null ? undefined : lane.blocks.at(-1)
+    const isMissed =
+      dropped !== undefined &&
+      lane.blocks.length > 1 &&
+      !lane.rests.has(dropped.handle) &&
+      liesOnFloor(dropped)
+    const turn = dropper === null ? lane.turn : lane.turn + 1
+
+    if (fallen.length > 0 && rule === 'race') {
+      without(lane.blocks, lane.blocks)
+      return { ...rested(lane, []), toppled: lane.toppled + 1, turn }
     }
-    if (hasMissed(lane)) {
-      // Nobody toppled anything: the missed block goes, the turn passes.
-      const missed = lane.blocks.at(-1)
-      if (missed !== undefined) physics.remove(missed.handle)
-      const blocks = lane.blocks.slice(0, -1)
+
+    if (fallen.length > 0) {
+      // The dropped block came down with the rest: it scores nothing either.
+      const gone =
+        isMissed && dropped !== undefined ? [...fallen, dropped] : fallen
+      const blocks = without(lane.blocks, gone)
+      // What stood on the blocks taken away may still move: the tower settles
+      // again, blamed on nobody, before the next block is handed out.
       return {
         ...lane,
         blocks,
-        height: heightOf({ ...lane, blocks }),
-        settling: null,
-        turn: lane.turn + 1
+        fall:
+          dropper === null
+            ? lane.fall
+            : { at: elapsed, count: fallen.length, seat: dropper },
+        penalties:
+          dropper === null
+            ? lane.penalties
+            : new Map(lane.penalties).set(
+                dropper,
+                (lane.penalties.get(dropper) ?? 0) + fallen.length
+              ),
+        settling: { dropper: null, for: 0, stillFor: 0 },
+        turn
       }
     }
-    const height = heightOf(lane)
-    if (height >= towerCeiling(interior, lane.u)) {
-      outcome = { kind: 'ceiling', seats: lane.seats }
+
+    const blocks =
+      isMissed && dropped !== undefined
+        ? without(lane.blocks, [dropped])
+        : lane.blocks
+    const settled = { ...rested(lane, blocks), turn }
+    if (settled.height >= towerCeiling(interior, lane.u)) {
+      outcome =
+        rule === 'shared'
+          ? { kind: 'scored', seat: bestOf(settled) }
+          : { kind: 'ceiling', seats: lane.seats }
     }
-    return { ...lane, height, settling: null, turn: lane.turn + 1 }
+    return settled
   }
 
   const stepLane = (lane: Lane, step: TowerMatchStep): Lane => {
@@ -326,33 +442,39 @@ export const createTowerMatch = ({
         for: lane.settling.for + TOWER_STEP_SECONDS,
         stillFor: isStill ? lane.settling.stillFor + TOWER_STEP_SECONDS : 0
       }
-      const dropper = lane.blocks.at(-1)?.seat
       if (
-        dropper !== undefined &&
-        (settling.stillFor >= TOWER_TUNING.restSeconds ||
-          settling.for >= TOWER_TUNING.longestSettleSeconds)
+        settling.stillFor >= TOWER_TUNING.restSeconds ||
+        settling.for >= TOWER_TUNING.longestSettleSeconds
       ) {
-        return settle(lane, dropper)
+        return settle(lane, settling.dropper)
       }
       return { ...lane, settling }
     }
 
     if (lane.floating === null) {
+      if (!lane.seats.some((seat) => hasTurnsLeft(lane, seat))) {
+        outcome = { kind: 'scored', seat: bestOf(lane) }
+        return lane
+      }
       const player = playerOf(lane, step.present)
       return player === null ? lane : handOut(lane, player)
     }
 
     const { seat } = lane.floating
     if (!step.present.has(seat)) {
-      // The player left mid-turn: the block goes to whoever plays next.
+      // The player left mid-turn: their blocks go to whoever plays next.
       return {
         ...lane,
         floating: null,
-        next: lane.floating.kind,
+        offer: lane.floating.offer,
         turn: lane.turn + 1
       }
     }
-    const floating = aimed(lane, lane.floating, step.aims.get(seat))
+    const floating = aimed(
+      lane,
+      handled(lane.floating, step),
+      step.aims.get(seat)
+    )
     return step.drops.has(seat) || floating.since >= TOWER_TUNING.turnSeconds
       ? dropFloating(lane, floating)
       : { ...lane, floating }
@@ -396,18 +518,12 @@ export const createTowerMatch = ({
         elapsed >= TOWER_TUNING.raceSeconds
       ) {
         outcome = tallest()
+      }
+      if (outcome !== null) {
         lanes = lanes.map((lane) => ({ ...lane, floating: null }))
       }
       return false
     },
-    landingOf: (lane) =>
-      lane.floating === null
-        ? 0
-        : physics.surfaceBelow({
-            x: lane.floating.x,
-            y: hoverHeight(lane, lane.floating, interior),
-            z: lane.floating.z
-          }),
     poseOf: physics.pose,
     view: () => ({ elapsed, lanes, outcome, rule })
   }
@@ -420,3 +536,7 @@ export const floatingHeight = (lane: Lane, interior: AlcoveInterior): number =>
 /** A lane's height read on the chart, in centimetres. */
 export const heightCm = (height: number): number =>
   Math.round(height * TOWER_TUNING.cmPerUnit)
+
+/** The seconds before a floating block drops by itself. */
+export const secondsLeftOf = (floating: FloatingBlock): number =>
+  Math.max(0, TOWER_TUNING.turnSeconds - floating.since)

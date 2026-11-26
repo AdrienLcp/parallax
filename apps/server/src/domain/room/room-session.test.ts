@@ -344,6 +344,8 @@ describe('handleFrame', () => {
       { type: 'tower.aim', x: -0.25, z: 1 }
     ],
     ['{"type":"tower.drop"}', { type: 'tower.drop' }],
+    ['{"type":"tower.pick","choice":1}', { choice: 1, type: 'tower.pick' }],
+    ['{"rate":-0.5,"type":"tower.spin"}', { rate: -0.5, type: 'tower.spin' }],
     [
       '{"rule":"race","type":"tower.rule"}',
       { rule: 'race', type: 'tower.rule' }
@@ -369,9 +371,17 @@ describe('handleFrame', () => {
       phase: 'aiming',
       rule: 'shared',
       seats: [
-        { heightCm: 42, nextBlock: 'arch', seatId: 'seat-1', toppled: false }
+        {
+          heightCm: 42,
+          offer: { blocks: ['arch', 'plank'], choice: 0 },
+          score: 2,
+          seatId: 'seat-1',
+          secondsLeft: 12,
+          won: false
+        }
       ],
       turnSeatId: 'seat-1',
+      turns: { of: 6, played: 2 },
       type: 'tower.state'
     }
     const frame = JSON.stringify(state)

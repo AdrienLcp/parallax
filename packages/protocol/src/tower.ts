@@ -25,9 +25,26 @@ export const towerAimSchema = z.object({
 /** Lets the floating block go where it hovers. */
 export const towerDropSchema = z.object({ type: z.literal('tower.drop') })
 
+/** Which of the two blocks on offer floats: the player may swap until they drop it. */
+export const towerPickSchema = z.object({
+  choice: z.union([z.literal(0), z.literal(1)]),
+  type: z.literal('tower.pick')
+})
+
 /**
- * The two ways to play, picked in the lobby: one tower built in turns, where
- * whoever topples it loses, or one tower each racing for height.
+ * The second stick: how fast the floating block turns on itself, from -1 to 1,
+ * positive clockwise seen from above. Sent at the aim's pace, only when it
+ * changed; the block keeps turning at that rate until the next.
+ */
+export const towerSpinSchema = z.object({
+  rate: aimAxisSchema,
+  type: z.literal('tower.spin')
+})
+
+/**
+ * The two ways to play, picked in the lobby: one tower built in turns for
+ * points, where whoever brings blocks down loses as many, or one tower each
+ * racing for height.
  */
 export const towerRuleSchema = z.enum(['shared', 'race'])
 
@@ -52,17 +69,26 @@ export const towerSeatDropSchema = towerDropSchema.extend({
   seatId: seatIdSchema
 })
 
+export const towerSeatPickSchema = towerPickSchema.extend({
+  seatId: seatIdSchema
+})
+
+export const towerSeatSpinSchema = towerSpinSchema.extend({
+  seatId: seatIdSchema
+})
+
 export const towerSeatRuleChoiceSchema = towerRuleChoiceSchema.extend({
   seatId: seatIdSchema
 })
 
-/** The blocks drawn at random, one at a time. */
+/** The blocks drawn at random, two at a time for the player to pick from; every one has a flat top. */
 export const towerBlockSchema = z.enum([
   'plank',
   'cube',
   'cylinder',
   'arch',
-  'triangle'
+  'trapezoid',
+  'ell'
 ])
 
 /**
@@ -72,7 +98,8 @@ export const towerBlockSchema = z.enum([
 export const towerStateSchema = z.object({
   /**
    * `aiming`: a block floats, waiting to be dropped; `settling`: the dropped
-   * block is still moving; `decided`: the tower fell, or the race is over.
+   * block is still moving; `decided`: the shared game's turns are all played,
+   * or the race is over.
    */
   phase: z.enum(['lobby', 'aiming', 'settling', 'decided']),
   rule: towerRuleSchema,
@@ -80,15 +107,26 @@ export const towerStateSchema = z.object({
     z.object({
       /** Height of the seat's tower in centimetres on the chart; the shared tower's height under `shared`. */
       heightCm: z.number().nonnegative(),
-      /** The block this seat drops next; `null` while it is not its turn under `shared`. */
-      nextBlock: towerBlockSchema.nullable(),
+      /** The two blocks this seat may drop and the one floating; `null` while it holds no block. */
+      offer: z
+        .object({
+          blocks: z.tuple([towerBlockSchema, towerBlockSchema]),
+          choice: z.union([z.literal(0), z.literal(1)])
+        })
+        .nullable(),
+      /** Under `shared`: blocks standing that the seat laid, less those it brought down. */
+      score: z.number().int(),
       seatId: seatIdSchema,
-      /** Toppled the shared tower, or its own under `race`. */
-      toppled: z.boolean()
+      /** Seconds before the seat's floating block drops by itself; `null` while it holds none. */
+      secondsLeft: z.number().nonnegative().nullable(),
+      /** Won: the best score under `shared`, the tallest tower under `race`. */
+      won: z.boolean()
     })
   ),
   /** Whose block floats under `shared`; `null` under `race`, where everyone drops at once. */
   turnSeatId: seatIdSchema.nullable(),
+  /** Under `shared`: turns played by the seat who played most, out of each seat's share. */
+  turns: z.object({ of: z.number().int(), played: z.number().int() }),
   type: z.literal('tower.state')
 })
 
@@ -97,5 +135,7 @@ export type TowerBlock = z.infer<typeof towerBlockSchema>
 export type TowerRule = z.infer<typeof towerRuleSchema>
 export type TowerSeatAim = z.infer<typeof towerSeatAimSchema>
 export type TowerSeatDrop = z.infer<typeof towerSeatDropSchema>
+export type TowerSeatPick = z.infer<typeof towerSeatPickSchema>
+export type TowerSeatSpin = z.infer<typeof towerSeatSpinSchema>
 export type TowerSeatRuleChoice = z.infer<typeof towerSeatRuleChoiceSchema>
 export type TowerState = z.infer<typeof towerStateSchema>

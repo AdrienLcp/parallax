@@ -13,6 +13,8 @@ export const TOWER_STATE_REPORT_SECONDS = 0.2
 export const TOWER_TUNING = {
   /** How fast a full stick moves the floating block, in alcove units a second. */
   aimSpeed: 0.42,
+  /** Under `shared`: how many blocks each player drops before the scores are read. */
+  blocksEach: 6,
   /** The bob of a floating block, up and down around its hover height. */
   bob: 0.006,
   /** The chart reads the tower as a child's height: one alcove unit is 1.60 m. */
@@ -33,6 +35,8 @@ export const TOWER_TUNING = {
   restSpeed: 0.02,
   /** A block's size unit in the shared tower; a race narrows it to fit its columns. */
   sharedUnit: 0.105,
+  /** How fast a full second stick turns the floating block, in radians a second. */
+  spinSpeed: Math.PI,
   /** A player who leaves their block floating this long has it dropped where it hovers. */
   turnSeconds: 20
 } as const

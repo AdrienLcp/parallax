@@ -12,6 +12,7 @@ import type { ScreenGameEvent } from '../game-definition'
 import { loadRapier } from './load-rapier'
 import {
   createTowerMatch,
+  type OfferChoice,
   type TowerAim,
   type TowerMatch,
   type TowerMatchView
@@ -44,14 +45,19 @@ export type TowerSimulation = {
 /** What of a view changes the standings: the rest moves every frame. */
 const standingsKey = (view: TowerMatchView): string =>
   JSON.stringify({
+    falls: view.lanes.map((lane) => lane.fall?.at ?? null),
     heights: view.lanes.map((lane) => Math.round(lane.height * 160)),
     outcome: view.outcome,
+    scores: view.lanes.map((lane) => [lane.blocks.length, ...lane.penalties]),
     seconds: Math.ceil(view.elapsed),
-    turns: view.lanes.map((lane) => lane.floating?.seat ?? null)
+    turns: view.lanes.map((lane) => [
+      lane.floating?.seat ?? null,
+      lane.floating?.kind ?? null
+    ])
   })
 
 /**
- * Runs the tower on the screen: hears the phones' aims, drops and rule choice,
+ * Runs the tower on the screen: hears the phones' aims, picks, spins, drops and rule choice,
  * starts a game once every present player is ready and tells the room their
  * marks are spent, steps the physics at a fixed rate whatever the display's
  * refresh, tells the phones when the game's state changes, and tells the room
@@ -69,6 +75,8 @@ export const useTowerSimulation = ({
   const ruleRef = useRef<TowerRule>(DEFAULT_TOWER_RULE)
   const aims = useRef(new Map<SeatId, TowerAim>())
   const drops = useRef(new Set<SeatId>())
+  const picks = useRef(new Map<SeatId, OfferChoice>())
+  const spins = useRef(new Map<SeatId, number>())
   const present = useRef<readonly SeatId[]>([])
   const ready = useRef<ReadonlySet<SeatId>>(new Set())
   const seated = useRef<ReadonlySet<SeatId>>(new Set())
@@ -88,6 +96,7 @@ export const useTowerSimulation = ({
     for (const seat of room.seats) {
       if (!seat.isConnected) {
         aims.current.delete(seat.seatId)
+        spins.current.delete(seat.seatId)
       }
     }
     lastReport.current = null
@@ -100,6 +109,10 @@ export const useTowerSimulation = ({
           aims.current.set(event.seatId, { x: event.x, z: event.z })
         } else if (event.type === 'tower.drop') {
           drops.current.add(event.seatId)
+        } else if (event.type === 'tower.pick') {
+          picks.current.set(event.seatId, event.choice)
+        } else if (event.type === 'tower.spin') {
+          spins.current.set(event.seatId, event.rate)
         } else if (event.type === 'tower.rule' && !isPlaying.current) {
           ruleRef.current = event.rule
           setRule(event.rule)
@@ -165,10 +178,13 @@ export const useTowerSimulation = ({
         const isOver = match.advance({
           aims: aims.current,
           drops: drops.current,
+          picks: picks.current,
           present: new Set(present.current),
-          seated: seated.current
+          seated: seated.current,
+          spins: spins.current
         })
         drops.current = new Set()
+        picks.current = new Map()
         if (isOver) {
           match = null
           dispose?.()

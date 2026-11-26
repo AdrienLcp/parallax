@@ -10,6 +10,7 @@ import { SHIPPED_ALCOVE } from '@/features/alcove/shipped-alcove'
 import {
   createTowerMatch,
   laneLayout,
+  scoreOf,
   type TowerAim,
   type TowerMatch,
   type TowerMatchStep
@@ -22,7 +23,7 @@ const ANA = 'seat-ana'
 const BEN = 'seat-ben'
 const BOTH = new Set([ANA, BEN])
 
-/** Every block drawn is a cube: the rules, not the luck of the draw, are under test. */
+/** Every offer is a cube and a cylinder: the rules, not the luck of the draw, are under test. */
 const CUBES = () => 0.4
 
 const matchOf = (rule: TowerRule) =>
@@ -37,8 +38,10 @@ const matchOf = (rule: TowerRule) =>
 const idle: TowerMatchStep = {
   aims: new Map(),
   drops: new Set(),
+  picks: new Map(),
   present: BOTH,
-  seated: BOTH
+  seated: BOTH,
+  spins: new Map()
 }
 
 const run = (
@@ -96,7 +99,7 @@ describe('createTowerMatch, shared', () => {
     expect(match.view().lanes[0]?.floating?.seat).toBe(ANA)
   })
 
-  it('makes whoever knocks a standing block to the floor lose', () => {
+  it('takes the blocks a drop knocks down away and off its dropper score, the game going on', () => {
     const real = createTowerPhysics(RAPIER, INTERIOR)
     const knocked = new Set<number>()
     const match = createTowerMatch({
@@ -122,7 +125,48 @@ describe('createTowerMatch, shared', () => {
     if (standing !== undefined) knocked.add(standing.handle)
     run(match, 2)
 
-    expect(match.view().outcome).toEqual({ kind: 'toppled', seat: ANA })
+    const lane = match.view().lanes[0]
+    expect(match.view().outcome).toBeNull()
+    expect(lane?.blocks.map((block) => block.seat)).toEqual([ANA, ANA])
+    expect(lane?.penalties.get(ANA)).toBe(1)
+    expect(lane === undefined ? null : scoreOf(lane, ANA)).toBe(1)
+    expect(lane?.fall).toMatchObject({ count: 1, seat: ANA })
+    match.advance(idle)
+    expect(match.view().lanes[0]?.floating?.seat).toBe(BEN)
+  })
+
+  it('lets the player pick either block on offer and turn it with the second stick', () => {
+    const match = matchOf('shared')
+    match.advance(idle)
+    expect(match.view().lanes[0]?.floating).toMatchObject({
+      kind: 'cube',
+      offer: ['cube', 'cylinder']
+    })
+
+    match.advance({ ...idle, picks: new Map([[ANA, 1]]) })
+    expect(match.view().lanes[0]?.floating?.kind).toBe('cylinder')
+
+    // Clockwise for half a second at full stick: a quarter turn, anticlockwise yaw going down.
+    run(match, 0.5, { spins: new Map([[ANA, 1]]) })
+    expect(match.view().lanes[0]?.floating?.yaw).toBeCloseTo(1.5 * Math.PI, 1)
+    run(match, 1, { spins: new Map([[ANA, -1]]) })
+    expect(match.view().lanes[0]?.floating?.yaw).toBeCloseTo(0.5 * Math.PI, 1)
+  })
+
+  it('reads the scores once every player has dropped their share, the best winning', () => {
+    const match = matchOf('shared')
+    match.advance(idle)
+    dropBy(match, ANA)
+    for (let drop = 1; drop < 2 * TOWER_TUNING.blocksEach; drop += 1) {
+      match.advance(idle)
+      const seat = match.view().lanes[0]?.floating?.seat
+      if (seat === undefined) break
+      aimBy(match, seat, { x: 1, z: 0 }, 1)
+      dropBy(match, seat)
+    }
+    match.advance(idle)
+
+    expect(match.view().outcome).toEqual({ kind: 'scored', seat: ANA })
   })
 
   it('skips an absent player and ends once fewer than two remain seated', () => {

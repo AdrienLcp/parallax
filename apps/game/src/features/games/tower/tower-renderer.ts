@@ -5,11 +5,9 @@ import {
   type Color,
   CylinderGeometry,
   DirectionalLight,
-  EdgesGeometry,
   ExtrudeGeometry,
   Group,
   HemisphereLight,
-  LineBasicMaterial,
   LineSegments,
   type Material,
   Mesh,
@@ -44,8 +42,8 @@ import {
   ARCH_LEG,
   ARCH_LINTEL,
   blockExtent,
-  blockSize,
-  triangleSpan
+  blockProfile,
+  blockSize
 } from './tower-blocks'
 import { floatingHeight, type TowerMatchView } from './tower-match'
 import type { BlockPose } from './tower-physics'
@@ -59,8 +57,6 @@ export type LaneAnchors = {
 
 /** What the renderer is handed each frame. */
 export type TowerFrame = {
-  /** The landing height under each lane's floating block. */
-  readonly landings: readonly number[]
   readonly poseOf: (handle: number) => BlockPose
   readonly slotOf: (seat: SeatId) => SeatSlot | undefined
   readonly view: TowerMatchView
@@ -171,12 +167,12 @@ const blockGeometry = (kind: TowerBlock, u: number): BufferGeometry => {
       shape.closePath()
       return extruded(shape, d)
     }
-    case 'triangle': {
-      const { apex, base } = triangleSpan(h)
+    case 'trapezoid':
+    case 'ell': {
+      const [first, ...rest] = blockProfile(kind, u) ?? []
       const shape = new Shape()
-      shape.moveTo(-w / 2, base)
-      shape.lineTo(w / 2, base)
-      shape.lineTo(0, apex)
+      if (first !== undefined) shape.moveTo(first.x, first.y)
+      for (const point of rest) shape.lineTo(point.x, point.y)
       shape.closePath()
       return extruded(shape, d)
     }
@@ -201,9 +197,8 @@ const disposeTree = (root: Scene) => {
 
 /**
  * The tower in the alcove: the camera at the players' eye, beech blocks
- * painted in their player's colour, an overhead light so each block's shadow
- * falls right under it, and under each floating block the outline of where it
- * will land. The back wall and its height chart are the page's, behind the
+ * painted in their player's colour, and an overhead light so each block's
+ * shadow falls right under it: the shadow alone tells where it will land. The back wall and its height chart are the page's, behind the
  * transparent canvas.
  */
 export const createTowerRenderer = (
@@ -327,13 +322,7 @@ export const createTowerRenderer = (
 
   const placed = new Map<number, Mesh>()
   const floating = new Group()
-  const footprints = new Group()
-  const footprintMaterial = new LineBasicMaterial({
-    color: ink,
-    opacity: 0.8,
-    transparent: true
-  })
-  scene.add(floating, footprints)
+  scene.add(floating)
 
   const camera = new PerspectiveCamera()
   const canvas = { height: 0, width: 0 }
@@ -375,7 +364,7 @@ export const createTowerRenderer = (
       renderer.domElement.remove()
       colors.dispose()
     },
-    draw: ({ landings, poseOf, slotOf, view }, seconds) => {
+    draw: ({ poseOf, slotOf, view }, seconds) => {
       clock += seconds
       const seen = new Set<number>()
       for (const lane of view.lanes) {
@@ -405,13 +394,9 @@ export const createTowerRenderer = (
       }
 
       floating.clear()
-      for (const child of footprints.children) {
-        if (child instanceof LineSegments) child.geometry.dispose()
-      }
-      footprints.clear()
       const bob = Math.sin(clock * 2.4) * TOWER_TUNING.bob
 
-      const anchors = view.lanes.map((lane, index): LaneAnchors => {
+      const anchors = view.lanes.map((lane): LaneAnchors => {
         const height = toCanvas(
           lane.centre.x + lane.halfWidth * 0.55,
           lane.height,
@@ -428,13 +413,6 @@ export const createTowerRenderer = (
         floating.add(mesh)
 
         const extent = blockExtent(kind, lane.u, yaw)
-        const outline = new LineSegments(
-          new EdgesGeometry(new PlaneGeometry(extent.hx * 2, extent.hz * 2)),
-          footprintMaterial
-        )
-        outline.rotation.x = -Math.PI / 2
-        outline.position.set(x, (landings[index] ?? 0) + 0.002, z)
-        footprints.add(outline)
 
         return { floating: toCanvas(x, y + extent.above + 0.02, z), height }
       })

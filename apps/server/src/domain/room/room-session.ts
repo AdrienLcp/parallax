@@ -21,7 +21,9 @@ import type {
 import type {
   TowerSeatAim,
   TowerSeatDrop,
+  TowerSeatPick,
   TowerSeatRuleChoice,
+  TowerSeatSpin,
   TowerState
 } from '@parallax/protocol/tower'
 import { PROTOCOL_VERSION } from '@parallax/protocol/version'
@@ -46,7 +48,9 @@ export type SessionEvent =
         | SumoSeatStick
         | TowerSeatAim
         | TowerSeatDrop
+        | TowerSeatPick
         | TowerSeatRuleChoice
+        | TowerSeatSpin
         | ClawSeatStick
         | ClawSeatDrop
     }
@@ -178,7 +182,9 @@ const play = ({
     case 'sumo.stick':
     case 'tower.aim':
     case 'tower.drop':
+    case 'tower.pick':
     case 'tower.rule':
+    case 'tower.spin':
     case 'claw.stick':
     case 'claw.drop':
       return admission.role === 'player'

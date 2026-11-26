@@ -209,8 +209,9 @@ export const EN_DICTIONARY = defineDictionary({
       arch: 'Arch',
       cube: 'Cube',
       cylinder: 'Cylinder',
+      ell: 'Ell',
       plank: 'Plank',
-      triangle: 'Triangle'
+      trapezoid: 'Trapezoid'
     },
     cue: {
       aim: 'Aim across and in depth',
@@ -221,11 +222,8 @@ export const EN_DICTIONARY = defineDictionary({
       centimetres: '{cm:number} cm',
       metres: '{metres:number} m {cm}'
     },
-    next: 'Next',
     outcome: {
-      ceiling: 'Up to the roof',
       lost: 'Lost',
-      toppled: 'You toppled it',
       won: 'You win'
     },
     rule: {
@@ -233,22 +231,21 @@ export const EN_DICTIONARY = defineDictionary({
       race: 'Height race',
       shared: 'One tower'
     },
+    score: '{score:number} points',
     standings: {
       ceiling: 'The tower touches the roof',
       race: 'Race',
       raceCue: 'The tallest wins',
       shared: 'The tower',
-      sharedCue: 'Topple it and you lose',
+      sharedCue: 'Standing +1 · Knocked down −1',
       tie: 'A tie',
       timeLeft: '{seconds:number} s left',
-      toppled: '{seat} toppled the tower',
-      turnOf: '{seat} aims',
-      won: '{seat} wins · {height}'
+      turns: 'Turn {played:number} / {of:number}',
+      won: '{seat} wins · {height}',
+      wonOnPoints: '{seat} wins · {score:number} points'
     },
     turn: {
-      settling: 'Hold your breath…',
-      theirs: '{seat} aims',
-      yours: 'Your block'
+      theirs: '{seat} aims'
     }
   },
   tuning: {

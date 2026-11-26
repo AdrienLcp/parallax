@@ -18,6 +18,85 @@
       grid-template-columns: 1fr 1fr
 
   .tower-controller
+    // Where each stick rests: down the pad, and in from its half's outer edge
+    // (`--stick-in` from the left on the left, `--stick-out` from the right
+    // on the right), so the two thumbs mirror each other. The drop button's
+    // centre sits `--thumb-edge` in from the right, above the right stick.
+    --stick-line: 66%
+    --stick-in: 62%
+    --stick-out: 62%
+    --thumb-edge: calc(var(--pad-unit) * 25 + var(--space-s))
+
+    .pad .seat-badge
+      inset-inline-start: var(--gutter-left)
+      translate: none
+
+    .badge-score
+      --text-badge-score: 1rem
+
+      @include typography.label
+
+      font-size: var(--text-badge-score)
+      opacity: 0.8
+
+    // The two blocks on offer, at the top between the thumbs: the one held is filled.
+    .block-offer
+      display: flex
+      gap: var(--space-s)
+      inset-block-start: max(var(--space-s), var(--safe-area-top))
+      inset-inline-start: 50%
+      position: absolute
+      translate: -50% 0
+      z-index: 1
+
+    .offer-button
+      align-items: center
+      background: none
+      block-size: calc(var(--pad-unit) * 17)
+      border: calc(var(--pad-unit) * 0.6) solid color-mix(in oklab, var(--seat-cap) 40%, transparent)
+      border-radius: calc(var(--pad-unit) * 3)
+      color: color-mix(in oklab, var(--seat-cap) 75%, transparent)
+      display: grid
+      inline-size: calc(var(--pad-unit) * 26)
+      justify-items: center
+      padding: 0
+      touch-action: none
+      transition: background-color var(--transition-fast), color var(--transition-fast)
+
+      &[aria-pressed='true']
+        background: var(--seat-cap)
+        border-color: var(--seat-cap)
+        color: var(--seat)
+
+    .offer-glyph
+      inline-size: 75%
+
+    // Laid out like a console pad: both sticks rest low and towards the
+    // middle, the drop button sits up on the right where the face buttons are.
+    .floating-stick .stick-base
+      inset-block-start: var(--anchor-y-px, var(--stick-line))
+      inset-inline-start: var(--anchor-x-px, var(--stick-in))
+
+    .spin-side
+      display: grid
+      position: relative
+
+      .floating-stick
+        --stick-in: calc(100% - var(--stick-out))
+
+        grid-area: 1 / 1
+
+    .rotate-arrows
+      block-size: calc(var(--pad-unit) * 64)
+      color: var(--seat-cap)
+      inline-size: calc(var(--pad-unit) * 64)
+      inset-block-start: var(--stick-line)
+      inset-inline-start: calc(100% - var(--stick-out))
+      opacity: 0.45
+      pointer-events: none
+      position: absolute
+      translate: -50% -50%
+
     .drop-button
       --drop-size: calc(var(--pad-unit) * 35)
       --text-drop: 1.375rem
@@ -35,11 +114,22 @@
       font-size: var(--text-drop)
       inline-size: var(--drop-size)
       justify-items: center
-      margin-inline-end: var(--space-xs)
+      inset-block-start: 30%
+      inset-inline-end: calc(var(--thumb-edge) - var(--drop-size) / 2)
       padding: 0
+      position: absolute
       touch-action: none
       transition: scale var(--transition-fast) var(--ease-out)
-      translate: 0 50%
+      translate: 0 -50%
+
+      // The time left before the block drops by itself, emptying around the button.
+      &::before
+        background: conic-gradient(var(--seat-cap) calc(var(--left, 1) * 360deg), color-mix(in oklab, var(--seat-cap) 25%, transparent) 0)
+        border-radius: 50%
+        content: ''
+        inset: calc(var(--pad-unit) * -3.4)
+        mask: radial-gradient(closest-side, transparent calc(100% - var(--pad-unit) * 1.6), #000 calc(100% - var(--pad-unit) * 1.6 + 1px))
+        position: absolute
 
       &[data-pressed]
         scale: 0.94

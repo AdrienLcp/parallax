@@ -153,8 +153,10 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({
         ) : (
           <PlayHeader
             code={room.code}
+            countdown={standings.countdown}
             subtitle={standings.subtitle}
             title={standings.title}
+            titleSlot={standings.titleSlot}
           />
         )}
         <AnnouncementBand announcement={standings?.announcement ?? null} />
