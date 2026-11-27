@@ -18,6 +18,7 @@ import type {
 } from '@parallax/protocol/globe'
 import type { SeatId } from '@parallax/protocol/identifiers'
 import type { ReplyMessage } from '@parallax/protocol/server-message'
+import type { ShipsSeatPad } from '@parallax/protocol/ships'
 import type {
   SumoSeatDash,
   SumoSeatJump,
@@ -62,6 +63,7 @@ export type SessionEvent =
         | GlobeSeatStick
         | GlobeSeatZoom
         | GlobeSeatPlant
+        | ShipsSeatPad
     }
   | {
       kind: 'to_players'
@@ -202,6 +204,7 @@ const play = ({
     case 'globe.stick':
     case 'globe.zoom':
     case 'globe.plant':
+    case 'ships.pad':
       return admission.role === 'player'
         ? passed(admission, {
             kind: 'to_screen',

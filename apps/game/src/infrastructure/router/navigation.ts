@@ -12,7 +12,10 @@ export const paths = {
   home: '/',
   legal: '/legal',
   play: '/play/:roomCode',
-  screen: '/screen'
+  screen: '/screen',
+  shipsLab: '/lab/ships',
+  shipsLabPad: '/lab/ships/:mode/pad/:roomCode',
+  shipsLabScreen: '/lab/ships/:mode'
 } as const
 
 const pathFor = <TPath extends string>(

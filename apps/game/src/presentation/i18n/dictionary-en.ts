@@ -213,6 +213,24 @@ export const EN_DICTIONARY = defineDictionary({
     },
     skipLink: 'Skip to content'
   },
+  shipsLab: {
+    about: {
+      pilot: 'The ship turns and moves as in a first-person game',
+      screen: 'The ship follows the screen, two buttons for depth'
+    },
+    connecting: 'Connecting…',
+    far: 'Far',
+    fire: 'Fire',
+    mode: { pilot: 'FPS flight', screen: 'Screen flight' },
+    near: 'Near',
+    opening: 'Opening the room…',
+    refused: 'Room not found. Scan the code again.',
+    retry: 'Retry',
+    scan: 'Scan to fly',
+    score: '{hits} hits · {shots} shots',
+    title: 'Ships · trials',
+    unknownMode: 'Unknown address.'
+  },
   sumo: {
     cue: {
       dodge: 'Jump to dodge',

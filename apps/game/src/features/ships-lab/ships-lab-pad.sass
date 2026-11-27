@@ -1,0 +1,65 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .ships-lab-pad
+    --text-hold: 1.125rem
+
+    .lab-side
+      display: grid
+      position: relative
+
+      .floating-stick
+        grid-area: 1 / 1
+
+    // The depth buttons stand along the left edge, above and below the stick's resting line.
+    .depth-buttons
+      display: grid
+      gap: var(--space-s)
+      inset-block-start: 50%
+      inset-inline-start: 0
+      position: absolute
+      translate: 0 -50%
+      z-index: 1
+
+    .lab-hold
+      --hold-size: calc(var(--pad-unit) * 26)
+
+      @include typography.display
+
+      background: color-mix(in oklab, var(--seat-cap) 22%, transparent)
+      block-size: var(--hold-size)
+      border: 0
+      border-radius: var(--radius-pill)
+      color: var(--seat-cap)
+      font-size: var(--text-hold)
+      inline-size: var(--hold-size)
+      padding: 0
+      touch-action: none
+      transition: scale var(--transition-fast) var(--ease-out), background-color var(--transition-fast)
+
+      &[data-pressed]
+        background: var(--seat-cap)
+        color: var(--seat)
+        scale: 0.94
+
+    .fire-button
+      --hold-size: calc(var(--pad-unit) * 34)
+
+      background: var(--seat-cap)
+      box-shadow: var(--shadow-phone-dash)
+      color: var(--seat)
+      inset-block-start: 8%
+      inset-inline-end: 0
+      position: absolute
+      z-index: 1
+
+      &[data-pressed]
+        background: color-mix(in oklab, var(--seat-cap) 70%, var(--seat))
+
+  .lab-pad-notice
+    display: grid
+    inset: 0
+    padding: var(--space-l)
+    place-content: center
+    position: absolute
+    text-align: center

@@ -18,6 +18,17 @@ const pageFor = {
   }),
   [paths.screen]: async () => ({
     Component: (await import('@/features/screen/screen-page')).ScreenPage
+  }),
+  [paths.shipsLab]: async () => ({
+    Component: (await import('@/features/ships-lab/ships-lab-index'))
+      .ShipsLabIndex
+  }),
+  [paths.shipsLabPad]: async () => ({
+    Component: (await import('@/features/ships-lab/ships-lab-pad')).ShipsLabPad
+  }),
+  [paths.shipsLabScreen]: async () => ({
+    Component: (await import('@/features/ships-lab/ships-lab-screen'))
+      .ShipsLabScreen
   })
 } satisfies Record<RoutedPath, RouteObject['lazy']>
 

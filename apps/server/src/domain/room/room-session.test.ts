@@ -489,6 +489,26 @@ describe('handleFrame', () => {
     }
   )
 
+  it('passes the ships pad to the screen stamped with its seat', () => {
+    const pad = {
+      depth: -1,
+      fire: true,
+      left: { x: 0.5, y: -0.25 },
+      right: { x: 0, y: 1 },
+      type: 'ships.pad'
+    }
+    const outcome = sendFrame({
+      admission: PLAYER,
+      frame: JSON.stringify(pad),
+      store: openedStore()
+    })
+
+    expect(outcome.event).toEqual({
+      kind: 'to_screen',
+      message: { ...pad, seatId: 'seat-1' }
+    })
+  })
+
   it('passes the globe state to the phones, and only from the screen', () => {
     const state = {
       phase: 'reveal',

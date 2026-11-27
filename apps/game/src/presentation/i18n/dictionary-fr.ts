@@ -211,6 +211,25 @@ export default defineDictionary({
     },
     skipLink: 'Aller au contenu'
   },
+  shipsLab: {
+    about: {
+      pilot:
+        'Le vaisseau tourne et avance comme dans un jeu à la première personne',
+      screen: 'Le vaisseau suit l’écran, deux boutons pour la profondeur'
+    },
+    connecting: 'Connexion…',
+    far: 'Loin',
+    fire: 'Feu',
+    mode: { pilot: 'Pilotage FPS', screen: 'Pilotage écran' },
+    near: 'Près',
+    opening: 'Ouverture de la salle…',
+    refused: 'Salle introuvable. Scannez à nouveau le code.',
+    retry: 'Réessayer',
+    scan: 'Scannez pour piloter',
+    score: '{hits} touchées · {shots} tirs',
+    title: 'Vaisseaux · essais',
+    unknownMode: 'Adresse inconnue.'
+  },
   sumo: {
     cue: {
       dodge: 'Sautez pour esquiver',

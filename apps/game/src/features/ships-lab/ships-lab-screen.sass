@@ -1,0 +1,62 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  :root:has(.ships-lab-screen)
+    scrollbar-gutter: auto
+
+  .ships-lab-screen
+    --host-qr-ink: #0d1018
+    --host-qr-quiet: #f4f1ea
+
+    background: #0d1018
+    color: #e9ecf5
+    inset: 0
+    overflow: hidden
+    position: fixed
+
+  .lab-flight
+    inset: 0
+    position: absolute
+
+    .scene-canvas
+      block-size: 100%
+      display: block
+      inline-size: 100%
+      max-inline-size: none
+
+  // Off to the left, outside the alcove on a wide monitor: the code, the mode, the count.
+  .lab-panel
+    --text-lab-title: 1.5rem
+
+    display: grid
+    gap: var(--space-s)
+    inline-size: min(14rem, 30vw)
+    inset-block-start: var(--space-l)
+    inset-inline-start: var(--space-l)
+    position: absolute
+
+  .lab-title
+    @include typography.display
+
+    font-size: var(--text-lab-title)
+    margin: 0
+
+  .lab-status
+    font-size: var(--text-m)
+    margin: 0
+    opacity: 0.85
+
+  .lab-other
+    color: inherit
+    font-size: var(--text-s)
+    opacity: 0.7
+
+  .lab-notice
+    background: none
+    border: 0
+    color: inherit
+    display: grid
+    font-size: var(--text-l)
+    inset: 0
+    place-content: center
+    position: absolute

@@ -33,12 +33,14 @@ const darkModulesPath = (modules: readonly (readonly boolean[])[]): string =>
 
 type RoomQrProps = {
   code: RoomCode
+  /** Where the code sends a phone: the room's seat unless told otherwise. */
+  path?: string
 }
 
 /** The code a phone scans to take a seat in the room: dark on ivory, its quiet zone included. */
-export const RoomQr: React.FC<RoomQrProps> = ({ code }) => {
+export const RoomQr: React.FC<RoomQrProps> = ({ code, path }) => {
   const translate = useTranslate()
-  const qr = encode(sameOriginUrl(playPathFor(code)), {
+  const qr = encode(sameOriginUrl(path ?? playPathFor(code)), {
     border: QUIET_ZONE_MODULES,
     ecc: 'M'
   })

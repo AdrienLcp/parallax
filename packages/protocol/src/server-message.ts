@@ -15,6 +15,7 @@ import {
 } from './globe'
 import { roomCodeSchema, seatIdSchema } from './identifiers'
 import { seatSchema } from './room'
+import { shipsSeatPadSchema } from './ships'
 import {
   sumoSeatDashSchema,
   sumoSeatJumpSchema,
@@ -74,7 +75,8 @@ export const screenEventSchema = z.discriminatedUnion('type', [
   clawSeatDropSchema,
   globeSeatStickSchema,
   globeSeatZoomSchema,
-  globeSeatPlantSchema
+  globeSeatPlantSchema,
+  shipsSeatPadSchema
 ])
 
 /** What only a phone hears: the room and the game as the screen tells it. */

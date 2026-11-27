@@ -17,6 +17,7 @@ import {
   seatReadySchema,
   seatUnreadySchema
 } from './lobby'
+import { shipsPadSchema } from './ships'
 import {
   sumoDashSchema,
   sumoJumpSchema,
@@ -84,7 +85,8 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   globeStickSchema,
   globeZoomSchema,
   globePlantSchema,
-  globeStateSchema
+  globeStateSchema,
+  shipsPadSchema
 ])
 
 export type Credentials = z.infer<typeof credentialsSchema>
