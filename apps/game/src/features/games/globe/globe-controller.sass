@@ -1,0 +1,29 @@
+@use '../../../presentation/styles/typography'
+
+@layer components
+  // The place asked, at the top between the thumbs, as the display names it.
+  .globe-controller .globe-asked
+    color: var(--seat-cap)
+    display: grid
+    inset-block-start: max(var(--space-s), var(--safe-area-top))
+    inset-inline-start: 50%
+    justify-items: center
+    margin: 0
+    pointer-events: none
+    position: absolute
+    translate: -50% 0
+    z-index: 1
+
+  .globe-controller .globe-kind
+    --text-globe-kind: 0.875rem
+
+    @include typography.label
+
+    font-size: var(--text-globe-kind)
+    opacity: 0.8
+
+  .globe-controller .globe-place
+    @include typography.display
+
+    font-size: var(--text-seat-name)
+    white-space: nowrap

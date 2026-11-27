@@ -4,7 +4,8 @@
     "dist",
     "node_modules",
     "pnpm-lock.yaml",
-    "**/worker-configuration.d.ts"
+    "**/worker-configuration.d.ts",
+    "**/globe/globe-place-rows.ts"
   ],
   "import": ["@cspell/dict-fr-fr/cspell-ext.json"],
   "language": "en,en-GB",
@@ -32,6 +33,7 @@
     "dashoffset",
     "dimforge",
     "EDID",
+    "equirectangular",
     "esbuild",
     "essai",
     "evenodd",
@@ -67,9 +69,12 @@
     "RGPD",
     "rrggbb",
     "shadowmap",
+    "Siachen",
     "subgrid",
     "subp",
     "toise",
+    "topojson",
+    "TopoJSON",
     "webxr",
     "workerd"
   ]

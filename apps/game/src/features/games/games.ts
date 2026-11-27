@@ -6,6 +6,9 @@ import { ClawCues } from './claw/claw-cues'
 import { ClawPreview } from './claw/claw-preview'
 import { CLAW_PLAYERS } from './claw/claw-tuning'
 import type { GameDefinition } from './game-definition'
+import { GlobeCues } from './globe/globe-cues'
+import { GlobePreview } from './globe/globe-preview'
+import { GLOBE_PLAYERS } from './globe/globe-tuning'
 import { SumoCues } from './sumo/sumo-cues'
 import { SumoPreview } from './sumo/sumo-preview'
 import { SUMO_PLAYERS } from './sumo/sumo-tuning'
@@ -14,6 +17,7 @@ import { TowerPreview } from './tower/tower-preview'
 import { TOWER_PLAYERS } from './tower/tower-tuning'
 
 import './claw/claw-world.sass'
+import './globe/globe-world.sass'
 import './sumo/sumo-world.sass'
 import './tower/tower-world.sass'
 
@@ -38,6 +42,21 @@ export const games = {
     })),
     Showcase: lazy(async () => ({
       default: (await import('./claw/claw-showcase')).ClawShowcase
+    }))
+  },
+  globe: {
+    Controller: lazy(async () => ({
+      default: (await import('./globe/globe-controller')).GlobeController
+    })),
+    Cues: GlobeCues,
+    name: 'games.globe.name',
+    Preview: GlobePreview,
+    players: GLOBE_PLAYERS,
+    Scene: lazy(async () => ({
+      default: (await import('./globe/globe-scene')).GlobeScene
+    })),
+    Showcase: lazy(async () => ({
+      default: (await import('./globe/globe-showcase')).GlobeShowcase
     }))
   },
   sumo: {

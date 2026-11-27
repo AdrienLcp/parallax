@@ -1,0 +1,52 @@
+// Side effect: Terre's world, loaded with the game registry so it is there
+// before any of the globe's own pieces load. While a page shows the globe
+// (`data-game='globe'` on its landmark), the school atlas's palette is
+// declared and the host's roles take its values.
+
+@layer tokens
+  :root:has([data-game='globe'])
+    // A school wall map: a blue-grey room, flat bright countries, borders in
+    // ink, the same whatever the system theme.
+    --atlas-backdrop: oklch(91.5% 0.009 180)
+    --atlas-paper: oklch(99% 0.001 197)
+    --atlas-ink: oklch(26.7% 0.013 258)
+    --atlas-ink-soft: oklch(49.7% 0.024 258)
+    --atlas-red: oklch(57.7% 0.2 29)
+    --atlas-red-deep: oklch(50% 0.18 29)
+    --atlas-sea: oklch(74.8% 0.074 240)
+    --atlas-sea-deep: oklch(52% 0.08 242)
+
+    // The globe's own paint, read by its renderer.
+    --globe-ocean: var(--atlas-sea)
+    --globe-graticule: oklch(69.4% 0.08 242)
+    --globe-land-1: oklch(87.4% 0.128 92)
+    --globe-land-2: oklch(81.8% 0.109 136)
+    --globe-land-3: oklch(78.1% 0.104 36)
+    --globe-land-4: oklch(78.1% 0.084 307)
+    --globe-land-5: oklch(82% 0.118 67)
+    --globe-border: oklch(37.3% 0.014 257)
+    --globe-coast: oklch(28.4% 0.012 258)
+    --globe-ink: var(--atlas-ink)
+    --globe-accent: var(--atlas-red)
+    --globe-shadow: oklch(30.3% 0.024 244)
+
+    --host-backdrop: var(--atlas-backdrop)
+    --host-ground: var(--atlas-backdrop)
+    --host-ink: var(--atlas-ink)
+    --host-ink-soft: var(--atlas-ink-soft)
+    --host-ink-on-light: var(--atlas-ink)
+    --host-ink-soft-on-light: var(--atlas-ink-soft)
+    --host-line: var(--atlas-ink)
+    --host-line-faint: color-mix(in oklab, var(--atlas-ink) 22%, var(--atlas-backdrop))
+    --host-accent: var(--atlas-red)
+    --host-accent-deep: var(--atlas-red-deep)
+    --host-accent-hover: color-mix(in oklab, var(--atlas-red), var(--atlas-paper) 14%)
+    --host-accent-ink: var(--atlas-paper)
+    --host-panel: var(--atlas-paper)
+    --host-panel-frame: var(--atlas-sea-deep)
+    --host-panel-frame-deep: color-mix(in oklab, var(--atlas-sea-deep), var(--atlas-ink) 30%)
+    --host-plaque: var(--atlas-sea-deep)
+    --host-plaque-ink: var(--atlas-paper)
+    --host-qr-quiet: var(--atlas-paper)
+    --host-qr-ink: var(--atlas-ink)
+    --host-shadow: var(--globe-shadow)

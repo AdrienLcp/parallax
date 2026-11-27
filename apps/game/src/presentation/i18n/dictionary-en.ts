@@ -38,8 +38,48 @@ export const EN_DICTIONARY = defineDictionary({
   },
   games: {
     claw: { name: 'Claw' },
+    globe: { name: 'Earth' },
     sumo: { name: 'Sumo' },
     tower: { name: 'Tower' }
+  },
+  globe: {
+    cue: {
+      plant: 'Plant the pin',
+      turn: 'Turn the globe',
+      zoom: 'Zoom with the loupe'
+    },
+    kind: {
+      city: 'City',
+      country: 'Country',
+      monument: 'Monument',
+      mountain: 'Mountain'
+    },
+    outcome: {
+      lost: 'Lost',
+      won: 'Won'
+    },
+    plant: 'Plant',
+    points: defineTranslation('{points:plural}', {
+      plural: { points: { one: '{?} point', other: '{?} points' } }
+    }),
+    result: {
+      far: '{km:number} km',
+      inside: 'Right inside!',
+      near: 'Close, {km:number} km'
+    },
+    standings: {
+      cue: '{turns:number} turns each',
+      noWinner: 'Nobody scored',
+      planted: '{seat} · {result} · {points}',
+      tie: 'Tie: {seats:list}',
+      title: 'Earth',
+      turn: '{kind} · {played:number}/{of:number}',
+      turns: 'Turn {played:number}/{of:number}',
+      won: '{seat} wins · {points}'
+    },
+    turn: {
+      theirs: '{seat} is looking for {place}'
+    }
   },
   home: {
     games: 'Games',

@@ -38,8 +38,48 @@ export default defineDictionary({
   },
   games: {
     claw: { name: 'La pince' },
+    globe: { name: 'Terre' },
     sumo: { name: 'Sumo' },
     tower: { name: 'La tour' }
+  },
+  globe: {
+    cue: {
+      plant: 'Plantez l’épingle',
+      turn: 'Tournez le globe',
+      zoom: 'Zoomez à la loupe'
+    },
+    kind: {
+      city: 'Ville',
+      country: 'Pays',
+      monument: 'Monument',
+      mountain: 'Montagne'
+    },
+    outcome: {
+      lost: 'Perdu',
+      won: 'Gagné'
+    },
+    plant: 'Planter',
+    points: defineTranslation('{points:plural}', {
+      plural: { points: { one: '{?} point', other: '{?} points' } }
+    }),
+    result: {
+      far: '{km:number} km',
+      inside: 'En plein dedans !',
+      near: 'Tout près, {km:number} km'
+    },
+    standings: {
+      cue: '{turns:number} tours chacun',
+      noWinner: 'Personne n’a marqué',
+      planted: '{seat} · {result} · {points}',
+      tie: 'Égalité : {seats:list}',
+      title: 'Terre',
+      turn: '{kind} · {played:number}/{of:number}',
+      turns: 'Tour {played:number}/{of:number}',
+      won: '{seat} gagne · {points}'
+    },
+    turn: {
+      theirs: '{seat} cherche {place}'
+    }
   },
   home: {
     games: 'Jeux',
