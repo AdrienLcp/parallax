@@ -466,6 +466,59 @@ describe('handleFrame', () => {
     )
   })
 
+  it.each([
+    [
+      '{"type":"globe.stick","x":-0.25,"y":1}',
+      { type: 'globe.stick', x: -0.25, y: 1 }
+    ],
+    ['{"type":"globe.zoom","rate":0.5}', { rate: 0.5, type: 'globe.zoom' }],
+    ['{"type":"globe.plant"}', { type: 'globe.plant' }]
+  ])(
+    'passes the globe frame %s to the screen stamped with its seat',
+    (frame, message) => {
+      const outcome = sendFrame({
+        admission: PLAYER,
+        frame,
+        store: openedStore()
+      })
+
+      expect(outcome.event).toEqual({
+        kind: 'to_screen',
+        message: { ...message, seatId: 'seat-1' }
+      })
+    }
+  )
+
+  it('passes the globe state to the phones, and only from the screen', () => {
+    const state = {
+      phase: 'reveal',
+      place: { id: 'country:PE', kind: 'country' },
+      result: { km: 212, points: 640, seatId: 'seat-1' },
+      seats: [{ score: 640, seatId: 'seat-1', won: false }],
+      secondsLeft: null,
+      turnSeatId: 'seat-1',
+      turns: { of: 6, played: 1 },
+      type: 'globe.state'
+    }
+    const frame = JSON.stringify(state)
+
+    const fromScreen = sendFrame({
+      admission: SCREEN,
+      frame,
+      store: openedStore()
+    })
+    const fromPhone = sendFrame({
+      admission: PLAYER,
+      frame,
+      store: openedStore()
+    })
+
+    expect(fromScreen.event).toEqual({ kind: 'to_players', message: state })
+    expect(fromPhone.reply?.type === 'error' && fromPhone.reply.code).toBe(
+      'wrong_role'
+    )
+  })
+
   it('refuses a frame from the wrong role without closing', () => {
     const outcome = sendFrame({
       admission: SCREEN,

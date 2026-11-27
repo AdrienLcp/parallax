@@ -10,6 +10,12 @@ import {
 } from '@parallax/protocol/client-message'
 import { decodeMessage } from '@parallax/protocol/codec'
 import type { ProtocolErrorCode } from '@parallax/protocol/error-code'
+import type {
+  GlobeSeatPlant,
+  GlobeSeatStick,
+  GlobeSeatZoom,
+  GlobeState
+} from '@parallax/protocol/globe'
 import type { SeatId } from '@parallax/protocol/identifiers'
 import type { ReplyMessage } from '@parallax/protocol/server-message'
 import type {
@@ -53,8 +59,14 @@ export type SessionEvent =
         | TowerSeatSpin
         | ClawSeatStick
         | ClawSeatDrop
+        | GlobeSeatStick
+        | GlobeSeatZoom
+        | GlobeSeatPlant
     }
-  | { kind: 'to_players'; message: SumoState | TowerState | ClawState }
+  | {
+      kind: 'to_players'
+      message: SumoState | TowerState | ClawState | GlobeState
+    }
 
 export type FrameOutcome = {
   /** The socket's admission after this frame, to keep on it. */
@@ -187,6 +199,9 @@ const play = ({
     case 'tower.spin':
     case 'claw.stick':
     case 'claw.drop':
+    case 'globe.stick':
+    case 'globe.zoom':
+    case 'globe.plant':
       return admission.role === 'player'
         ? passed(admission, {
             kind: 'to_screen',
@@ -196,6 +211,7 @@ const play = ({
     case 'sumo.state':
     case 'tower.state':
     case 'claw.state':
+    case 'globe.state':
       return admission.role === 'screen'
         ? passed(admission, { kind: 'to_players', message })
         : wrongRole(admission)

@@ -2,6 +2,12 @@ import { z } from 'zod'
 
 import { clawDropSchema, clawStateSchema, clawStickSchema } from './claw'
 import { roomGameSchema } from './games'
+import {
+  globePlantSchema,
+  globeStateSchema,
+  globeStickSchema,
+  globeZoomSchema
+} from './globe'
 import { screenTokenSchema, sessionIdSchema } from './identifiers'
 import {
   gameEndedSchema,
@@ -74,7 +80,11 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   towerSpinSchema,
   clawStickSchema,
   clawDropSchema,
-  clawStateSchema
+  clawStateSchema,
+  globeStickSchema,
+  globeZoomSchema,
+  globePlantSchema,
+  globeStateSchema
 ])
 
 export type Credentials = z.infer<typeof credentialsSchema>
