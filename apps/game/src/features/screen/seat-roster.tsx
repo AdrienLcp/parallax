@@ -5,7 +5,6 @@ import { ROOM_SEAT_LIMIT, type Seat } from '@parallax/protocol/room'
 
 import { FullscreenSwitch } from '@/features/fullscreen/fullscreen-switch'
 import type { SceneStandings } from '@/features/games/game-definition'
-import { type GameId, games } from '@/features/games/games'
 import { CheckMark } from '@/features/room/check-mark'
 import { ScorePips } from '@/features/room/score-pips'
 import { seatNameOf } from '@/features/room/seat-name'
@@ -13,6 +12,7 @@ import { SeatTop } from '@/features/room/seat-top'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { BackToGames } from './back-to-games'
+import { PLAQUE_STYLES, SHELF_SHADOW_STYLE } from './back-wall'
 import { KickSeat } from './kick-seat'
 import { SoundSwitch } from './sound-switch'
 
@@ -25,7 +25,6 @@ const longestWordLength = (name: string): number =>
   Math.max(...name.split(' ').map((word) => word.length))
 
 type SeatRosterProps = {
-  game: GameId
   /** A game runs: the hold control stops it rather than leaving for the game choice. */
   isPlaying: boolean
   /** The mouse at the display removes a seat from the room. */
@@ -41,11 +40,11 @@ type SeatRosterProps = {
 }
 
 /**
- * The room's places on a slate framed in walnut: who sits, who is away, what
- * is free and, while a game runs, the scoreboard.
+ * The room's places, one plaque each standing on the shelf of the alcove's
+ * back wall: who sits, who is away, what is free and, while a game runs, the
+ * scoreboard. The room's controls stay flat at the glass, bottom right.
  */
 export const SeatRoster: React.FC<SeatRosterProps> = ({
-  game,
   isPlaying,
   onKick,
   onLeave,
@@ -54,28 +53,21 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({
   standings
 }) => {
   const translate = useTranslate()
-  const { players } = games[game]
-  const present = seats.filter((seat) => seat.isConnected)
-  const waitingCue =
-    present.length < players.fewest
-      ? translate('screen.players', {
-          fewest: players.fewest,
-          most: players.most
-        })
-      : translate('lobby.readyCount', {
-          present: present.length,
-          ready: present.filter((seat) => seat.isReady).length
-        })
 
   return (
     <div className='seat-roster'>
+      <span className='shelf-shadow' style={SHELF_SHADOW_STYLE} />
       <ul className='seat-places'>
         {SLOTS.map((slot) => {
           const seat = seats.find((candidate) => candidate.slot === slot)
 
           if (seat === undefined) {
             return (
-              <li className='seat-place free' key={slot}>
+              <li
+                className='seat-place free'
+                key={slot}
+                style={PLAQUE_STYLES[slot]}
+              >
                 <svg
                   aria-hidden='true'
                   className='seat-socket'
@@ -105,6 +97,7 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({
               }
               data-winner={standing?.isWinner ? '' : undefined}
               key={slot}
+              style={PLAQUE_STYLES[slot]}
             >
               <SeatTop className='seat-place-top' slot={slot} />
               <KickSeat name={name} onKick={() => onKick(seat.seatId)} />
@@ -140,8 +133,7 @@ export const SeatRoster: React.FC<SeatRosterProps> = ({
           )
         })}
       </ul>
-      <div className='seat-foot'>
-        <p className='seat-cue'>{standings?.cue ?? waitingCue}</p>
+      <div className='seat-controls'>
         <SoundSwitch />
         <FullscreenSwitch />
         <BackToGames isPlaying={isPlaying} onLeave={onLeave} onStop={onStop} />

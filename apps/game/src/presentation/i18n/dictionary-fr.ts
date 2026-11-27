@@ -133,6 +133,7 @@ export default defineDictionary({
     },
     fullscreen: 'Plein écran',
     join: 'Scannez pour jouer',
+    lateJoin: 'Rejoindre',
     openFailed: 'La salle ne s’est pas ouverte.',
     opening: 'Ouverture de la salle',
     players: '{fewest:number} à {most:number} joueurs',

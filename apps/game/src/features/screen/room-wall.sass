@@ -1,0 +1,130 @@
+@use '../../presentation/styles/display'
+@use '../../presentation/styles/typography'
+
+// Every piece is sized by its own rectangle on the back wall: `--wall-unit`
+// is 1 % of the piece's width, so the lettering keeps its proportions
+// wherever the calibration puts the wall.
+@layer components
+  .wall-piece
+    block-size: var(--wall-height)
+    inline-size: var(--wall-width)
+    inset-block-start: var(--wall-top)
+    inset-inline-start: var(--wall-left)
+    margin: 0
+    position: absolute
+
+  .room-wall
+    inset: 0
+    pointer-events: none
+    position: absolute
+
+    // The QR card hangs on the wall: the code's ivory quiet zone is the card.
+    .wall-qr
+      align-content: start
+      display: grid
+      justify-items: center
+
+      .room-qr
+        border-radius: calc(var(--wall-unit) * 1.5)
+        box-shadow: calc(var(--wall-unit) * 1.8) calc(var(--wall-unit) * 3.9) calc(var(--wall-unit) * 4.6) var(--screen-shadow-ink)
+
+    .wall-qr-caption
+      --text-wall-caption: calc(var(--wall-unit) * 16)
+
+      @include display.on-backdrop
+      @include typography.display
+
+      font-size: var(--text-wall-caption)
+      margin-block-start: calc(var(--wall-unit) * 3)
+
+    // Painted straight on the wall, in the backdrop's ink.
+    .wall-title
+      @include display.on-backdrop
+
+      align-content: start
+      display: grid
+      justify-items: start
+
+    .wall-heading
+      --text-wall-heading: calc(var(--wall-unit) * 19)
+
+      @include typography.display
+
+      align-items: center
+      display: flex
+      font-size: var(--text-wall-heading)
+      gap: calc(var(--wall-unit) * 3)
+      text-wrap: balance
+
+    .room-plaque
+      --plaque-filet: calc(var(--wall-unit) * 2.2)
+      --plaque-pad-block: calc(var(--wall-unit) * 2)
+      --plaque-pad-inline: calc(var(--wall-unit) * 5)
+      --plaque-shadow: calc(var(--wall-unit) * 1.3) calc(var(--wall-unit) * 2.6) calc(var(--wall-unit) * 3.2) var(--screen-shadow-ink)
+      --text-wall-plaque: calc(var(--wall-unit) * 15)
+
+      border-radius: calc(var(--wall-unit) * 3)
+      font-size: var(--text-wall-plaque)
+      margin-block-start: calc(var(--wall-unit) * 4)
+
+    .wall-waiting
+      --text-wall-waiting: calc(var(--wall-unit) * 6.4)
+
+      @include typography.label
+
+      font-size: var(--text-wall-waiting)
+      margin-block-start: calc(var(--wall-unit) * 3)
+
+    // The seat whose turn it is; with a clock, a ring around it empties as the turn runs out.
+    .wall-turn
+      --ring: calc(var(--wall-unit) * 1.4)
+
+      block-size: 0.85em
+      display: grid
+      flex: none
+      inline-size: 0.85em
+      place-items: center
+      position: relative
+
+      &[data-clock]::before
+        background: conic-gradient(var(--host-line) calc(var(--left) * 360deg), var(--host-line-faint) 0)
+        border-radius: 50%
+        content: ''
+        inset: 0
+        mask: radial-gradient(closest-side, transparent calc(100% - var(--ring)), #000 calc(100% - var(--ring) + 1px))
+        position: absolute
+
+    .wall-turn-top
+      block-size: calc(100% - var(--ring) * 3.4)
+      inline-size: calc(100% - var(--ring) * 3.4)
+
+    .wall-cues
+      @include display.on-backdrop
+
+      align-items: center
+      display: grid
+
+      .sumo-cues
+        display: flex
+        gap: calc(var(--wall-unit) * 3)
+        justify-content: space-between
+
+        li
+          --text-wall-cue: calc(var(--wall-unit) * 3.6)
+
+          font-size: var(--text-wall-cue)
+          white-space: nowrap
+          gap: calc(var(--wall-unit) * 1.4)
+          grid-template-columns: calc(var(--wall-unit) * 5.4) auto
+
+        .cue-icon
+          block-size: calc(var(--wall-unit) * 5.4)
+          inline-size: calc(var(--wall-unit) * 5.4)
+
+    .wall-subtitle
+      --text-wall-subtitle: calc(var(--wall-unit) * 5.4)
+
+      @include typography.label
+
+      font-size: var(--text-wall-subtitle)
+      text-align: center

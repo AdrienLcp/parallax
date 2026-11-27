@@ -14,6 +14,7 @@ Every game in `apps/game` builds its scene from `apps/game/src/features/alcove/`
 | `aimAlcoveCamera`  | The camera at that eye, its view off-centre so the canvas is the display   |
 | `alcoveInterior`   | The room every object stays in (below)                                     |
 | `buildAlcoveStage` | An invisible floor and back wall that only catch shadows                   |
+| `buildAlcoveShelf` | The room's shelf on the back wall, which the seats' plaques stand on       |
 
 A game reads its sizes from these and copies no number out of them. Then one
 change moves every game at once:
@@ -83,10 +84,13 @@ by where its top touches, never by its inset outline.
 
 ## Flat lettering
 
-- The clock and the round are lettered flat on the back wall, behind the scene.
-- The QR code and the room code stay in front of the scene, so no cable, claw or
-  piece ever crosses them.
-- The sound and game controls sit at the top.
+- The room's lettering stands on the back wall, behind the scene: the QR card,
+  the title and the room code, the cues, and the seats' plaques on the shared
+  shelf (`buildAlcoveShelf`, placed by `features/screen/back-wall.ts`). Adrien
+  chose it on 2026-11-26 (mock H); a claw's cable may pass in front of the QR
+  card for a moment.
+- Only the announcement band and the sound, fullscreen and game controls stay
+  flat at the glass, the controls at the bottom right.
 
 ## The page
 

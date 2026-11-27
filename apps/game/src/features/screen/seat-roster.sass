@@ -1,37 +1,49 @@
 @use '../../presentation/styles/display'
 @use '../../presentation/styles/typography'
 
+// Each place is a plaque standing on the back wall's shelf, placed by
+// `PLAQUE_STYLES`, and sized by `--wall-unit`, 1 % of the plaque's width.
 @layer components
   .seat-roster
-    @include display.hud
+    inset: 0
+    pointer-events: none
+    position: absolute
 
-    background: var(--host-panel)
-    border-radius: calc(var(--cu) * 0.8)
-    box-shadow: inset 0 0 0 calc(var(--cu) * 0.5) var(--host-panel-frame), inset 0 0 0 calc(var(--cu) * 0.7) var(--host-panel-frame-deep), var(--screen-shadow-raised)
-    display: grid
-    grid-template-rows: 1fr auto
-    margin-block-start: calc(var(--cu) * 0.6)
-    min-block-size: 0
-    padding: calc(var(--cu) * 1.4) calc(var(--cu) * 2) calc(var(--cu) * 1.1)
+    // The shelf's shadow on the wall, under the plank: the scene's lights
+    // would run it down the whole wall, so the wall paints it.
+    .shelf-shadow
+      background: linear-gradient(var(--screen-shadow-ink), transparent)
+      block-size: var(--wall-height)
+      filter: blur(calc(var(--wall-unit) * 0.4))
+      inline-size: var(--wall-width)
+      inset-block-start: var(--wall-top)
+      inset-inline-start: var(--wall-left)
+      opacity: 0.7
+      position: absolute
 
     .seat-places
-      column-gap: calc(var(--cu) * 1.4)
-      display: grid
-      grid-template-columns: repeat(3, 1fr)
-      grid-template-rows: repeat(2, 1fr)
       list-style: none
-      min-block-size: 0
+      margin: 0
       padding: 0
 
     .seat-place
-      align-items: center
-      border-block-end: calc(var(--cu) * 0.15) solid var(--host-line-faint)
-      display: grid
-      gap: var(--cu)
-      grid-template-columns: calc(var(--cu) * 6) 1fr
-      min-block-size: 0
-      padding-inline: calc(var(--cu) * 0.6)
-      position: relative
+      --plaque-drop: calc(var(--wall-unit) * 2) calc(var(--wall-unit) * 3.3) calc(var(--wall-unit) * 4.6) var(--screen-shadow-ink)
+      --plaque-frame: calc(var(--wall-unit) * 2.4)
+      --plaque-frame-deep: calc(var(--wall-unit) * 3.4)
+
+      align-content: center
+      background: var(--host-panel)
+      block-size: var(--wall-height)
+      border-radius: calc(var(--wall-unit) * 4.6) calc(var(--wall-unit) * 4.6) calc(var(--wall-unit) * 1.3) calc(var(--wall-unit) * 1.3)
+      box-shadow: inset 0 0 0 var(--plaque-frame) var(--host-panel-frame), inset 0 0 0 var(--plaque-frame-deep) var(--host-panel-frame-deep), var(--plaque-drop)
+      color: var(--host-ink)
+        display: grid
+      inline-size: var(--wall-width)
+      inset-block-start: var(--wall-top)
+      inset-inline-start: var(--wall-left)
+      justify-items: center
+      pointer-events: auto
+      position: absolute
 
       &[data-absent]
         .seat-place-top
@@ -46,15 +58,14 @@
           transition: opacity var(--transition-slow)
 
         .seat-name
-          text-decoration: line-through calc(var(--cu) * 0.35) var(--host-line)
+          text-decoration: line-through calc(var(--wall-unit) * 2.6) var(--host-line)
 
       &[data-winner]
-        border-radius: calc(var(--cu) * 0.8)
-        box-shadow: inset 0 0 0 calc(var(--cu) * 0.3) var(--host-line)
+        box-shadow: inset 0 0 0 var(--plaque-frame) var(--host-line), inset 0 0 0 var(--plaque-frame-deep) var(--host-panel-frame-deep), var(--plaque-drop)
 
     .seat-place-top, .seat-socket
-      block-size: calc(var(--cu) * 5.4)
-      inline-size: calc(var(--cu) * 5.4)
+      block-size: calc(var(--wall-unit) * 44)
+      inline-size: calc(var(--wall-unit) * 44)
 
     .seat-socket
       fill: none
@@ -65,62 +76,70 @@
 
     .seat-label
       display: grid
-      gap: calc(var(--cu) * 0.3)
+      gap: calc(var(--wall-unit) * 1.4)
+      justify-items: center
+      margin-block-start: calc(var(--wall-unit) * 3)
+      max-inline-size: calc(var(--wall-unit) * 86)
       min-inline-size: 0
 
     .seat-name
-      --name-room: calc(var(--cu) * 7.2)
-      --text-seat-name: min(calc(var(--cu) * 3.2), calc(var(--name-room) / (var(--name-length) * 0.44)))
+      --text-seat-name: min(calc(var(--wall-unit) * 21), calc(calc(var(--wall-unit) * 86) / (var(--name-length) * 0.44)))
 
       @include typography.display
 
       font-size: var(--text-seat-name)
+      text-align: center
 
     .seat-place.free .seat-label
+      --text-seat-free: calc(var(--wall-unit) * 13)
+
       @include typography.label
 
       color: var(--host-ink-soft)
-      font-size: calc(var(--cu) * 2.4)
+      font-size: var(--text-seat-free)
 
-    .seat-ready
+    .seat-ready, .seat-points, .seat-absence
+      --text-seat-mark: calc(var(--wall-unit) * 10.6)
+
       @include typography.label
 
+      font-size: var(--text-seat-mark)
+
+    .seat-ready
       align-items: center
       color: var(--host-line)
       display: flex
-      font-size: calc(var(--cu) * 1.9)
-      gap: calc(var(--cu) * 0.5)
+      gap: calc(var(--wall-unit) * 1.6)
 
     .seat-points
-      @include typography.label
-
       color: var(--host-line)
-      font-size: calc(var(--cu) * 1.9)
       font-variant-numeric: tabular-nums
 
     .seat-absence
-      @include typography.label
-
       color: var(--host-ink-soft)
-      font-size: calc(var(--cu) * 1.7)
 
     .score-pips
       --pip-color: var(--host-line)
-      --pip-gap: calc(var(--cu) * 0.6)
-      --pip-size: calc(var(--cu) * 1.6)
-      --pip-stroke: calc(var(--cu) * 0.25)
+      --pip-gap: calc(var(--wall-unit) * 4)
+      --pip-size: calc(var(--wall-unit) * 8.6)
+      --pip-stroke: calc(var(--wall-unit) * 1.4)
 
-    .seat-foot
+    .kick-seat
+      block-size: calc(var(--wall-unit) * 22)
+      inline-size: calc(var(--wall-unit) * 22)
+      inset-block-start: calc(var(--wall-unit) * 4)
+      inset-inline-end: calc(var(--wall-unit) * 4)
+
+    // The room's controls, flat at the glass, bottom right, over the scene.
+    .seat-controls
+      @include display.hud
+      @include display.on-backdrop
+
       align-items: center
       display: flex
-      gap: calc(var(--cu) * 2)
-      justify-content: space-between
-      padding-block-start: calc(var(--cu) * 0.9)
-
-      .sound-switch
-        margin-inline-start: auto
-
-    .seat-cue
-      @include typography.label
-
-      font-size: calc(var(--cu) * 2.2)
+      gap: calc(var(--cu) * 1.6)
+      inset-block-end: max(var(--screen-safe-block), var(--safe-area-bottom))
+      inset-inline-end: var(--screen-safe-inline)
+      pointer-events: auto
+      position: absolute
+      z-index: 1

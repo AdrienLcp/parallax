@@ -28,6 +28,7 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 
 import { aimAlcoveCamera } from '@/features/alcove/aim-alcove-camera'
 import { alcoveInterior } from '@/features/alcove/alcove-bounds'
+import { buildAlcoveShelf } from '@/features/alcove/alcove-shelf'
 import {
   enableSoftShadows,
   softenShadow
@@ -411,6 +412,10 @@ export const createFlatPortraitRenderer: CreateArenaRenderer = (
         color: ink,
         floorOpacity: initialTuning.lighting.shadowOpacity,
         wallOpacity: initialTuning.lighting.shadowOpacity
+      }),
+      buildAlcoveShelf(SHIPPED_ALCOVE, {
+        metal: colors.read('var(--host-line)'),
+        wood: colors.read('var(--host-panel-frame)')
       })
     )
   } else {

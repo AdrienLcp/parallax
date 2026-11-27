@@ -47,7 +47,7 @@ export const ClawScene: React.FC<GameSceneProps> = ({
 
   useEffect(() => {
     if (host.current === null) return
-    const created = createClawRenderer(host.current, PIT)
+    const created = createClawRenderer(host.current, PIT, { hasShelf: true })
     renderer.current = created
     return () => {
       created.dispose()

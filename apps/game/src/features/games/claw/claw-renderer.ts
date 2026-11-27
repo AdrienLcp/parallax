@@ -25,6 +25,10 @@ import { ROOM_SEAT_LIMIT, type SeatSlot } from '@parallax/protocol/room'
 
 import { aimAlcoveCamera } from '@/features/alcove/aim-alcove-camera'
 import {
+  buildAlcoveShelf,
+  type ShelfOption
+} from '@/features/alcove/alcove-shelf'
+import {
   enableSoftShadows,
   softenShadow
 } from '@/features/alcove/alcove-soft-shadows'
@@ -100,7 +104,8 @@ const disposeTree = (root: Object3D) => {
  */
 export const createClawRenderer = (
   host: HTMLElement,
-  pit: ClawPit
+  pit: ClawPit,
+  { hasShelf = false }: ShelfOption = {}
 ): ClawRenderer => {
   const colors = createSceneColors(host)
   const renderer = new WebGLRenderer({ alpha: true, antialias: true })
@@ -153,6 +158,14 @@ export const createClawRenderer = (
   })
   softenShadow(overhead)
   scene.add(key, overhead, overhead.target)
+  if (hasShelf) {
+    scene.add(
+      buildAlcoveShelf(SHIPPED_ALCOVE, {
+        metal: colors.read('var(--host-line)'),
+        wood: colors.read('var(--host-panel-frame)')
+      })
+    )
+  }
 
   const metal = new MeshPhysicalMaterial({
     color: chrome,

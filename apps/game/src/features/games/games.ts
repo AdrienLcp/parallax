@@ -16,7 +16,6 @@ import { TOWER_PLAYERS } from './tower/tower-tuning'
 import './claw/claw-world.sass'
 import './sumo/sumo-world.sass'
 import './tower/tower-world.sass'
-import './tower/tower-room.sass'
 
 export {
   DEFAULT_GAME_ID,

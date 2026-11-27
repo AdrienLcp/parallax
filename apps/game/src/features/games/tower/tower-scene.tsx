@@ -88,7 +88,9 @@ export const TowerScene: React.FC<GameSceneProps> = ({
 
   useEffect(() => {
     if (host.current === null) return
-    const created = createTowerRenderer(host.current, INTERIOR)
+    const created = createTowerRenderer(host.current, INTERIOR, {
+      hasShelf: true
+    })
     renderer.current = created
     return () => {
       created.dispose()

@@ -135,6 +135,7 @@ export const EN_DICTIONARY = defineDictionary({
     },
     fullscreen: 'Full screen',
     join: 'Scan to play',
+    lateJoin: 'Join',
     openFailed: 'The room did not open.',
     opening: 'Opening the room',
     players: '{fewest:number} to {most:number} players',

@@ -22,8 +22,7 @@ import { homePathFor, paths } from '@/infrastructure/router/navigation'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import { AnnouncementBand } from './announcement-band'
-import { PlayHeader } from './play-header'
-import { RoomJoin } from './room-join'
+import { RoomWall } from './room-wall'
 import { ScreenNotice } from './screen-notice'
 import { SeatRoster } from './seat-roster'
 
@@ -46,7 +45,7 @@ type ScreenRoomProps = {
   room: CreateRoomResponse
 }
 
-/** The room on the display: how to join it or how the game stands, the arena the game plays on, and its seats. */
+/** The room on the display: its lettering and its seats on the alcove's back wall, the game's scene in front of them, and the announcement band at the glass. */
 export const ScreenRoom: React.FC<ScreenRoomProps> = ({
   askedGame,
   onGame,
@@ -147,20 +146,20 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({
 
   return (
     <div className='screen-room'>
-      <div className='screen-head'>
-        {standings === null ? (
-          <RoomJoin code={room.code} game={gameId} />
-        ) : (
-          <PlayHeader
-            code={room.code}
-            countdown={standings.countdown}
-            subtitle={standings.subtitle}
-            title={standings.title}
-            titleSlot={standings.titleSlot}
-          />
-        )}
-        <AnnouncementBand announcement={standings?.announcement ?? null} />
-      </div>
+      <RoomWall
+        code={room.code}
+        game={gameId}
+        seats={roomView?.seats ?? []}
+        standings={standings}
+      />
+      <SeatRoster
+        isPlaying={roomView?.phase === 'playing'}
+        onKick={(seatId) => socket.send({ seatId, type: 'seat.kick' })}
+        onLeave={() => void navigate(homePathFor(gameId))}
+        onStop={stopGame}
+        seats={roomView?.seats ?? []}
+        standings={standings}
+      />
       <div className='arena'>
         {roomView === null ? (
           <game.Preview />
@@ -182,15 +181,7 @@ export const ScreenRoom: React.FC<ScreenRoomProps> = ({
           </p>
         )}
       </div>
-      <SeatRoster
-        game={gameId}
-        isPlaying={roomView?.phase === 'playing'}
-        onKick={(seatId) => socket.send({ seatId, type: 'seat.kick' })}
-        onLeave={() => void navigate(homePathFor(gameId))}
-        onStop={stopGame}
-        seats={roomView?.seats ?? []}
-        standings={standings}
-      />
+      <AnnouncementBand announcement={standings?.announcement ?? null} />
     </div>
   )
 }

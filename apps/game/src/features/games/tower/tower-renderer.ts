@@ -31,6 +31,10 @@ import type { TowerBlock } from '@parallax/protocol/tower'
 import { aimAlcoveCamera } from '@/features/alcove/aim-alcove-camera'
 import type { AlcoveInterior } from '@/features/alcove/alcove-bounds'
 import {
+  buildAlcoveShelf,
+  type ShelfOption
+} from '@/features/alcove/alcove-shelf'
+import {
   enableSoftShadows,
   softenShadow
 } from '@/features/alcove/alcove-soft-shadows'
@@ -203,7 +207,8 @@ const disposeTree = (root: Scene) => {
  */
 export const createTowerRenderer = (
   host: HTMLElement,
-  interior: AlcoveInterior
+  interior: AlcoveInterior,
+  { hasShelf = false }: ShelfOption = {}
 ): TowerRenderer => {
   const colors = createSceneColors(host)
   const renderer = new WebGLRenderer({ alpha: true, antialias: true })
@@ -264,6 +269,14 @@ export const createTowerRenderer = (
   })
   softenShadow(overhead)
   scene.add(key, overhead, overhead.target)
+  if (hasShelf) {
+    scene.add(
+      buildAlcoveShelf(SHIPPED_ALCOVE, {
+        metal: colors.read('var(--host-line)'),
+        wood: colors.read('var(--host-panel-frame)')
+      })
+    )
+  }
 
   const chartWidth = 0.09
   const chart = new Mesh(

@@ -3,38 +3,34 @@
 @use '../../presentation/styles/typography'
 
 @layer components
+  // The room's lettering and seats stand on the alcove's back wall, placed
+  // in shares of the display frame (`back-wall.ts`), behind the game's scene;
+  // only the announcement band and the controls stay flat at the glass.
   .screen-room
     @include display.column
 
-    display: grid
-    grid-template-rows: auto calc(var(--cu) * 22 * var(--hud-scale, 1)) minmax(0, 1fr)
+    position: relative
 
-    .screen-head
-      @include display.hud
-
-      display: grid
-      grid-template: auto / minmax(0, 1fr)
-      position: relative
-      z-index: 1
-
-      & > *
-        grid-area: 1 / 1
-
-    .seat-roster
-      margin-block-start: calc(var(--cu) * 1.6)
-      position: relative
-      z-index: 1
-
-    // The game's scene fills the whole window, under the head and the roster:
-    // the alcove camera frames the box that holds the canvas.
+    // The game's scene fills the whole window, in front of the wall: the
+    // alcove camera frames the box that holds the canvas, transparent around
+    // the scene. The display takes no touch: the mouse reaches the plaques
+    // behind it.
     .arena
       display: grid
       grid-template: minmax(0, 1fr) / minmax(0, 1fr)
       inset: 0
+      pointer-events: none
       position: fixed
 
       & > *
         grid-area: 1 / 1
+
+    .announcement-band
+      @include display.hud
+
+      inset-block-start: max(var(--screen-safe-block), var(--safe-area-top))
+      inset-inline: var(--screen-safe-inline)
+      position: absolute
 
     .screen-reconnecting
       @include typography.label
