@@ -1,8 +1,22 @@
 @use '../../presentation/styles/typography'
 
 @layer components
+  // Played in landscape: on a phone held upright the pad turns a quarter, and
+  // the sumo's portrait layout (a wide left half, the right one shrunk to its
+  // content) must not follow it, or the right stick falls past the edge.
+  .ships-lab-pad[data-turned]
+    --pad-unit: min(1dvw, 0.5dvh, 0.3rem)
+
+    .pad
+      column-gap: 0
+      grid-template-columns: 1fr 1fr
+
   .ships-lab-pad
+    // Each stick rests towards the middle (`--stick-in` of its half from the
+    // outer edge), so the buttons on the outer edges stay clear of it.
+    --stick-in: 64%
     --text-hold: 1.125rem
+    --thumb-line: 60%
 
     .lab-side
       display: grid
@@ -10,6 +24,15 @@
 
       .floating-stick
         grid-area: 1 / 1
+
+      .stick-base
+        inset-inline-start: var(--anchor-x-px, var(--stick-at))
+
+    .move-side
+      --stick-at: var(--stick-in)
+
+    .aim-side
+      --stick-at: calc(100% - var(--stick-in))
 
     // The depth buttons stand along the left edge, above and below the stick's resting line.
     .depth-buttons
