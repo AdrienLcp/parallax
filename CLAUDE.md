@@ -72,6 +72,13 @@ URL holds `/ws/rooms/`: Vite's HMR socket lives on the same page, and closing it
 reloads the page, which hides the bug under test. `.seat-controller` never
 counts as visible to Playwright: wait on it with `state: 'attached'`.
 
+A phone pad is checked as a phone holds it before it ships: an upright
+viewport (412 × 915 less the browser bar, `hasTouch`), nothing past its edges,
+and two thumbs at once through CDP `Input.dispatchTouchEvent` (two
+`touchPoints`, each held while the other moves). A mouse is one pointer
+and a landscape viewport never turns the pad: both passed on 2026-11-27
+while the real phone could hold only one control.
+
 An absent seat is released after `SEAT_RELEASE_AFTER_MS` (60 s): the room's one
 alarm rings for it, so a release test waits a full minute.
 
