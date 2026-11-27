@@ -50,6 +50,16 @@ A part meant to touch a surface sits on the real one (`SHIPPED_ALCOVE`), not on
 the inset: rails hung under the inset roof dropped their far ends about 50 px
 below the back wall's top edge and seemed to go through it (2026-11-26).
 
+## What things roll or stand on stays level
+
+A surface that holds pieces under gravity (a shelf, a tray, a board, a floor of
+a stack) stays parallel to the alcove's floor. Raked toward the eye, it fights
+the real floor the players see: it reads as a slope everything should slide off
+(Adrien, 2026-11-27, on a marble maze of raked shelves). A flat surface, in
+turn, is seen almost edge-on from the eye at mid-height, and one above the eye
+shows only its underside: a game whose play happens on such surfaces does not
+fit this display. That is why the marble maze was dropped.
+
 ## Why a part near the roof looks too deep
 
 The scene is one flat image, seen from one eye at mid-height. A line on the roof
