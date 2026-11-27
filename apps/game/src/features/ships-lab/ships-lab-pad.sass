@@ -94,3 +94,37 @@
     place-content: center
     position: absolute
     text-align: center
+
+  // Tilt: the phone aims, so the right thumb only fires; the fire button
+  // takes the stick's resting place and recentring sits above it.
+  .ships-lab-pad[data-mode='gyro']
+    .aim-side
+      align-content: center
+      gap: var(--space-m)
+      justify-items: center
+
+    .tilt-controls
+      display: grid
+      place-items: center
+
+    .lab-recenter
+      @include typography.display
+
+      background: color-mix(in oklab, var(--seat-cap) 22%, transparent)
+      border: 0
+      border-radius: var(--radius-pill)
+      color: var(--seat-cap)
+      font-size: var(--text-hold)
+      max-inline-size: calc(var(--pad-unit) * 70)
+      padding: var(--space-s) var(--space-m)
+      touch-action: manipulation
+
+      &[data-pressed]
+        background: var(--seat-cap)
+        color: var(--seat)
+
+    .fire-button
+      --hold-size: calc(var(--pad-unit) * 44)
+
+      inset: auto
+      position: relative

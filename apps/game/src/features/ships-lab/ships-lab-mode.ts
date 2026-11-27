@@ -8,7 +8,10 @@ import type { FlightMode } from './ships-lab-flight'
 
 export const FLIGHT_MODES = [
   'screen',
-  'pilot'
+  'pilot',
+  'gyro',
+  'auto',
+  'depth'
 ] as const satisfies readonly FlightMode[]
 
 const isFlightMode = (value: string | undefined): value is FlightMode =>

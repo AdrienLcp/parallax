@@ -3,7 +3,7 @@ import { MathUtils, Matrix4, Quaternion, Vector2, Vector3 } from 'three'
 import type { AlcoveInterior } from '@/features/alcove/alcove-bounds'
 
 /**
- * The two ways to fly a ship that the lab compares:
+ * The ways to fly a ship that the lab compares:
  * - `screen` — the sticks follow the display: the left one moves across and
  *   up, two buttons push in depth, the right one aims in the screen's plane
  *   and fires when pushed past half.
@@ -11,8 +11,25 @@ import type { AlcoveInterior } from '@/features/alcove/alcove-bounds'
  *   left one thrusts along the nose and strafes, the right one turns it
  *   (yaw round the vertical, pitch held short of straight up or down), a
  *   button fires along the nose.
+ * - `gyro` — the phone points the nose: held like a camera at the display,
+ *   the ship's nose points where the phone's back does, in the alcove's frame
+ *   (turn it left, the nose turns left, whichever way the ship flies). The
+ *   pad's `right` carries that heading, not a stick. The left stick thrusts
+ *   along the nose, a button fires.
+ * - `auto` — the ship flies on by itself: the left stick, read as a map seen
+ *   from above (up is into the alcove, down towards the players), picks the
+ *   heading the ship turns to; the right stick's height climbs or dives and
+ *   the nose levels out when it is let go. It fires on its own at a target
+ *   in front of the nose.
+ * - `depth` — the sticks follow the floor seen from above: the left one moves
+ *   across and in depth (up is into the alcove), two buttons climb and
+ *   descend, the right one aims along the floor and fires past half.
  */
-export type FlightMode = 'pilot' | 'screen'
+export type FlightMode = 'auto' | 'depth' | 'gyro' | 'pilot' | 'screen'
+
+/** The modes whose ship points its nose anywhere, drawn with a beam to the wall it faces. */
+export const pointsNose = (mode: FlightMode): boolean =>
+  mode === 'pilot' || mode === 'gyro' || mode === 'auto'
 
 export type FlightPad = {
   readonly depth: number
@@ -29,18 +46,35 @@ export const IDLE_PAD: FlightPad = {
 }
 
 export const FLIGHT = {
+  /** Fires on its own at a target this close to the nose's line, in `auto`. */
+  autoAssist: MathUtils.degToRad(14),
+  /** Climb or dive at full stick, in `auto`. */
+  autoPitch: MathUtils.degToRad(55),
+  /** How far `auto` sees a target to fire at it. */
+  autoRange: 1.4,
+  autoSpeed: 0.42,
+  /** How fast the ship turns to the stick's heading, in `auto`, radians a second. */
+  autoTurn: 2.6,
   /** Share of the ship's speed a bullet keeps. */
   bulletCarry: 0.4,
   bulletLife: 1.1,
   bulletRadius: 0.009,
   bulletSpeed: 1.7,
   deadZone: 0.18,
+  /** How far off the aimed line a target still pulls the bullet to it, in `depth`. */
+  depthAssist: MathUtils.degToRad(24),
   depthThrust: 1.1,
   /** Damping per second: low, so the ship glides. */
   drag: 0.55,
   fireCooldown: 0.2,
   /** The right stick fires past this magnitude, in `screen`. */
   fireMagnitude: 0.6,
+  /** How fast the nose catches the phone's heading, in `gyro`, per second. */
+  gyroFollow: 14,
+  /** The tilt's height spans this either side of level, in `gyro`. */
+  gyroPitchSpan: MathUtils.degToRad(80),
+  /** The tilt's heading spans this either side of straight in, in `gyro`. */
+  gyroYawSpan: Math.PI,
   maxSpeed: 0.95,
   pilotAssist: MathUtils.degToRad(12),
   pitchLimit: MathUtils.degToRad(80),
@@ -106,7 +140,7 @@ export type FlightWorld = {
   hits: number
   readonly mode: FlightMode
   readonly ship: {
-    /** Where the ship points: in the screen's plane in `screen`, anywhere in `pilot`. */
+    /** Where the ship points: in the screen's plane in `screen`, along the floor in `depth`, anywhere otherwise. */
     readonly forward: Vector3
     pitch: number
     readonly position: Vector3
@@ -197,7 +231,7 @@ export const resetShip = (world: FlightWorld): void => {
   ship.yaw = 0
   ship.pitch = 0
   ship.forward.copy(
-    world.mode === 'pilot' ? noseOf(0, 0) : new Vector3(0, 1, 0)
+    world.mode === 'screen' ? new Vector3(0, 1, 0) : noseOf(0, 0)
   )
 }
 
@@ -266,14 +300,14 @@ const fire = (world: FlightWorld) => {
         ((target.position.z - nose.z) / (across / FLIGHT.bulletSpeed)) * 0.95
     }
   } else {
-    // A narrower pull toward a target near the nose's line.
-    const target = targetAlong(
-      world,
-      nose,
-      direction,
-      FLIGHT.pilotAssist,
-      false
-    )
+    // A pull toward a target near the line, in all three axes.
+    const cone =
+      world.mode === 'depth'
+        ? FLIGHT.depthAssist
+        : world.mode === 'auto'
+          ? FLIGHT.autoAssist
+          : FLIGHT.pilotAssist
+    const target = targetAlong(world, nose, direction, cone, false)
     if (target !== null) {
       velocity
         .copy(target.position)
@@ -311,6 +345,67 @@ const steer = (world: FlightWorld, pad: FlightPad, dt: number): boolean => {
     return aim.length() > FLIGHT.fireMagnitude
   }
 
+  if (world.mode === 'depth') {
+    // Up on the stick goes into the alcove, away from the players.
+    ship.thrust = move.length()
+    ship.velocity.x += move.x * FLIGHT.thrust * dt
+    ship.velocity.z -= move.y * FLIGHT.thrust * dt
+    ship.velocity.y +=
+      MathUtils.clamp(pad.depth, -1, 1) * FLIGHT.depthThrust * dt
+    if (aim.lengthSq() > 0.25) {
+      ship.forward.set(aim.x, 0, -aim.y).normalize()
+    } else if (ship.thrust > 0.3) {
+      ship.forward
+        .lerp(new Vector3(move.x, 0, -move.y).normalize(), Math.min(1, dt * 4))
+        .normalize()
+    }
+    return aim.length() > FLIGHT.fireMagnitude
+  }
+
+  if (world.mode === 'gyro') {
+    // The phone's heading, raw: no dead zone, the nose eases to it.
+    const yaw = MathUtils.clamp(pad.right.x, -1, 1) * FLIGHT.gyroYawSpan
+    const pitch = -MathUtils.clamp(pad.right.y, -1, 1) * FLIGHT.gyroPitchSpan
+    const ease = 1 - Math.exp(-FLIGHT.gyroFollow * dt)
+    ship.yaw += turnBetween(ship.yaw, yaw) * ease
+    ship.pitch += (pitch - ship.pitch) * ease
+    ship.forward.copy(noseOf(ship.yaw, ship.pitch))
+    ship.thrust = Math.max(move.y, 0)
+    ship.velocity.addScaledVector(ship.forward, move.y * FLIGHT.thrust * dt)
+    return pad.fire
+  }
+
+  if (world.mode === 'auto') {
+    if (move.lengthSq() > 0) {
+      // The stick as a map from above: up is into the alcove.
+      const turn = turnBetween(ship.yaw, Math.atan2(move.x, move.y))
+      ship.yaw += MathUtils.clamp(
+        turn,
+        -FLIGHT.autoTurn * dt,
+        FLIGHT.autoTurn * dt
+      )
+    }
+    const pitch = aim.y * FLIGHT.autoPitch
+    ship.pitch += (pitch - ship.pitch) * Math.min(1, dt * 3)
+    ship.forward.copy(noseOf(ship.yaw, ship.pitch))
+    ship.thrust = 0.5
+    ship.velocity.lerp(
+      ship.forward.clone().multiplyScalar(FLIGHT.autoSpeed),
+      Math.min(1, dt * 2.5)
+    )
+    const ahead = targetAlong(
+      world,
+      ship.position,
+      ship.forward,
+      FLIGHT.autoAssist,
+      false
+    )
+    return (
+      ahead !== null &&
+      ahead.position.distanceTo(ship.position) < FLIGHT.autoRange
+    )
+  }
+
   ship.yaw += aim.x * FLIGHT.yawRate * dt
   ship.pitch = MathUtils.clamp(
     ship.pitch + aim.y * FLIGHT.pitchRate * dt,
@@ -325,6 +420,10 @@ const steer = (world: FlightWorld, pad: FlightPad, dt: number): boolean => {
     .addScaledVector(right, move.x * FLIGHT.thrust * dt)
   return pad.fire
 }
+
+/** The shortest turn from one heading to another, between -π and π. */
+const turnBetween = (from: number, to: number): number =>
+  MathUtils.euclideanModulo(to - from + Math.PI, Math.PI * 2) - Math.PI
 
 const stepOnce = (world: FlightWorld, pad: FlightPad, dt: number) => {
   const { bounds, ship } = world
@@ -413,9 +512,10 @@ export const advanceFlight = (
 export const shipAttitude = (world: FlightWorld): Quaternion => {
   const { ship } = world
   const forward = ship.forward.clone().normalize()
-  const up =
-    world.mode === 'pilot'
-      ? noseOf(ship.yaw, ship.pitch + Math.PI / 2)
+  const up = pointsNose(world.mode)
+    ? noseOf(ship.yaw, ship.pitch + Math.PI / 2)
+    : world.mode === 'depth'
+      ? new Vector3(0, 1, 0)
       : new Vector3(0, 0, 1)
   const right = new Vector3().crossVectors(forward, up).normalize()
   up.crossVectors(right, forward).normalize()

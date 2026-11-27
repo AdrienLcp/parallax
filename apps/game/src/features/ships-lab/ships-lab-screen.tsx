@@ -12,6 +12,7 @@ import { RoomQr } from '@/features/screen/room-qr'
 import { openRoom } from '@/infrastructure/api/rooms-api'
 import { reloadPage } from '@/infrastructure/browser'
 import { useRoomSocket } from '@/infrastructure/messaging/use-room-socket'
+import { paths } from '@/infrastructure/router/navigation'
 import { Main } from '@/presentation/components/main'
 import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
@@ -22,12 +23,7 @@ import {
   type FlightPad,
   IDLE_PAD
 } from './ships-lab-flight'
-import {
-  labPadPathFor,
-  labScreenPathFor,
-  UNIT_PARAM,
-  useFlightModeParam
-} from './ships-lab-mode'
+import { labPadPathFor, UNIT_PARAM, useFlightModeParam } from './ships-lab-mode'
 import { createShipsLabRenderer } from './ships-lab-renderer'
 
 import './ships-lab-screen.sass'
@@ -98,8 +94,6 @@ const FlightView: React.FC<FlightViewProps> = ({ isOnUnit, mode, room }) => {
     }
   }, [isOnUnit, mode])
 
-  const otherMode: FlightMode = mode === 'screen' ? 'pilot' : 'screen'
-
   return (
     <div className='lab-flight' ref={host}>
       <aside className='lab-panel'>
@@ -117,8 +111,8 @@ const FlightView: React.FC<FlightViewProps> = ({ isOnUnit, mode, room }) => {
                   shots: String(score.shots)
                 })}
         </p>
-        <Link className='lab-other' to={labScreenPathFor(otherMode)}>
-          {translate(`shipsLab.mode.${otherMode}`)}
+        <Link className='lab-other' to={paths.shipsLab}>
+          {translate('shipsLab.others')}
         </Link>
       </aside>
     </div>

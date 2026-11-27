@@ -216,21 +216,40 @@ export const EN_DICTIONARY = defineDictionary({
   },
   shipsLab: {
     about: {
+      auto: 'The ship flies on by itself: the left stick picks its heading seen from above, the right one climbs, it fires on its own',
+      depth:
+        'The left stick moves along the floor seen from above, two buttons for height, the right stick aims',
+      gyro: 'Point the phone at the screen: the nose follows it, the left stick thrusts',
       pilot: 'The ship turns and moves as in a first-person game',
       screen: 'The ship follows the screen, two buttons for depth'
     },
     connecting: 'Connecting…',
+    down: 'Down',
     far: 'Far',
     fire: 'Fire',
-    mode: { pilot: 'FPS flight', screen: 'Screen flight' },
+    mode: {
+      auto: 'Autopilot',
+      depth: 'Depth stick',
+      gyro: 'Phone tilt',
+      pilot: 'FPS flight',
+      screen: 'Screen flight'
+    },
     near: 'Near',
     opening: 'Opening the room…',
+    others: 'Other ways to fly',
+    recenter: 'Recenter',
     refused: 'Room not found. Scan the code again.',
     retry: 'Retry',
     scan: 'Scan to fly',
     score: '{hits} hits · {shots} shots',
+    tilt: {
+      denied: 'Motion refused: allow it in the browser',
+      unsupported: 'No motion sensor here'
+    },
+    tiltStart: 'Aim with the phone',
     title: 'Ships · trials',
-    unknownMode: 'Unknown address.'
+    unknownMode: 'Unknown address.',
+    up: 'Up'
   },
   sumo: {
     cue: {

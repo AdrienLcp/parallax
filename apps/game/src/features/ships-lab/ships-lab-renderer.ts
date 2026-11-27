@@ -39,7 +39,12 @@ import { buildAlcoveStage } from '@/features/alcove/alcove-stage'
 import { SHIPPED_ALCOVE } from '@/features/alcove/shipped-alcove'
 import { createSceneColors } from '@/features/games/scene-colors'
 
-import { FLIGHT, type FlightWorld, shipAttitude } from './ships-lab-flight'
+import {
+  FLIGHT,
+  type FlightWorld,
+  pointsNose,
+  shipAttitude
+} from './ships-lab-flight'
 
 export type ShipsLabRenderer = {
   dispose: () => void
@@ -401,7 +406,7 @@ export const createShipsLabRenderer = (
     if (stalkEnds !== undefined) stalkEnds.needsUpdate = true
     mark.position.set(state.position.x, 0.002, state.position.z)
 
-    const isPilot = world.mode === 'pilot'
+    const isPilot = pointsNose(world.mode)
     beam.visible = isPilot
     beamDot.visible = isPilot
     if (isPilot) {

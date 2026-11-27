@@ -20,6 +20,7 @@ import { useTranslate } from '@/presentation/i18n/i18n-provider'
 
 import type { FlightMode } from './ships-lab-flight'
 import { useFlightModeParam, useLabRoomCodeParam } from './ships-lab-mode'
+import { usePhoneAim } from './use-phone-aim'
 
 import '@/features/games/sumo/sumo-controller.sass'
 import '@/features/play/play-page.sass'
@@ -115,6 +116,7 @@ const LabController: React.FC<LabControllerProps> = ({ mode, roomCode }) => {
   const update = (change: Partial<Pad>) => {
     padRef.current = { ...padRef.current, ...change }
   }
+  const phoneAim = usePhoneAim((aim) => update({ right: aim }))
   const holdDepth = (side: 'far' | 'near', isHeld: boolean) => {
     heldRef.current = { ...heldRef.current, [side]: isHeld }
     const { far, near } = heldRef.current
@@ -150,27 +152,48 @@ const LabController: React.FC<LabControllerProps> = ({ mode, roomCode }) => {
             onStick={(stick) => update({ left: steppedStick(stick) })}
             slot={ownSeat.slot}
           />
-          {mode === 'screen' && (
+          {(mode === 'screen' || mode === 'depth') && (
             <div className='depth-buttons'>
               <HoldButton
                 className='depth-far'
-                label={translate('shipsLab.far')}
+                label={translate(
+                  mode === 'depth' ? 'shipsLab.up' : 'shipsLab.far'
+                )}
                 onHold={(isHeld) => holdDepth('far', isHeld)}
               />
               <HoldButton
                 className='depth-near'
-                label={translate('shipsLab.near')}
+                label={translate(
+                  mode === 'depth' ? 'shipsLab.down' : 'shipsLab.near'
+                )}
                 onHold={(isHeld) => holdDepth('near', isHeld)}
               />
             </div>
           )}
         </div>
         <div className='lab-side aim-side'>
-          <FloatingStick
-            onStick={(stick) => update({ right: steppedStick(stick) })}
-            slot={ownSeat.slot}
-          />
-          {mode === 'pilot' && (
+          {mode === 'gyro' ? (
+            <div className='tilt-controls'>
+              <Button
+                className='lab-recenter'
+                onPress={() => void phoneAim.recenter()}
+              >
+                {translate(
+                  phoneAim.status === 'live'
+                    ? 'shipsLab.recenter'
+                    : phoneAim.status === 'idle'
+                      ? 'shipsLab.tiltStart'
+                      : `shipsLab.tilt.${phoneAim.status}`
+                )}
+              </Button>
+            </div>
+          ) : (
+            <FloatingStick
+              onStick={(stick) => update({ right: steppedStick(stick) })}
+              slot={ownSeat.slot}
+            />
+          )}
+          {(mode === 'pilot' || mode === 'gyro') && (
             <HoldButton
               className='fire-button'
               label={translate('shipsLab.fire')}
