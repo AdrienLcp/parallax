@@ -79,6 +79,14 @@
       &[data-pressed]
         background: color-mix(in oklab, var(--seat-cap) 70%, var(--seat))
 
+    // At the top, between the two halves: clear of both thumbs.
+    .lab-install
+      inset-block-start: max(var(--space-s), var(--safe-area-top))
+      inset-inline-start: 50%
+      position: absolute
+      translate: -50% 0
+      z-index: 1
+
   .lab-pad-notice
     display: grid
     inset: 0

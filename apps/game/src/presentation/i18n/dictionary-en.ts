@@ -86,6 +86,7 @@ export const EN_DICTIONARY = defineDictionary({
     open: 'Open the room',
     title: 'Parallax'
   },
+  install: 'Install',
   legal: {
     host: {
       body: 'The site is hosted by:',

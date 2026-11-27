@@ -5,6 +5,7 @@ import { cleanSeatName, SEAT_NAME_MAX_LENGTH } from '@parallax/protocol/lobby'
 import type { Seat } from '@parallax/protocol/room'
 
 import { GAME_IDS, type GameId, games } from '@/features/games/games'
+import { InstallButton } from '@/features/install/install-button'
 import { warnOnFailure } from '@/infrastructure/diagnostics'
 import type { RoomSocket } from '@/infrastructure/messaging/use-room-socket'
 import {
@@ -168,6 +169,7 @@ export const LobbySheet: React.FC<LobbySheetProps> = ({
         <LeavePictogram />
         {translate('lobby.leave')}
       </button>
+      <InstallButton className='lobby-install' />
       {GAME_IDS.length > 1 && <GameChoice game={game} send={send} />}
       <form className='lobby-form' onSubmit={markReady}>
         <div className='lobby-seat'>

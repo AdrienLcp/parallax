@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 
+import { keepInstallOffer } from '@/features/install/install-prompt'
 import { preferredLocales } from '@/infrastructure/browser'
 import { routes } from '@/infrastructure/router/routes'
 import { i18n } from '@/presentation/i18n/i18n'
@@ -15,6 +16,8 @@ const container = document.getElementById('root')
 if (container === null) {
   throw new Error('Missing #root in index.html')
 }
+
+keepInstallOffer()
 
 const locale = applyInitialLocale()
 const translate = await i18n.load(locale, { formatLocale: preferredLocales() })

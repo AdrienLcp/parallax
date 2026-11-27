@@ -12,6 +12,13 @@
     <meta content="#000000" data-scheme="dark" media="(prefers-color-scheme: dark)" name="theme-color" />
     <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
     <!--
+      Installable on a phone: it then opens full screen, and on Android a
+      scanned room code opens in it. No service worker, so no cached app to
+      go stale between deploys.
+    -->
+    <link href="/manifest.webmanifest" rel="manifest" />
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
+    <!--
       The faces every first screen paints — the screen's room code, a phone's
       name and its text —, found before the stylesheet asks for them so
       the swap from the fallback lands before the first paint, or just after.

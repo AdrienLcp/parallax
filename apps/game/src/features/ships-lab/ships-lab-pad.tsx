@@ -8,6 +8,7 @@ import { SHIPS_PAD_HZ, type ShipsPad } from '@parallax/protocol/ships'
 
 import { FloatingStick } from '@/features/games/sumo/floating-stick'
 import { steppedStick } from '@/features/games/sumo/stick-pacing'
+import { InstallButton } from '@/features/install/install-button'
 import { usePlayerSessionId } from '@/features/play/use-player-session-id'
 import { useUpright } from '@/features/play/use-upright'
 import type { PlanarVector } from '@/helpers/planar-vector'
@@ -180,6 +181,7 @@ const LabController: React.FC<LabControllerProps> = ({ mode, roomCode }) => {
             />
           )}
         </div>
+        <InstallButton className='lab-install' />
       </section>
     </div>
   )

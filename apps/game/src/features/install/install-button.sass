@@ -1,0 +1,21 @@
+@use '../../presentation/styles/typography'
+
+@layer components
+  .install-button
+    @include typography.label
+
+    align-items: center
+    background: none
+    border: none
+    color: var(--seat-cap)
+    display: flex
+    font-size: var(--text-m)
+    gap: var(--space-xs)
+    min-block-size: var(--target)
+    opacity: 0.8
+    padding: var(--space-xs)
+    touch-action: manipulation
+
+  .install-pictogram
+    block-size: 1.5rem
+    inline-size: 1.5rem

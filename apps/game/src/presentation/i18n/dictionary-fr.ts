@@ -86,6 +86,7 @@ export default defineDictionary({
     open: 'Ouvrir la salle',
     title: 'Parallax'
   },
+  install: 'Installer',
   legal: {
     host: {
       body: 'Le site est hébergé par :',
